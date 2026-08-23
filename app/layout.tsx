@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
 export const metadata: Metadata = {
-  title: "SAP PP/QM Logbook | AWP COP",
+  title: "SAP PP/QM Knowledge",
   description:
-    "Structured reference logbook for SAP Production Planning and Quality Management functions — AWP internal tool.",
+    "Structured reference guide for SAP Production Planning and Quality Management T-codes — definitions, integration flows, and process context.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <body className="antialiased">{children}</body>
     </html>
   );

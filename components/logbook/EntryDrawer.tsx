@@ -9,35 +9,29 @@ interface Props {
   onTcodeFilter: (code: string) => void;
 }
 
-const MODULE_COLORS: Record<string, string> = {
-  PP: "bg-[#047836] text-white",
-  QM: "bg-[#C49A1A] text-black",
-  "PP/QM": "bg-[#D24918] text-white",
+const MODULE_STYLES: Record<string, string> = {
+  PP:     "bg-[#1C3A2B] text-[#F7F5F0]",
+  QM:     "bg-[#4E7862] text-[#F7F5F0]",
+  "PP/QM":"bg-[#C8DFC5] text-[#1C3A2B]",
 };
 
-const RELEVANCE_COLORS: Record<string, string> = {
-  High: "text-[#34d068] bg-[#047836]/20 border-[#047836]/40",
-  Medium: "text-[#e8bc30] bg-[#C49A1A]/20 border-[#C49A1A]/40",
-  Low: "text-slate-400 bg-slate-700/50 border-slate-600",
-  "Not Used": "text-red-400 bg-red-900/20 border-red-800/40",
+const RELEVANCE_STYLES: Record<string, string> = {
+  High:      "bg-[#D4EFE0] text-[#1C3A2B] border border-[#C8DFC5]",
+  Medium:    "bg-[#F8EBC5] text-[#7A5E0A] border border-[#e5d08a]",
+  Low:       "bg-[#EDE9E1] text-[#6B7A6F] border border-[#D9D4C8]",
+  "Not Used":"bg-[#FCDEDE] text-[#9B3030] border border-[#f5b8b8]",
 };
 
 export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
   const [notes, setNotes] = useState("");
   const [copied, setCopied] = useState(false);
 
-  // Sync local notes with entry
   useEffect(() => {
-    if (entry) {
-      setNotes(entry.notes || "");
-    }
+    if (entry) setNotes(entry.notes || "");
   }, [entry?.id]);
 
-  // Close on Escape
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
+    function handleKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
@@ -57,42 +51,47 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-[#1C3A2B]/20 backdrop-blur-[2px] z-40"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-[#0f1117] border-l border-slate-700 z-50 flex flex-col shadow-2xl overflow-hidden animate-slide-in">
-        {/* Drawer Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-slate-700/60 bg-[#1a1f2e]">
+      <div className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-[#F7F5F0] border-l border-[#D9D4C8] z-50 flex flex-col overflow-hidden animate-slide-in">
+
+        {/* Drawer Header — keylime bg */}
+        <div className="px-7 pt-7 pb-5 border-b border-[#C8DFC5] bg-[#E8F0E4]">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-2">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded ${MODULE_COLORS[entry.module]}`}>
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full tracking-wide ${MODULE_STYLES[entry.module]}`}>
                   {entry.module}
                 </span>
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full border ${RELEVANCE_COLORS[entry.awpRelevance]}`}
-                >
+                <span className="text-[10px] text-[#6B7A6F] bg-[#FAFAF8] border border-[#D9D4C8] px-2.5 py-1 rounded-full">
+                  {entry.category}
+                </span>
+                <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
                   AWP: {entry.awpRelevance}
                 </span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <code className="text-[#C49A1A] font-mono font-bold text-lg">{entry.transactionCode}</code>
-                <button
-                  onClick={copyTcode}
-                  title="Copy T-code"
-                  className="text-xs text-slate-500 hover:text-slate-300 border border-slate-700 hover:border-slate-500 px-2 py-0.5 rounded transition-colors"
-                >
-                  {copied ? "✓ Copied" : "Copy"}
-                </button>
+              {/* T-Code — large display */}
+              <div
+                className="text-5xl font-light text-[#1C3A2B] leading-none tracking-wide mb-1"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                {entry.transactionCode}
               </div>
+              <button
+                onClick={copyTcode}
+                className="text-[10px] text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#FAFAF8] hover:bg-[#C8DFC5] px-2.5 py-1 rounded-full transition-colors mt-1.5 inline-flex items-center gap-1"
+              >
+                {copied ? "✓ Copied" : "Copy T-code"}
+              </button>
 
-              <h2 className="text-white font-semibold text-base mt-1 leading-snug">{entry.title}</h2>
+              <h2 className="text-[#2A2E2B] font-medium text-base mt-3 leading-snug">{entry.title}</h2>
               {entry.titleAr && (
                 <p
-                  className="text-slate-400 text-sm mt-0.5 text-right"
+                  className="text-[#6B7A6F] text-sm mt-1 text-right leading-relaxed"
                   style={{ fontFamily: "'Sakkal Majalla', 'Arial Unicode MS', serif", direction: "rtl" }}
                 >
                   {entry.titleAr}
@@ -102,46 +101,43 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
             <button
               onClick={onClose}
-              className="text-slate-500 hover:text-white transition-colors shrink-0 mt-1"
+              className="text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#FAFAF8] hover:bg-[#C8DFC5] w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0 mt-0.5"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              ×
             </button>
           </div>
         </div>
 
         {/* Drawer Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5 custom-scroll">
+        <div className="flex-1 overflow-y-auto px-7 py-6 space-y-6 custom-scroll">
+
           {/* Description */}
           <section>
-            <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">Description</h3>
-            <p className="text-slate-300 text-sm leading-relaxed">{entry.description}</p>
+            <SectionLabel>Description</SectionLabel>
+            <p className="text-[#2A2E2B] text-sm leading-relaxed">{entry.description}</p>
           </section>
 
-          {/* Meta */}
+          {/* Details */}
           <section>
-            <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">Details</h3>
-            <div className="space-y-2">
-              <Row label="Category" value={entry.category} />
+            <SectionLabel>Details</SectionLabel>
+            <div className="space-y-2 bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
               <Row label="Process Area" value={entry.processArea} />
               <Row label="Module" value={entry.module} />
+              <Row label="Category" value={entry.category} />
             </div>
           </section>
 
           {/* Related Transactions */}
           {entry.relatedTransactions.length > 0 && (
             <section>
-              <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">Related Transactions</h3>
+              <SectionLabel>Related T-Codes</SectionLabel>
               <div className="flex flex-wrap gap-2">
                 {entry.relatedTransactions.map((tc) => (
                   <button
                     key={tc}
-                    onClick={() => {
-                      onTcodeFilter(tc);
-                      onClose();
-                    }}
-                    className="text-sm font-mono text-[#C49A1A] bg-[#C49A1A]/10 border border-[#C49A1A]/30 px-3 py-1 rounded-lg hover:bg-[#C49A1A]/20 hover:border-[#C49A1A]/60 transition-all"
+                    onClick={() => { onTcodeFilter(tc); onClose(); }}
+                    className="text-sm font-light text-[#1C3A2B] bg-[#EDE9E1] border border-[#D9D4C8] px-3 py-1.5 rounded-xl hover:bg-[#C8DFC5] hover:border-[#4E7862] transition-all"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "15px" }}
                     title={`Filter to ${tc}`}
                   >
                     {tc} ↗
@@ -154,12 +150,12 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
           {/* Tags */}
           {entry.tags.length > 0 && (
             <section>
-              <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">Tags</h3>
+              <SectionLabel>Tags</SectionLabel>
               <div className="flex flex-wrap gap-1.5">
                 {entry.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full border border-slate-700"
+                    className="text-[10px] text-[#4E7862] bg-[#E8F0E4] border border-[#C8DFC5] px-2.5 py-1 rounded-full"
                   >
                     #{tag}
                   </span>
@@ -168,75 +164,66 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
             </section>
           )}
 
-          {/* SAP Documentation */}
+          {/* Documentation */}
           <section>
-            <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">Source</h3>
-            <div className="flex items-center gap-2 bg-[#1a1f2e] border border-slate-700/60 rounded-lg p-3">
-              <div className="flex-1">
-                <p className="text-xs text-slate-400 mb-1">SAP Help Portal</p>
-                {hasUrl ? (
-                  <a
-                    href={entry.sapDocUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#047836] hover:text-[#34d068] text-sm transition-colors flex items-center gap-1.5 break-all"
-                  >
-                    Open Official SAP Documentation ↗
-                  </a>
-                ) : (
-                  <span className="text-[#C49A1A] text-sm flex items-center gap-1">
-                    ⚠ Doc link pending verification
-                  </span>
-                )}
-              </div>
+            <SectionLabel>SAP Documentation</SectionLabel>
+            <div className="bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
+              <p className="text-[10px] text-[#6B7A6F] mb-2">SAP Help Portal</p>
+              {hasUrl ? (
+                <a
+                  href={entry.sapDocUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#4E7862] hover:text-[#1C3A2B] text-sm transition-colors"
+                >
+                  Open Official Documentation ↗
+                </a>
+              ) : (
+                <span className="text-[#7A5E0A] text-sm">⚠ Doc link pending verification</span>
+              )}
+              <p className="text-[10px] text-[#D9D4C8] mt-2">Last verified: {entry.lastVerified}</p>
             </div>
-            <p className="text-xs text-slate-600 mt-1.5">
-              Last verified: {entry.lastVerified}
-            </p>
           </section>
 
-          {/* Notes — Editable */}
+          {/* AWP Notes — Editable */}
           <section>
-            <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2">
-              AWP Notes
-              <span className="ml-2 text-slate-600 font-normal normal-case tracking-normal">(local state)</span>
-            </h3>
+            <SectionLabel>
+              AWP Notes{" "}
+              <span className="text-[#D9D4C8] font-normal normal-case tracking-normal ml-1">(local state)</span>
+            </SectionLabel>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
               placeholder="Add AWP-specific notes or consultant observations…"
-              className="w-full bg-[#1a1f2e] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 placeholder:text-slate-600 focus:outline-none focus:border-[#047836] focus:ring-1 focus:ring-[#047836]/30 transition-colors resize-none"
+              className="w-full bg-[#FAFAF8] border border-[#D9D4C8] rounded-2xl px-4 py-3 text-sm text-[#2A2E2B] placeholder:text-[#D9D4C8] focus:outline-none focus:border-[#4E7862] transition-colors resize-none"
             />
-            <p className="text-xs text-slate-600 mt-1">
-              Notes are saved in local browser state — future version will persist to DB.
-            </p>
           </section>
         </div>
 
         {/* Drawer Footer */}
-        <div className="px-6 py-4 border-t border-slate-700/60 bg-[#1a1f2e] flex items-center justify-between gap-3">
+        <div className="px-7 py-4 border-t border-[#D9D4C8] bg-[#EDE9E1] flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             {hasUrl && (
               <a
                 href={entry.sapDocUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-white bg-[#047836] hover:bg-[#047836]/80 px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5"
+                className="text-sm text-[#F7F5F0] bg-[#1C3A2B] hover:bg-[#3D6B52] px-4 py-2 rounded-full transition-colors"
               >
                 SAP Docs ↗
               </a>
             )}
             <button
               onClick={copyTcode}
-              className="text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 rounded-lg transition-colors"
+              className="text-sm text-[#2A2E2B] bg-[#FAFAF8] hover:bg-[#C8DFC5] border border-[#D9D4C8] hover:border-[#4E7862] px-4 py-2 rounded-full transition-colors"
             >
-              {copied ? "✓ Copied T-code" : "Copy T-code"}
+              {copied ? "✓ Copied" : "Copy T-code"}
             </button>
           </div>
           <button
             onClick={onClose}
-            className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
+            className="text-sm text-[#6B7A6F] hover:text-[#2A2E2B] transition-colors"
           >
             Close
           </button>
@@ -246,11 +233,19 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
   );
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-2.5">
+      {children}
+    </h3>
+  );
+}
+
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline gap-3">
-      <span className="text-xs text-slate-500 w-24 shrink-0">{label}</span>
-      <span className="text-sm text-slate-300">{value}</span>
+      <span className="text-[10px] text-[#6B7A6F] uppercase tracking-wide w-24 shrink-0">{label}</span>
+      <span className="text-sm text-[#2A2E2B]">{value}</span>
     </div>
   );
 }
