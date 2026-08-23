@@ -1,0 +1,1778 @@
+<title>PP/QM Knowledge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500;600&display=swap">
+
+<style>
+/* ── Ease Health Tokens ───────────────────────────────────────────────── */
+:root {
+  --cream:    #F7F5F0;
+  --parchment:#EDE9E1;
+  --mist:     #D9D4C8;
+  --forest:   #1C3A2B;
+  --sage:     #4E7862;
+  --fern:     #3D6B52;
+  --keylime:  #E8F0E4;
+  --mint:     #C8DFC5;
+  --slate:    #6B7A6F;
+  --ink:      #2A2E2B;
+  --paper:    #FAFAF8;
+
+  --radius-card: 14px;
+  --radius-pill: 999px;
+  --radius-sm:   8px;
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+button { cursor: pointer; font-family: inherit; }
+input  { font-family: inherit; }
+
+/* ── Layout Shell ─────────────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: 58px 1fr;
+  grid-template-columns: 232px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+#header {
+  grid-area: header;
+  background: var(--paper);
+  border-bottom: 1px solid var(--mist);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+  z-index: 50;
+}
+.logo {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 20px;
+  color: var(--forest);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.logo span { color: var(--sage); }
+.search-wrap {
+  flex: 1;
+  max-width: 480px;
+  position: relative;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--slate);
+  pointer-events: none;
+}
+#search {
+  width: 100%;
+  padding: 8px 36px 8px 36px;
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-pill);
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 180ms;
+}
+#search:focus { border-color: var(--sage); }
+#search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--slate);
+  font-size: 18px;
+  line-height: 1;
+  display: none;
+  padding: 2px 4px;
+}
+#search-clear.visible { display: block; }
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#result-count {
+  font-size: 12px;
+  color: var(--slate);
+  white-space: nowrap;
+}
+.sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sort-wrap label { font-size: 12px; color: var(--slate); }
+#sort-select {
+  border: 1px solid var(--mist);
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+  outline: none;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────── */
+#sidebar {
+  grid-area: sidebar;
+  background: var(--paper);
+  border-right: 1px solid var(--mist);
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+.filter-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  font-weight: 600;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--mist);
+}
+
+/* Module pills */
+.module-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.module-pill {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--mist);
+  background: transparent;
+  color: var(--slate);
+  transition: all 140ms;
+}
+.module-pill:hover { border-color: var(--sage); color: var(--forest); }
+.module-pill.active { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.module-pill[data-module="QM"].active { background: var(--sage); color: var(--cream); border-color: var(--sage); }
+.module-pill[data-module="PP/QM"].active { background: var(--mint); color: var(--forest); border-color: var(--fern); }
+
+/* Checkbox filters */
+.check-list { display: flex; flex-direction: column; gap: 6px; }
+.check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.check-item input[type="checkbox"] { accent-color: var(--sage); cursor: pointer; }
+.check-item span { font-size: 13px; color: var(--ink); }
+.check-item:hover span { color: var(--forest); }
+
+/* Role filter */
+.role-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.role-pill {
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--mist);
+  background: transparent;
+  color: var(--slate);
+  transition: all 140ms;
+}
+.role-pill:hover { border-color: var(--fern); color: var(--forest); }
+.role-pill.active { background: var(--keylime); color: var(--forest); border-color: var(--sage); }
+
+/* Sidebar stats */
+.sidebar-stat {
+  background: var(--keylime);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-row { display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-size: 11px; color: var(--slate); }
+.stat-num { font-family: var(--font-display); font-size: 18px; font-weight: 300; color: var(--forest); }
+
+/* ── Main Content ─────────────────────────────────────────────────────── */
+#main {
+  grid-area: main;
+  overflow-y: auto;
+  padding: 24px;
+}
+#cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--slate);
+}
+.no-results p { font-size: 14px; margin-top: 8px; }
+
+/* ── Entry Card ───────────────────────────────────────────────────────── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  cursor: pointer;
+  transition: background 160ms, border-color 160ms;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card:hover { background: var(--keylime); border-color: var(--sage); }
+.card:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.module-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+.badge-PP   { background: var(--forest); color: var(--cream); }
+.badge-QM   { background: var(--sage);   color: var(--cream); }
+.badge-PPQM { background: var(--mint);   color: var(--forest); }
+
+.relevance-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.dot-High   { background: #4E9E6A; }
+.dot-Medium { background: #C49A1A; }
+.dot-Low    { background: var(--mist); }
+.dot-NotUsed { background: #E07070; }
+
+.card-tcode {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 30px;
+  color: var(--forest);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.card-title-ar {
+  font-size: 12px;
+  color: var(--slate);
+  text-align: right;
+  line-height: 1.5;
+  font-family: 'Sakkal Majalla', 'Arial Unicode MS', serif;
+}
+.card-desc {
+  font-size: 12px;
+  color: var(--slate);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.category-tag {
+  font-size: 10px;
+  color: var(--sage);
+  background: var(--keylime);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  letter-spacing: 0.03em;
+}
+.role-tag {
+  font-size: 10px;
+  color: var(--slate);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+}
+
+/* ── Drawer ───────────────────────────────────────────────────────────── */
+#drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 58, 43, 0.18);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms;
+}
+#drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+#drawer {
+  position: fixed;
+  right: 0; top: 0; bottom: 0;
+  width: 520px;
+  max-width: 100vw;
+  background: var(--cream);
+  border-left: 1px solid var(--mist);
+  z-index: 100;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+#drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  background: var(--keylime);
+  border-bottom: 1px solid var(--mint);
+  padding: 24px 28px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.drawer-close {
+  position: absolute;
+  top: 18px; right: 20px;
+  background: none;
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-pill);
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate);
+  font-size: 18px;
+  transition: all 140ms;
+}
+.drawer-close:hover { background: var(--mint); color: var(--forest); border-color: var(--sage); }
+
+.drawer-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.drawer-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.06em;
+}
+.drawer-badge-category {
+  background: var(--paper);
+  color: var(--slate);
+  border: 1px solid var(--mist);
+}
+.drawer-badge-relevance-High   { background: #D4EFE0; color: #2A6A42; }
+.drawer-badge-relevance-Medium { background: #F8EBC5; color: #7A5E0A; }
+.drawer-badge-relevance-Low    { background: var(--parchment); color: var(--slate); }
+.drawer-badge-relevance-NotUsed { background: #FCDEDE; color: #9B3030; }
+.drawer-badge-role { background: var(--mint); color: var(--forest); }
+
+.drawer-tcode {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 48px;
+  color: var(--forest);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.drawer-title {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+.drawer-title-ar {
+  font-size: 15px;
+  color: var(--slate);
+  text-align: right;
+  margin-top: 4px;
+  font-family: 'Sakkal Majalla', 'Arial Unicode MS', serif;
+  direction: rtl;
+}
+
+.drawer-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 24px; }
+
+.drawer-section-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.drawer-desc {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+/* Integration Flow */
+.flow-wrap {
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-card);
+  padding: 18px;
+}
+.flow-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.flow-col { display: flex; flex-direction: column; gap: 6px; }
+.flow-col-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.flow-item {
+  background: var(--keylime);
+  border: 1px solid var(--mint);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--forest);
+  font-weight: 500;
+  text-align: center;
+}
+.flow-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+.flow-tcode-node {
+  background: var(--forest);
+  color: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  text-align: center;
+  white-space: nowrap;
+}
+.flow-arrow {
+  color: var(--sage);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  padding-top: 20px;
+}
+.flow-produces .flow-item {
+  background: var(--mint);
+  border-color: var(--sage);
+}
+
+/* Related + Tags */
+.related-grid { display: flex; flex-direction: column; gap: 6px; }
+.related-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 140ms;
+  text-align: left;
+  width: 100%;
+}
+.related-item:hover { background: var(--keylime); border-color: var(--sage); }
+.related-tcode { font-family: var(--font-display); font-size: 16px; font-weight: 300; color: var(--forest); flex-shrink: 0; }
+.related-title { font-size: 12px; color: var(--ink); line-height: 1.3; }
+
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-pill {
+  font-size: 11px;
+  color: var(--sage);
+  background: var(--keylime);
+  border: 1px solid var(--mint);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 140ms;
+}
+.tag-pill:hover { background: var(--mint); color: var(--forest); }
+
+.drawer-meta {
+  font-size: 11px;
+  color: var(--mist);
+  border-top: 1px solid var(--mist);
+  padding-top: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.drawer-meta a { color: var(--sage); text-decoration: none; }
+.drawer-meta a:hover { text-decoration: underline; }
+.doc-pending { color: #C49A1A; font-size: 11px; }
+
+/* Copy button */
+.copy-btn {
+  background: none;
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--slate);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 140ms;
+  margin-top: 4px;
+}
+.copy-btn:hover { background: var(--keylime); border-color: var(--sage); color: var(--forest); }
+
+/* Notes */
+.notes-area {
+  width: 100%;
+  min-height: 80px;
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  resize: vertical;
+  outline: none;
+  transition: border-color 140ms;
+}
+.notes-area:focus { border-color: var(--sage); }
+.notes-area::placeholder { color: var(--mist); }
+
+/* Sidebar scrollbar */
+#sidebar::-webkit-scrollbar,
+#main::-webkit-scrollbar,
+#drawer::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track,
+#main::-webkit-scrollbar-track,
+#drawer::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb,
+#main::-webkit-scrollbar-thumb,
+#drawer::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 99px; }
+</style>
+
+<div id="app">
+  <!-- Header -->
+  <header id="header">
+    <div class="logo">PP<span>/</span>QM <span style="font-style:italic;color:var(--slate)">Knowledge</span></div>
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+        <circle cx="7" cy="7" r="5"/><path d="m11 11 3 3"/>
+      </svg>
+      <input id="search" type="text" placeholder="Search T-codes, titles, keywords…">
+      <button id="search-clear" aria-label="Clear search">×</button>
+    </div>
+    <div class="header-right">
+      <span id="result-count">— entries</span>
+      <div class="sort-wrap">
+        <label for="sort-select">Sort</label>
+        <select id="sort-select">
+          <option value="relevance">AWP Relevance</option>
+          <option value="tcode">T-Code A→Z</option>
+          <option value="module">Module</option>
+          <option value="category">Category</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <!-- Module -->
+    <div class="filter-group">
+      <div class="filter-label">Module</div>
+      <div class="module-pills">
+        <button class="module-pill active" data-module="ALL">All</button>
+        <button class="module-pill" data-module="PP">PP</button>
+        <button class="module-pill" data-module="QM">QM</button>
+        <button class="module-pill" data-module="PP/QM">PP/QM</button>
+      </div>
+    </div>
+
+    <!-- AWP Relevance -->
+    <div class="filter-group">
+      <div class="filter-label">AWP Relevance</div>
+      <div class="check-list" id="relevance-list">
+        <label class="check-item"><input type="checkbox" data-relevance="High" checked><span>High</span></label>
+        <label class="check-item"><input type="checkbox" data-relevance="Medium" checked><span>Medium</span></label>
+        <label class="check-item"><input type="checkbox" data-relevance="Low" checked><span>Low</span></label>
+        <label class="check-item"><input type="checkbox" data-relevance="Not Used" checked><span>Not Used</span></label>
+      </div>
+    </div>
+
+    <!-- Role -->
+    <div class="filter-group">
+      <div class="filter-label">Process Role</div>
+      <div class="role-pills" id="role-pills">
+        <button class="role-pill active" data-role="ALL">All</button>
+        <button class="role-pill" data-role="Plan">Plan</button>
+        <button class="role-pill" data-role="Execute">Execute</button>
+        <button class="role-pill" data-role="Inspect">Inspect</button>
+        <button class="role-pill" data-role="Decide">Decide</button>
+        <button class="role-pill" data-role="Configure">Configure</button>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="filter-group">
+      <div class="filter-label">Category</div>
+      <div class="check-list" id="category-list"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="filter-group">
+      <div class="filter-label">Coverage Stats</div>
+      <div class="sidebar-stat">
+        <div class="stat-row">
+          <span class="stat-label">PP T-Codes</span>
+          <span class="stat-num" id="stat-pp">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">QM T-Codes</span>
+          <span class="stat-num" id="stat-qm">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">PP/QM Shared</span>
+          <span class="stat-num" id="stat-ppqm">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="main">
+    <div id="cards"></div>
+  </main>
+</div>
+
+<!-- Drawer Overlay -->
+<div id="drawer-overlay" role="presentation"></div>
+
+<!-- Detail Drawer -->
+<aside id="drawer" role="dialog" aria-modal="true" aria-label="T-Code detail">
+  <div class="drawer-header">
+    <button class="drawer-close" id="drawer-close" aria-label="Close">×</button>
+    <div class="drawer-badges" id="drawer-badges"></div>
+    <div class="drawer-tcode" id="drawer-tcode"></div>
+    <div class="drawer-title" id="drawer-title"></div>
+    <div class="drawer-title-ar" id="drawer-title-ar"></div>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script>
+/* ── Data ──────────────────────────────────────────────────────────────── */
+const entries = [
+  /* ─── PRODUCTION PLANNING ─────────────────────────────────── */
+  {
+    id:"pp-md01", module:"PP", category:"MRP", transactionCode:"MD01",
+    title:"MRP Run – Total Planning",
+    titleAr:"تشغيل تخطيط المتطلبات – إجمالي",
+    description:"Executes Materials Requirements Planning for all materials in a plant or MRP area. Calculates net requirements, generates procurement proposals (planned orders, purchase requisitions, schedule lines), and refreshes the MRP list.",
+    processArea:"Material Requirements Planning",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/f8ebc4c8d7a549919e5a38e14c5dd6e8/e9bb5fb5fd394e47e10000000a174cb4.html",
+    relatedTransactions:["MD02","MD03","MD04","MD06"],
+    tags:["mrp","planning","procurement","plant"],
+    awpRelevance:"High",
+    notes:"Run nightly in AWP. Use planning file entries to scope re-runs and avoid full regeneration.",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Sales orders","Planned independent requirements","Stock levels"],
+    produces:["Planned orders","Purchase requisitions","MRP list"],
+  },
+  {
+    id:"pp-md02", module:"PP", category:"MRP", transactionCode:"MD02",
+    title:"MRP Run – Single-Item, Multi-Level",
+    titleAr:"تخطيط المتطلبات – صنف واحد متعدد المستويات",
+    description:"Runs MRP for a single material and all its BOM components. Useful for focused re-planning when a single material's situation changes without triggering a full plant-wide run.",
+    processArea:"Material Requirements Planning",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["MD01","MD03","MD04"],
+    tags:["mrp","single-item","bom"],
+    awpRelevance:"High",
+    notes:"Used for urgent re-planning in AWP project scenarios.",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Engineering change","Spot demand"],
+    produces:["Planned orders","Purchase requisitions for components"],
+  },
+  {
+    id:"pp-md03", module:"PP", category:"MRP", transactionCode:"MD03",
+    title:"MRP Run – Single-Item, Single-Level",
+    titleAr:"تخطيط المتطلبات – صنف واحد مستوى واحد",
+    description:"Re-plans a single material at one BOM level only. Fastest MRP option; does not cascade through component levels. Suitable for header material re-runs when components are already planned.",
+    processArea:"Material Requirements Planning",
+    sapDocUrl:"",
+    relatedTransactions:["MD01","MD02","MD04"],
+    tags:["mrp","single-level"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Single-material demand change"],
+    produces:["Planned orders (header level only)"],
+  },
+  {
+    id:"pp-md04", module:"PP", category:"MRP", transactionCode:"MD04",
+    title:"Stock/Requirements List",
+    titleAr:"قائمة المخزون والمتطلبات",
+    description:"Displays the dynamic supply-demand situation for a material: current stock, existing orders, purchase orders, planned orders, and sales orders. Updates in real time, unlike the static MRP list.",
+    processArea:"Material Requirements Planning",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/f8ebc4c8d7a549919e5a38e14c5dd6e8/e9bb5fb5fd394e47e10000000a174cb4.html",
+    relatedTransactions:["MD01","MD06","CO01"],
+    tags:["stock","requirements","supply-demand"],
+    awpRelevance:"High",
+    notes:"First point of reference in AWP when checking material availability for upcoming production.",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Any order creation or stock movement"],
+    produces:["Supply-demand pegging overview"],
+  },
+  {
+    id:"pp-md06", module:"PP", category:"MRP", transactionCode:"MD06",
+    title:"MRP List",
+    titleAr:"قائمة تخطيط المتطلبات",
+    description:"Displays the static snapshot of MRP results from the last planning run. Provides exception messages (excess stock, delivery delays, re-scheduling proposals) for material planners to act on.",
+    processArea:"Material Requirements Planning",
+    sapDocUrl:"",
+    relatedTransactions:["MD01","MD04"],
+    tags:["mrp","exceptions","planner"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["MD01/MD02 MRP run completion"],
+    produces:["Exception messages","Planner action list"],
+  },
+  {
+    id:"pp-co01", module:"PP", category:"Production Orders", transactionCode:"CO01",
+    title:"Create Production Order",
+    titleAr:"إنشاء أمر الإنتاج",
+    description:"Creates a production order for a finished or semi-finished material. Determines components (from BOM), operations (from routing), costs, and scheduled dates. Triggers availability check.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/f8ebc4c8d7a549919e5a38e14c5dd6e8/2e6edb57fef64b43e10000000a174cb4.html",
+    relatedTransactions:["CO02","CO03","CO11N","CO15","MIGO"],
+    tags:["production-order","manufacturing","bom","routing"],
+    awpRelevance:"High",
+    notes:"AWP creates production orders against project WBS elements. Confirm order type alignment with AWP project controlling.",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Planned order (from MRP)","Manual demand"],
+    produces:["Production order","Goods issue reservation","Capacity requirements"],
+  },
+  {
+    id:"pp-co02", module:"PP", category:"Production Orders", transactionCode:"CO02",
+    title:"Change Production Order",
+    titleAr:"تعديل أمر الإنتاج",
+    description:"Modifies an existing production order — adjust quantities, dates, components, or operations. Changes trigger rescheduling and cost recalculation. Some changes require status checks.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"",
+    relatedTransactions:["CO01","CO03","CO11N"],
+    tags:["production-order","change","modify"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Quantity change","Date change","Engineering change"],
+    produces:["Updated production order","Revised cost estimate"],
+  },
+  {
+    id:"pp-co03", module:"PP", category:"Production Orders", transactionCode:"CO03",
+    title:"Display Production Order",
+    titleAr:"عرض أمر الإنتاج",
+    description:"Read-only view of a production order. Shows all header data, components, operations, status history, and costs without modification rights.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"",
+    relatedTransactions:["CO01","CO02","CO11N","CO15"],
+    tags:["production-order","display","readonly"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Any reference need"],
+    produces:["Order status & detail view"],
+  },
+  {
+    id:"pp-co11n", module:"PP", category:"Production Orders", transactionCode:"CO11N",
+    title:"Goods Issue / Confirmations – Single Screen",
+    titleAr:"تسجيل التأكيد – شاشة واحدة",
+    description:"Records operation confirmations (quantities produced, actual time, yield vs. scrap) for production orders. Single-screen entry consolidates confirmation and goods movement in one step.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["CO01","CO15","MIGO","QA32"],
+    tags:["confirmation","production","yield","scrap"],
+    awpRelevance:"High",
+    notes:"AWP production teams use CO11N for shift reporting. Scrap quantities here feed QM exception reports.",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Production operation completed"],
+    produces:["Actual quantities","Actual time postings","GI movements"],
+  },
+  {
+    id:"pp-co15", module:"PP", category:"Production Orders", transactionCode:"CO15",
+    title:"Enter Goods Receipt for Production Order",
+    titleAr:"ترحيل استلام البضاعة لأمر الإنتاج",
+    description:"Posts goods receipt of the finished product from a production order to stock. Settles the order quantity, triggers batch classification (if active), and can initiate a QM inspection lot.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"",
+    relatedTransactions:["CO01","CO11N","MIGO","QA32"],
+    tags:["goods-receipt","production","finished-goods","inspection"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Production order confirmation complete"],
+    produces:["GR to stock","Inspection lot (QM)","Batch record"],
+  },
+  {
+    id:"pp-co26", module:"PP", category:"Production Orders", transactionCode:"CO26",
+    title:"Order Progress Report",
+    titleAr:"تقرير تقدم الأوامر",
+    description:"Provides a summarized progress view of production orders: scheduled vs. confirmed quantities, operations status, and date deviations. Used by production supervisors for shift handover.",
+    processArea:"Shop Floor Control",
+    sapDocUrl:"",
+    relatedTransactions:["CO01","CO03","CO11N"],
+    tags:["reporting","production","progress"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Production shift reporting need"],
+    produces:["Order status report","Variance analysis"],
+  },
+  {
+    id:"pp-ca01", module:"PP", category:"Routings", transactionCode:"CA01",
+    title:"Create Routing",
+    titleAr:"إنشاء خارطة العمليات",
+    description:"Defines the sequence of manufacturing operations (work centers, standard times, control keys) for producing a material. Routings are referenced by production orders for scheduling and costing.",
+    processArea:"Master Data – Routing",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["CA02","CA03","CO01","QP01"],
+    tags:["routing","operations","work-center","master-data"],
+    awpRelevance:"High",
+    notes:"AWP uses routings with inspection operations (control key QM01) to trigger in-process inspection lots.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["New product introduction","Process change"],
+    produces:["Routing master record","Capacity load profile"],
+  },
+  {
+    id:"pp-ca02", module:"PP", category:"Routings", transactionCode:"CA02",
+    title:"Change Routing",
+    titleAr:"تعديل خارطة العمليات",
+    description:"Modifies an existing routing — add/remove operations, update standard values, assign inspection characteristics to operations. Supports engineering change management.",
+    processArea:"Master Data – Routing",
+    sapDocUrl:"",
+    relatedTransactions:["CA01","CA03","QP01"],
+    tags:["routing","change","master-data"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Process improvement","Engineering change order"],
+    produces:["Updated routing","New routing version"],
+  },
+  {
+    id:"pp-cs01", module:"PP", category:"Bill of Materials", transactionCode:"CS01",
+    title:"Create Bill of Materials",
+    titleAr:"إنشاء قائمة المواد",
+    description:"Creates a Bill of Materials defining the component structure of a manufactured or assembled product. Specifies component quantities, item categories, and validity periods.",
+    processArea:"Master Data – BOM",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["CS02","CS03","CS11","MD01","CO01"],
+    tags:["bom","bill-of-materials","master-data","components"],
+    awpRelevance:"High",
+    notes:"Maintain BOM accuracy in AWP — MRP net requirements depend entirely on the BOM structure.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["New product design","Product change"],
+    produces:["BOM master record","Component list for MRP"],
+  },
+  {
+    id:"pp-cs02", module:"PP", category:"Bill of Materials", transactionCode:"CS02",
+    title:"Change Bill of Materials",
+    titleAr:"تعديل قائمة المواد",
+    description:"Modifies an existing BOM — add/remove components, update quantities, change effectivity dates. Changes propagate to MRP on the next planning run.",
+    processArea:"Master Data – BOM",
+    sapDocUrl:"",
+    relatedTransactions:["CS01","CS03","MD01"],
+    tags:["bom","change","master-data"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Engineering change","Substitution"],
+    produces:["Updated BOM","Engineering change order link"],
+  },
+  {
+    id:"pp-me21n", module:"PP", category:"Procurement", transactionCode:"ME21N",
+    title:"Create Purchase Order",
+    titleAr:"إنشاء أمر الشراء",
+    description:"Creates a purchase order for externally procured materials or services. Can be created manually or converted from a purchase requisition generated by MRP. Triggers GR and invoice processing.",
+    processArea:"External Procurement",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["ME22N","ME23N","MIGO","MD01"],
+    tags:["purchase-order","procurement","vendor"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Purchase requisition (MRP)","Manual requirement"],
+    produces:["Purchase order","GR obligation","Invoice verification basis"],
+  },
+  {
+    id:"pp-migo", module:"PP", category:"Inventory", transactionCode:"MIGO",
+    title:"Goods Movement",
+    titleAr:"حركة البضائع",
+    description:"Multi-purpose goods movement transaction: goods receipt (GR), goods issue (GI), transfer posting, stock transfer, return delivery. The primary transaction for all physical inventory movements.",
+    processArea:"Inventory Management",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["CO01","CO15","ME21N","QA32"],
+    tags:["goods-movement","inventory","gr","gi","stock"],
+    awpRelevance:"High",
+    notes:"MIGO GR against production order (movement type 101) triggers inspection lot in AWP QM configuration.",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Purchase order","Production order","Transfer order","Return"],
+    produces:["Stock update","Financial posting","Inspection lot (if QM active)"],
+  },
+  {
+    id:"pp-mf60", module:"PP", category:"Repetitive Manufacturing", transactionCode:"MF60",
+    title:"Backflushing – Repetitive Manufacturing",
+    titleAr:"الرجوع التلقائي – التصنيع المتكرر",
+    description:"Posts goods issue for components and goods receipt for finished goods simultaneously in repetitive manufacturing. Auto-calculates component consumption based on finished quantity.",
+    processArea:"Repetitive Manufacturing",
+    sapDocUrl:"",
+    relatedTransactions:["MF70","CO11N","MIGO"],
+    tags:["repetitive","backflush","production"],
+    awpRelevance:"Low",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Execute",
+    triggers:["Production line completion"],
+    produces:["GI for components","GR for finished product"],
+  },
+  /* ─── QUALITY MANAGEMENT ───────────────────────────────────── */
+  {
+    id:"qm-qa01", module:"QM", category:"Inspection Lots", transactionCode:"QA01",
+    title:"Create Inspection Lot (Manual)",
+    titleAr:"إنشاء دفعة فحص يدوي",
+    description:"Manually creates a QM inspection lot for a material and plant. Used when an inspection lot must be raised outside the normal automated triggers (GR, production, etc.).",
+    processArea:"Quality Inspection",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/f8ebc4c8d7a549919e5a38e14c5dd6e8/e9cc5fb5fd394e47e10000000a174cb4.html",
+    relatedTransactions:["QA02","QA11","QE01","QA32"],
+    tags:["inspection-lot","manual","quality"],
+    awpRelevance:"Medium",
+    notes:"Used in AWP for unplanned inspections, e.g. customer complaint-driven re-inspection.",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Manual quality trigger","Customer complaint","Audit requirement"],
+    produces:["Inspection lot","Usage decision required"],
+  },
+  {
+    id:"qm-qa02", module:"QM", category:"Inspection Lots", transactionCode:"QA02",
+    title:"Change Inspection Lot",
+    titleAr:"تعديل دفعة الفحص",
+    description:"Modifies an existing inspection lot — update quantities, inspection plan assignment, or inspection end date. Restricted to lots in certain statuses.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"",
+    relatedTransactions:["QA01","QA11","QE01"],
+    tags:["inspection-lot","change"],
+    awpRelevance:"Low",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Correction after lot creation"],
+    produces:["Updated inspection lot"],
+  },
+  {
+    id:"qm-qa11", module:"QM", category:"Usage Decision", transactionCode:"QA11",
+    title:"Record Usage Decision",
+    titleAr:"تسجيل قرار الاستخدام",
+    description:"Records the quality decision for an inspection lot — Accept, Reject, or Post to another stock type. Triggers stock posting (unrestricted, blocked, scrap) and closes the inspection lot. Core quality gatekeeping step.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QA01","QE01","QE11","QA32","QM01"],
+    tags:["usage-decision","accept","reject","stock-posting","quality"],
+    awpRelevance:"High",
+    notes:"AWP QC inspectors must complete usage decision before production or dispatch can proceed. Rejected lots trigger QM01 notification.",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Results recording complete","Inspection lot REL status"],
+    produces:["Stock posting","Inspection lot CLSD status","Quality notification (if rejected)"],
+  },
+  {
+    id:"qm-qa16", module:"QM", category:"Usage Decision", transactionCode:"QA16",
+    title:"Collective Usage Decision",
+    titleAr:"قرار الاستخدام الجماعي",
+    description:"Processes usage decisions for multiple inspection lots simultaneously. Used to efficiently clear a backlog of completed inspections in bulk.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"",
+    relatedTransactions:["QA11","QA32"],
+    tags:["usage-decision","bulk","batch"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Multiple lots awaiting decision"],
+    produces:["Bulk stock postings","Multiple lot closures"],
+  },
+  {
+    id:"qm-qa32", module:"QM", category:"Inspection Lots", transactionCode:"QA32",
+    title:"Change Inspection Lot – Worklist",
+    titleAr:"قائمة عمل دفعات الفحص",
+    description:"Worklist-based access to open inspection lots. Inspectors can navigate directly to results recording or usage decision for lots assigned to them. Primary daily-use transaction for QC team.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QA11","QE01","QE11","QA01"],
+    tags:["worklist","inspection-lot","daily","inspector"],
+    awpRelevance:"High",
+    notes:"AWP QC inspectors start each shift in QA32. Filter by plant and open status.",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Shift start","New inspection lot created"],
+    produces:["Access to QE01/QA11 for each lot"],
+  },
+  {
+    id:"qm-qe01", module:"QM", category:"Results Recording", transactionCode:"QE01",
+    title:"Record Inspection Results – Single Characteristic",
+    titleAr:"تسجيل نتائج الفحص – خاصية واحدة",
+    description:"Records measured values or attribute results for inspection characteristics on an inspection lot. Supports single-characteristic entry with valuation (OK/Not OK) and defect recording.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QE11","QA11","QA32","QS21"],
+    tags:["results-recording","inspection","characteristics","measurement"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Inspection lot in REL status","Physical inspection complete"],
+    produces:["Inspection results","Characteristic valuation","SPC data points"],
+  },
+  {
+    id:"qm-qe11", module:"QM", category:"Results Recording", transactionCode:"QE11",
+    title:"Record Inspection Results – All Characteristics",
+    titleAr:"تسجيل نتائج الفحص – جميع الخصائص",
+    description:"Records results for all characteristics of an inspection lot in a single screen. More efficient than QE01 for complex inspection plans with many characteristics.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"",
+    relatedTransactions:["QE01","QA11","QA32"],
+    tags:["results-recording","all-characteristics","inspection"],
+    awpRelevance:"High",
+    notes:"Preferred by AWP inspectors for multi-characteristic inspection plans.",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Inspection lot in REL status"],
+    produces:["Complete results set","Ready for usage decision"],
+  },
+  {
+    id:"qm-qe51n", module:"QM", category:"Results Recording", transactionCode:"QE51N",
+    title:"Worklist for Results Recording",
+    titleAr:"قائمة عمل تسجيل النتائج",
+    description:"Provides a filtered worklist of inspection lots pending results recording. Inspectors select lots and drill directly into results entry. Replaces individual lot selection.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"",
+    relatedTransactions:["QE01","QE11","QA32"],
+    tags:["worklist","results-recording","inspector"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Shift start","Inspection backlog review"],
+    produces:["Filtered lot list","Direct results entry access"],
+  },
+  {
+    id:"qm-qm01", module:"QM", category:"Quality Notifications", transactionCode:"QM01",
+    title:"Create Quality Notification",
+    titleAr:"إنشاء بلاغ الجودة",
+    description:"Creates a quality notification (defect report) to document quality problems, assign tasks, track corrective actions, and manage defect resolution. Used for internal defects, customer complaints, and vendor defects.",
+    processArea:"Quality Notifications",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QM02","QM03","QMEL","QA11"],
+    tags:["notification","defect","corrective-action","complaint"],
+    awpRelevance:"High",
+    notes:"AWP uses QM01 for all in-process and delivery rejections. Link to production order and inspection lot.",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Usage decision reject","Customer complaint","In-process defect"],
+    produces:["Quality notification","Task list","CAPA tracking"],
+  },
+  {
+    id:"qm-qm02", module:"QM", category:"Quality Notifications", transactionCode:"QM02",
+    title:"Change Quality Notification",
+    titleAr:"تعديل بلاغ الجودة",
+    description:"Modifies an existing quality notification — update tasks, corrective actions, root cause, add attachments, change status. Used to progress notifications through the CAPA lifecycle.",
+    processArea:"Quality Notifications",
+    sapDocUrl:"",
+    relatedTransactions:["QM01","QM03","QMEL"],
+    tags:["notification","change","capa"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["New information","Task completion","Escalation"],
+    produces:["Updated notification","Task status changes"],
+  },
+  {
+    id:"qm-qmel", module:"QM", category:"Quality Notifications", transactionCode:"QMEL",
+    title:"List of Quality Notifications",
+    titleAr:"قائمة بلاغات الجودة",
+    description:"Displays a configurable list of all quality notifications with selection criteria (type, status, material, plant, date). Used for monitoring open CAPAs and periodic quality reviews.",
+    processArea:"Quality Notifications",
+    sapDocUrl:"",
+    relatedTransactions:["QM01","QM02","QM03"],
+    tags:["notification","list","reporting","capa"],
+    awpRelevance:"High",
+    notes:"AWP quality managers review QMEL weekly for open notifications exceeding target closure days.",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Weekly quality review","Audit preparation"],
+    produces:["Open notification list","Overdue CAPA report"],
+  },
+  {
+    id:"qm-qi01", module:"QM", category:"Inspection Lots", transactionCode:"QI01",
+    title:"Create Inspection Lot (Without Reference)",
+    titleAr:"إنشاء دفعة فحص بدون مرجع",
+    description:"Creates a free-standing inspection lot with no reference to a procurement or production document. Useful for audit lots, in-process checks, or testing of retained samples.",
+    processArea:"Quality Inspection",
+    sapDocUrl:"",
+    relatedTransactions:["QA01","QA11","QE01"],
+    tags:["inspection-lot","audit","retained-sample"],
+    awpRelevance:"Low",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Audit schedule","Retained sample test"],
+    produces:["Inspection lot","Inspection results"],
+  },
+  {
+    id:"qm-qs21", module:"QM", category:"Inspection Characteristics", transactionCode:"QS21",
+    title:"Create Master Inspection Characteristic",
+    titleAr:"إنشاء خاصية فحص رئيسية",
+    description:"Creates a reusable master inspection characteristic (quantitative or qualitative) with defined sampling procedures, control limits, and valuation rules. Referenced by inspection plans.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QS23","QP01","QE01"],
+    tags:["characteristic","master-data","inspection-plan","sampling"],
+    awpRelevance:"High",
+    notes:"AWP maintains a standard characteristic library in QS21 for all product families.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["New product introduction","New test method"],
+    produces:["Master characteristic","Reusable in all inspection plans"],
+  },
+  {
+    id:"qm-qs23", module:"QM", category:"Inspection Characteristics", transactionCode:"QS23",
+    title:"Change Master Inspection Characteristic",
+    titleAr:"تعديل خاصية الفحص الرئيسية",
+    description:"Modifies an existing master inspection characteristic — update limits, sampling procedure, valuation method, or description. Changes propagate to all inspection plans referencing this characteristic.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"",
+    relatedTransactions:["QS21","QP01"],
+    tags:["characteristic","change","master-data"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Specification change","Regulatory update"],
+    produces:["Updated characteristic","Plan updates triggered"],
+  },
+  {
+    id:"qm-qs26", module:"QM", category:"Sampling", transactionCode:"QS26",
+    title:"Create Sampling Procedure",
+    titleAr:"إنشاء إجراء أخذ العينات",
+    description:"Defines a sampling procedure (100%, fixed sample, AQL-based) for use in inspection characteristics and inspection plans. Controls how many units are sampled from an inspection lot.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"",
+    relatedTransactions:["QS21","QP01","QA11"],
+    tags:["sampling","aql","master-data"],
+    awpRelevance:"Medium",
+    notes:"AWP uses AQL sampling for incoming goods inspections per ISO 2859.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["New inspection requirement","AQL level change"],
+    produces:["Sampling procedure","Sample size calculation rules"],
+  },
+  {
+    id:"qm-qs31", module:"QM", category:"Sampling", transactionCode:"QS31",
+    title:"Create Dynamic Modification Rule",
+    titleAr:"إنشاء قاعدة التعديل الديناميكي",
+    description:"Defines rules for dynamically adjusting the inspection level based on past quality performance (tightened, normal, reduced inspection). Automates sampling intensity adjustment over time.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"",
+    relatedTransactions:["QS26","QP01"],
+    tags:["dynamic-modification","sampling","vendor-quality"],
+    awpRelevance:"Low",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Quality program setup","Vendor qualification"],
+    produces:["Dynamic modification rule","Automated sampling level changes"],
+  },
+  {
+    id:"qm-qp01", module:"QM", category:"Inspection Plans", transactionCode:"QP01",
+    title:"Create Inspection Plan",
+    titleAr:"إنشاء خطة الفحص",
+    description:"Creates an inspection plan that assigns inspection characteristics (tests/measurements) to a material and plant. Defines the inspection sequence, operations, and sampling procedures that govern quality checks.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QP02","QP03","QS21","CA01","QA01"],
+    tags:["inspection-plan","master-data","characteristics","quality"],
+    awpRelevance:"High",
+    notes:"Every material inspected in AWP must have a valid inspection plan in QP01. Plans linked to routings trigger in-process lots.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["New material","Product qualification","Regulatory requirement"],
+    produces:["Inspection plan","Lot creation trigger rules","Characteristic assignment"],
+  },
+  {
+    id:"qm-qp02", module:"QM", category:"Inspection Plans", transactionCode:"QP02",
+    title:"Change Inspection Plan",
+    titleAr:"تعديل خطة الفحص",
+    description:"Modifies an existing inspection plan — add/remove characteristics, update sampling, change validity dates, or create a new plan version. Version management enables engineering change control.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"",
+    relatedTransactions:["QP01","QP03","QS21"],
+    tags:["inspection-plan","change","version"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Specification change","Process change","Customer requirement"],
+    produces:["Updated inspection plan","New plan version"],
+  },
+  {
+    id:"qm-qv51", module:"QM", category:"Quality Certificates", transactionCode:"QV51",
+    title:"Create Quality Certificate for Outgoing Deliveries",
+    titleAr:"إنشاء شهادة الجودة للتسليم الصادر",
+    description:"Generates a quality certificate (Certificate of Conformance / Certificate of Analysis) for a customer delivery. Pulls inspection results from the relevant inspection lot and formats them per certificate profile.",
+    processArea:"Quality Certificates",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["QV52","QA11","QE01"],
+    tags:["certificate","coa","customer","delivery","compliance"],
+    awpRelevance:"High",
+    notes:"AWP customer deliveries require QV51 CoA for all finished goods. Certificate profile must be maintained in customizing.",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Delivery creation","Customer CoA requirement"],
+    produces:["Quality certificate","CoA PDF","Customer compliance record"],
+  },
+  {
+    id:"qm-qv52", module:"QM", category:"Quality Certificates", transactionCode:"QV52",
+    title:"Change Quality Certificate",
+    titleAr:"تعديل شهادة الجودة",
+    description:"Modifies a quality certificate before it is issued. Used to correct certificate content, add manually entered values, or change the certificate profile.",
+    processArea:"Quality Certificates",
+    sapDocUrl:"",
+    relatedTransactions:["QV51","QA11"],
+    tags:["certificate","change"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Certificate correction required"],
+    produces:["Corrected certificate"],
+  },
+  {
+    id:"qm-qga1", module:"QM", category:"Reporting", transactionCode:"QGA1",
+    title:"Quality Analysis – Pareto Chart",
+    titleAr:"تحليل الجودة – مخطط باريتو",
+    description:"Generates a Pareto chart of defects by defect code, material, vendor, or notification type. Identifies the vital few defect causes driving the majority of quality escapes.",
+    processArea:"Quality Analytics",
+    sapDocUrl:"",
+    relatedTransactions:["QMEL","QM01"],
+    tags:["reporting","pareto","defects","analytics","quality"],
+    awpRelevance:"Medium",
+    notes:"AWP quality engineers use QGA1 monthly to prioritize CAPA initiatives.",
+    lastVerified:"2025-01",
+    role:"Decide",
+    triggers:["Monthly quality review","CAPA prioritization"],
+    produces:["Pareto chart","Defect frequency ranking"],
+  },
+  /* ─── PP/QM SHARED ─────────────────────────────────────────── */
+  {
+    id:"ppqm-inprocess", module:"PP/QM", category:"In-Process Inspection", transactionCode:"QA32",
+    title:"In-Process Inspection Lot Worklist",
+    titleAr:"قائمة عمل فحص أثناء الإنتاج",
+    description:"Worklist for in-process inspection lots generated from routing operations. Inspectors confirm or reject production operation output directly in QA32, feeding quality data back to the production order.",
+    processArea:"In-Process Quality",
+    sapDocUrl:"",
+    relatedTransactions:["CA01","CO11N","QE11","QA11"],
+    tags:["in-process","inspection","routing","production-order","worklist"],
+    awpRelevance:"High",
+    notes:"AWP in-process inspections are triggered by routing operations with control key QM01. Inspectors use QA32 worklist at each production stage gate.",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Production order operation with inspection control key","CO11N partial confirmation"],
+    produces:["In-process inspection result","Production gate decision","Scrap/rework trigger"],
+  },
+  {
+    id:"ppqm-gr-insp", module:"PP/QM", category:"Goods Receipt Inspection", transactionCode:"MIGO",
+    title:"Goods Receipt – Inspection Lot Trigger",
+    titleAr:"استلام البضاعة – تفعيل دفعة الفحص",
+    description:"When QM is active for a material with inspection type 01 (GR from vendor), posting goods receipt via MIGO automatically creates an inspection lot. Material is posted to quality inspection stock until usage decision is made.",
+    processArea:"Incoming Quality Control",
+    sapDocUrl:"",
+    relatedTransactions:["ME21N","QA32","QE01","QA11","QP01"],
+    tags:["goods-receipt","inspection","incoming","vendor","automatic"],
+    awpRelevance:"High",
+    notes:"AWP incoming goods policy: all critical materials require QM inspection type 01. GR posts to quality stock, not unrestricted.",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["Purchase order GR posting"],
+    produces:["Inspection lot","Quality stock","Usage decision required"],
+  },
+  {
+    id:"ppqm-msc1n", module:"PP/QM", category:"Batch Management", transactionCode:"MSC1N",
+    title:"Create Batch",
+    titleAr:"إنشاء دفعة",
+    description:"Creates a batch record for batch-managed materials. Batches carry classification values (characteristics), status, and shelf life information. Required for quality tracking, traceability, and recall management.",
+    processArea:"Batch Management",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["CO15","MIGO","QA11","MB52"],
+    tags:["batch","traceability","classification","shelf-life"],
+    awpRelevance:"High",
+    notes:"AWP manages batches for all traceable materials. Batch classification carries quality characteristics from usage decision.",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["GR of batch-managed material","Production order GR (CO15)"],
+    produces:["Batch record","Batch classification","Traceability chain"],
+  },
+  {
+    id:"ppqm-mb52", module:"PP/QM", category:"Inventory", transactionCode:"MB52",
+    title:"Warehouse Stock of Material",
+    titleAr:"مخزون المستودع للمادة",
+    description:"Displays stock of a material across storage locations and batch numbers, including unrestricted, quality inspection, blocked, and restricted use stock. Shows total and valuated quantities.",
+    processArea:"Inventory Management",
+    sapDocUrl:"",
+    relatedTransactions:["MIGO","MD04","QA11"],
+    tags:["stock","inventory","warehouse","batch","quality-stock"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Stock reporting need"],
+    produces:["Stock overview by category","Batch-level quantities"],
+  },
+  {
+    id:"qm-qa16b", module:"QM", category:"Inspection Plans", transactionCode:"QP03",
+    title:"Display Inspection Plan",
+    titleAr:"عرض خطة الفحص",
+    description:"Read-only display of an inspection plan with all assigned characteristics, operations, and validity information. Used by inspectors and auditors to verify the inspection setup.",
+    processArea:"Quality Master Data",
+    sapDocUrl:"",
+    relatedTransactions:["QP01","QP02","QS21"],
+    tags:["inspection-plan","display","readonly","audit"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Configure",
+    triggers:["Audit","Inspector reference"],
+    produces:["Plan detail view","Characteristic list"],
+  },
+  {
+    id:"pp-md61", module:"PP", category:"Demand Management", transactionCode:"MD61",
+    title:"Create Planned Independent Requirements",
+    titleAr:"إنشاء الاحتياجات المستقلة المخططة",
+    description:"Enters forecast or planned independent requirements (PIR) for make-to-stock materials. PIRs drive MRP planning for finished goods without a sales order.",
+    processArea:"Demand Management",
+    sapDocUrl:"https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE",
+    relatedTransactions:["MD62","MD01","MD04"],
+    tags:["demand","forecast","pir","planning","make-to-stock"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Sales forecast","Production program"],
+    produces:["Planned independent requirements","MRP input"],
+  },
+  {
+    id:"pp-cm01", module:"PP", category:"Capacity Planning", transactionCode:"CM01",
+    title:"Capacity Evaluation – Work Center View",
+    titleAr:"تقييم الطاقة الإنتاجية – منظور مركز العمل",
+    description:"Displays capacity load versus available capacity for work centers over time. Identifies overloads for leveling decisions. Used by production planners for finite scheduling.",
+    processArea:"Capacity Management",
+    sapDocUrl:"",
+    relatedTransactions:["CM02","CO01","CA01"],
+    tags:["capacity","work-center","leveling","scheduling"],
+    awpRelevance:"Medium",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Plan",
+    triggers:["Production order creation","MRP run"],
+    produces:["Capacity load profile","Overload alerts"],
+  },
+  {
+    id:"qm-q000", module:"QM", category:"Reporting", transactionCode:"Q000",
+    title:"Quality Management Menu",
+    titleAr:"قائمة إدارة الجودة",
+    description:"The Quality Management role menu providing quick access to all QM transactions — inspections, notifications, certificates, master data, and reporting. Starting point for QM users.",
+    processArea:"Navigation",
+    sapDocUrl:"",
+    relatedTransactions:["QA32","QM01","QP01","QE01","QV51"],
+    tags:["menu","navigation","qm","starting-point"],
+    awpRelevance:"High",
+    notes:"",
+    lastVerified:"2025-01",
+    role:"Inspect",
+    triggers:["QM user login"],
+    produces:["Navigation to QM transactions"],
+  },
+];
+
+/* ── State ─────────────────────────────────────────────────────────────── */
+let state = {
+  query: "",
+  module: "ALL",
+  relevances: new Set(["High","Medium","Low","Not Used"]),
+  categories: new Set(),
+  role: "ALL",
+  sort: "relevance",
+  openEntry: null,
+};
+
+/* ── Utilities ─────────────────────────────────────────────────────────── */
+const badgeClass = m => m === "PP" ? "badge-PP" : m === "QM" ? "badge-QM" : "badge-PPQM";
+const badgeLbl   = m => m === "PP/QM" ? "PP/QM" : m;
+const dotClass   = r => "dot-" + r.replace(/\s/g,"");
+const relevanceOrder = {High:0, Medium:1, Low:2, "Not Used":3};
+
+function allCategories() {
+  const s = new Set();
+  entries.forEach(e => s.add(e.category));
+  return [...s].sort();
+}
+
+function filtered() {
+  const q = state.query.toLowerCase();
+  return entries.filter(e => {
+    if (state.module !== "ALL" && e.module !== state.module) return false;
+    if (!state.relevances.has(e.awpRelevance)) return false;
+    if (state.categories.size > 0 && !state.categories.has(e.category)) return false;
+    if (state.role !== "ALL" && e.role !== state.role) return false;
+    if (!q) return true;
+    return [e.transactionCode, e.title, e.titleAr, e.description, e.category, e.processArea,
+            e.notes, ...(e.tags||[]), ...(e.relatedTransactions||[]),
+            ...(e.triggers||[]), ...(e.produces||[])].some(v => v && v.toLowerCase().includes(q));
+  }).sort((a, b) => {
+    if (state.sort === "relevance") return relevanceOrder[a.awpRelevance] - relevanceOrder[b.awpRelevance];
+    if (state.sort === "tcode") return a.transactionCode.localeCompare(b.transactionCode);
+    if (state.sort === "module") return a.module.localeCompare(b.module);
+    if (state.sort === "category") return a.category.localeCompare(b.category);
+    return 0;
+  });
+}
+
+/* ── Render Cards ──────────────────────────────────────────────────────── */
+function renderCards() {
+  const list = filtered();
+  const grid = document.getElementById("cards");
+  document.getElementById("result-count").textContent = `${list.length} of ${entries.length} entries`;
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="no-results">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--mist)" stroke-width="1.2">
+        <circle cx="11" cy="11" r="7"/><path d="m15 15 5 5"/>
+      </svg>
+      <p>No T-codes match your filters.<br>Try broadening your search.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(e => `
+    <div class="card" data-id="${e.id}" tabindex="0" role="button" aria-label="${e.transactionCode}: ${e.title}">
+      <div class="card-top">
+        <span class="module-badge ${badgeClass(e.module)}">${badgeLbl(e.module)}</span>
+        <div class="relevance-dot ${dotClass(e.awpRelevance)}" title="AWP: ${e.awpRelevance}"></div>
+      </div>
+      <div class="card-tcode">${e.transactionCode}</div>
+      <div class="card-title">${e.title}</div>
+      ${e.titleAr ? `<div class="card-title-ar">${e.titleAr}</div>` : ""}
+      <div class="card-desc">${e.description}</div>
+      <div class="card-footer">
+        <span class="category-tag">${e.category}</span>
+        <span class="role-tag">${e.role}</span>
+      </div>
+    </div>
+  `).join("");
+
+  grid.querySelectorAll(".card").forEach(card => {
+    const open = () => { const id = card.dataset.id; openDrawer(entries.find(e => e.id === id)); };
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); open(); } });
+  });
+}
+
+/* ── Render Sidebar Categories ─────────────────────────────────────────── */
+function renderCategoryList() {
+  const cats = allCategories();
+  const list = document.getElementById("category-list");
+  list.innerHTML = cats.map(c => `
+    <label class="check-item">
+      <input type="checkbox" data-category="${c}">
+      <span>${c}</span>
+    </label>
+  `).join("");
+  list.querySelectorAll("input").forEach(cb => {
+    cb.addEventListener("change", () => {
+      if (cb.checked) state.categories.add(cb.dataset.category);
+      else state.categories.delete(cb.dataset.category);
+      renderCards();
+    });
+  });
+}
+
+/* ── Stats ─────────────────────────────────────────────────────────────── */
+function renderStats() {
+  document.getElementById("stat-pp").textContent   = entries.filter(e => e.module === "PP").length;
+  document.getElementById("stat-qm").textContent   = entries.filter(e => e.module === "QM").length;
+  document.getElementById("stat-ppqm").textContent = entries.filter(e => e.module === "PP/QM").length;
+}
+
+/* ── Drawer ────────────────────────────────────────────────────────────── */
+function openDrawer(entry) {
+  if (!entry) return;
+  state.openEntry = entry;
+  const overlay = document.getElementById("drawer-overlay");
+  const drawer  = document.getElementById("drawer");
+
+  // Header
+  document.getElementById("drawer-tcode").textContent = entry.transactionCode;
+  document.getElementById("drawer-title").textContent = entry.title;
+  document.getElementById("drawer-title-ar").textContent = entry.titleAr || "";
+
+  const badgesEl = document.getElementById("drawer-badges");
+  badgesEl.innerHTML = `
+    <span class="drawer-badge ${badgeClass(entry.module)}" style="font-size:11px;padding:3px 10px">${entry.module}</span>
+    <span class="drawer-badge drawer-badge-category">${entry.category}</span>
+    <span class="drawer-badge drawer-badge-relevance-${entry.awpRelevance.replace(/\s/g,"")}">AWP: ${entry.awpRelevance}</span>
+    <span class="drawer-badge drawer-badge-role">${entry.role}</span>
+  `;
+
+  // Body
+  const related = (entry.relatedTransactions || [])
+    .map(tc => entries.find(e => e.transactionCode === tc || e.transactionCode.includes(tc)))
+    .filter(Boolean);
+
+  const hasUrl = Boolean(entry.sapDocUrl);
+
+  document.getElementById("drawer-body").innerHTML = `
+    <!-- Description -->
+    <div>
+      <div class="drawer-section-label">Description</div>
+      <p class="drawer-desc">${entry.description}</p>
+      <button class="copy-btn" id="copy-tcode">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="4" y="4" width="9" height="9" rx="1.5"/><path d="M3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1"/>
+        </svg>
+        Copy T-Code
+      </button>
+    </div>
+
+    <!-- Integration Flow -->
+    <div>
+      <div class="drawer-section-label">Integration Flow</div>
+      <div class="flow-wrap">
+        <div class="flow-grid">
+          <div class="flow-col">
+            <div class="flow-col-label">Triggers</div>
+            ${(entry.triggers||[]).map(t => `<div class="flow-item">${t}</div>`).join("") || `<div class="flow-item" style="color:var(--slate)">—</div>`}
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-center">
+            <div class="flow-col-label">T-Code</div>
+            <div class="flow-tcode-node">${entry.transactionCode}</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-col flow-produces">
+            <div class="flow-col-label">Produces</div>
+            ${(entry.produces||[]).map(p => `<div class="flow-item">${p}</div>`).join("") || `<div class="flow-item" style="color:var(--slate)">—</div>`}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Process Area -->
+    <div>
+      <div class="drawer-section-label">Process Area</div>
+      <p class="drawer-desc" style="font-size:13px">${entry.processArea}</p>
+    </div>
+
+    ${entry.notes ? `
+    <!-- AWP Notes -->
+    <div>
+      <div class="drawer-section-label">AWP Notes</div>
+      <p class="drawer-desc" style="font-size:13px;color:var(--sage);font-style:italic">${entry.notes}</p>
+    </div>` : ""}
+
+    ${related.length ? `
+    <!-- Related -->
+    <div>
+      <div class="drawer-section-label">Related T-Codes</div>
+      <div class="related-grid">
+        ${related.map(r => `
+          <button class="related-item" data-id="${r.id}">
+            <span class="related-tcode">${r.transactionCode}</span>
+            <span class="related-title">${r.title}</span>
+          </button>
+        `).join("")}
+      </div>
+    </div>` : ""}
+
+    ${entry.tags.length ? `
+    <!-- Tags -->
+    <div>
+      <div class="drawer-section-label">Tags</div>
+      <div class="tags-wrap">
+        ${entry.tags.map(t => `<span class="tag-pill" data-tag="${t}">#${t}</span>`).join("")}
+      </div>
+    </div>` : ""}
+
+    <!-- Meta -->
+    <div class="drawer-meta">
+      <span>ID: ${entry.id}</span>
+      ${hasUrl
+        ? `<a href="${entry.sapDocUrl}" target="_blank" rel="noopener">SAP Help ↗</a>`
+        : `<span class="doc-pending">⚠ Doc link pending</span>`}
+      <span>Verified: ${entry.lastVerified}</span>
+    </div>
+  `;
+
+  // Wire up related buttons
+  document.getElementById("drawer-body").querySelectorAll(".related-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const rel = entries.find(e => e.id === btn.dataset.id);
+      if (rel) openDrawer(rel);
+    });
+  });
+
+  // Tag pills — search on click
+  document.getElementById("drawer-body").querySelectorAll(".tag-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      const tag = pill.dataset.tag;
+      document.getElementById("search").value = tag;
+      state.query = tag;
+      document.getElementById("search-clear").classList.add("visible");
+      renderCards();
+      closeDrawer();
+    });
+  });
+
+  // Copy T-code
+  document.getElementById("copy-tcode").addEventListener("click", () => {
+    navigator.clipboard.writeText(entry.transactionCode).catch(() => {});
+    const btn = document.getElementById("copy-tcode");
+    btn.textContent = "Copied!";
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="9" height="9" rx="1.5"/><path d="M3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1"/></svg> Copy T-Code`;
+    }, 1500);
+  });
+
+  overlay.classList.add("open");
+  drawer.classList.add("open");
+  drawer.focus();
+}
+
+function closeDrawer() {
+  document.getElementById("drawer-overlay").classList.remove("open");
+  document.getElementById("drawer").classList.remove("open");
+  state.openEntry = null;
+}
+
+/* ── Wiring ─────────────────────────────────────────────────────────────── */
+// Search
+const searchEl = document.getElementById("search");
+const clearBtn = document.getElementById("search-clear");
+searchEl.addEventListener("input", () => {
+  state.query = searchEl.value;
+  clearBtn.classList.toggle("visible", !!state.query);
+  renderCards();
+});
+clearBtn.addEventListener("click", () => {
+  searchEl.value = "";
+  state.query = "";
+  clearBtn.classList.remove("visible");
+  renderCards();
+});
+
+// Sort
+document.getElementById("sort-select").addEventListener("change", e => {
+  state.sort = e.target.value;
+  renderCards();
+});
+
+// Module pills
+document.querySelectorAll(".module-pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    document.querySelectorAll(".module-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    state.module = pill.dataset.module;
+    renderCards();
+  });
+});
+
+// Relevance checkboxes
+document.querySelectorAll("[data-relevance]").forEach(cb => {
+  cb.addEventListener("change", () => {
+    if (cb.checked) state.relevances.add(cb.dataset.relevance);
+    else state.relevances.delete(cb.dataset.relevance);
+    renderCards();
+  });
+});
+
+// Role pills
+document.querySelectorAll(".role-pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    document.querySelectorAll(".role-pill").forEach(p => p.classList.remove("active"));
+    pill.classList.add("active");
+    state.role = pill.dataset.role;
+    renderCards();
+  });
+});
+
+// Drawer close
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+document.getElementById("drawer-overlay").addEventListener("click", closeDrawer);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+/* ── Init ───────────────────────────────────────────────────────────────── */
+renderCategoryList();
+renderStats();
+renderCards();
+</script>
