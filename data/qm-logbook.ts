@@ -13,7 +13,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Executes an MRP run for all materials in a plant. Regenerates planned orders, purchase requisitions, and dependent requirements based on demand from sales orders, forecasts, and production orders.",
     processArea: "MRP Run",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/mrp-total-plant-md01",
+      "https://help.sap.com/search/?q=MD01+SAP+S4HANA",
     relatedTransactions: ["MD02", "MD03", "MD04", "MD05"],
     tags: ["mrp", "planning", "regenerative", "demand", "plant"],
     awpRelevance: "High",
@@ -32,7 +32,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Runs MRP planning for a single material including all BOM levels. Useful for targeted replanning when only one material has changed demand or supply situation.",
     processArea: "MRP Run",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/single-item-multilevel-planning-md02",
+      "https://help.sap.com/search/?q=MD02+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD03", "MD04"],
     tags: ["mrp", "single item", "multi-level", "replanning"],
     awpRelevance: "High",
@@ -51,7 +51,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Executes MRP for a single material at one BOM level only. Does not explode lower BOM levels. Faster than MD02 for quick top-level planning.",
     processArea: "MRP Run",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/single-item-single-level-planning-md03",
+      "https://help.sap.com/search/?q=MD03+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD02", "MD04"],
     tags: ["mrp", "single item", "single level", "fast planning"],
     awpRelevance: "Medium",
@@ -69,7 +69,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Displays the current MRP situation for a material — stock levels, planned orders, purchase requisitions, sales orders, and production orders — in a time-phased view.",
     processArea: "MRP Evaluation",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/stock-requirements-list-md04",
+      "https://help.sap.com/search/?q=MD04+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD05", "MD06"],
     tags: ["mrp", "stock", "requirements", "evaluation", "display"],
     awpRelevance: "High",
@@ -88,7 +88,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a production order manually for a finished or semi-finished material. Defines quantity, dates, routing, and BOM explosion. The order is the basis for shop-floor execution.",
     processArea: "Production Order Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/create-production-order-co01",
+      "https://help.sap.com/search/?q=CO01+SAP+S4HANA",
     relatedTransactions: ["CO02", "CO03", "CO11N", "CO15"],
     tags: ["production order", "create", "shop floor", "manufacturing"],
     awpRelevance: "High",
@@ -106,7 +106,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing production order — adjusts quantities, dates, routing steps, or component assignments. Used to handle production plan changes or shop-floor exceptions.",
     processArea: "Production Order Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/change-production-order-co02",
+      "https://help.sap.com/search/?q=CO02+SAP+S4HANA",
     relatedTransactions: ["CO01", "CO03", "CO11N"],
     tags: ["production order", "change", "modify", "update"],
     awpRelevance: "High",
@@ -124,7 +124,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Records actual production quantities, times, and activities against a production order. Triggers goods receipt of finished goods to stock and backflush of components if configured.",
     processArea: "Production Confirmation",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/production-order-confirmation-co11n",
+      "https://help.sap.com/search/?q=CO11N+SAP+S4HANA",
     relatedTransactions: ["CO01", "CO02", "MIGO", "MB31"],
     tags: ["confirmation", "goods receipt", "backflush", "actual", "shop floor"],
     awpRelevance: "High",
@@ -160,7 +160,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a production routing — defines the sequence of operations, work centers, and standard times required to manufacture a material. Foundation for order scheduling and costing.",
     processArea: "Routing Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/create-routing-ca01",
+      "https://help.sap.com/search/?q=CA01+SAP+S4HANA",
     relatedTransactions: ["CA02", "CA03", "CA60"],
     tags: ["routing", "operations", "work center", "standard time", "capacity"],
     awpRelevance: "High",
@@ -178,7 +178,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing routing — add, change, or delete operations; update work centers, standard values, or inspection characteristics linked to routing operations.",
     processArea: "Routing Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/change-routing-ca02",
+      "https://help.sap.com/search/?q=CA02+SAP+S4HANA",
     relatedTransactions: ["CA01", "CA03", "QP01"],
     tags: ["routing", "change", "operations", "update"],
     awpRelevance: "Medium",
@@ -197,7 +197,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a Bill of Materials defining the components and quantities required to produce a finished or semi-finished material. BOM is exploded during MRP and production order creation.",
     processArea: "BOM Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/create-bom-cs01",
+      "https://help.sap.com/search/?q=CS01+SAP+S4HANA",
     relatedTransactions: ["CS02", "CS03", "CS11", "MD01"],
     tags: ["bom", "bill of materials", "components", "structure", "recipe"],
     awpRelevance: "High",
@@ -216,7 +216,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing BOM — add or remove components, change quantities, or update validity dates. Changes are effective based on engineering change management settings.",
     processArea: "BOM Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/change-bom-cs02",
+      "https://help.sap.com/search/?q=CS02+SAP+S4HANA",
     relatedTransactions: ["CS01", "CS03", "CC01"],
     tags: ["bom", "change", "components", "engineering change"],
     awpRelevance: "High",
@@ -235,7 +235,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a purchase order to procure materials or services from a vendor. Can be created manually or converted from purchase requisitions generated by MRP.",
     processArea: "Procurement",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/materials-management/create-purchase-order-me21n",
+      "https://help.sap.com/search/?q=ME21N+SAP+S4HANA",
     relatedTransactions: ["ME22N", "ME23N", "ME2M", "MIGO"],
     tags: ["purchase order", "procurement", "vendor", "po"],
     awpRelevance: "High",
@@ -253,7 +253,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing purchase order — change quantities, delivery dates, prices, or payment terms. Subject to release strategy if value thresholds are crossed.",
     processArea: "Procurement",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/materials-management/change-purchase-order-me22n",
+      "https://help.sap.com/search/?q=ME22N+SAP+S4HANA",
     relatedTransactions: ["ME21N", "ME23N"],
     tags: ["purchase order", "change", "modify", "procurement"],
     awpRelevance: "Medium",
@@ -272,7 +272,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Central transaction for all goods movements in SAP: goods receipts (GR), goods issues (GI), stock transfers, and reversals. Posts inventory changes and updates financial accounts.",
     processArea: "Goods Receipt / Goods Issue",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/materials-management/goods-movement-migo",
+      "https://help.sap.com/search/?q=MIGO+SAP+S4HANA",
     relatedTransactions: ["MB1A", "MB1B", "MB1C", "CO11N", "QA01"],
     tags: ["goods movement", "goods receipt", "goods issue", "stock transfer", "inventory"],
     awpRelevance: "High",
@@ -292,7 +292,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Posts goods receipt and component backflush for repetitive manufacturing. Processes production quantities against a run schedule without individual production order confirmation.",
     processArea: "Repetitive Manufacturing",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/backflush-repetitive-manufacturing-mf60",
+      "https://help.sap.com/search/?q=MF60+SAP+S4HANA",
     relatedTransactions: ["MF70", "CO11N", "MIGO"],
     tags: ["repetitive manufacturing", "backflush", "run schedule", "lean"],
     awpRelevance: "Low",
@@ -328,7 +328,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Manually creates an inspection lot for a material. Defines the inspection type, quantity, and inspection plan to be used. Can be triggered automatically by goods movement or production.",
     processArea: "Inspection Lot Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/create-inspection-lot-qa01",
+      "https://help.sap.com/search/?q=QA01+SAP+S4HANA",
     relatedTransactions: ["QA02", "QA11", "QA32", "QE51N"],
     tags: ["inspection lot", "create", "quality", "inspection"],
     awpRelevance: "High",
@@ -347,7 +347,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing inspection lot — update quantities, inspection plan, or usage decision. Used to correct incorrectly created lots or update inspection scope.",
     processArea: "Inspection Lot Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/change-inspection-lot-qa02",
+      "https://help.sap.com/search/?q=QA02+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA11", "QE51N"],
     tags: ["inspection lot", "change", "modify", "update"],
     awpRelevance: "High",
@@ -365,7 +365,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Records the usage decision (Accept / Reject / Conditional Release) for a completed inspection lot. Posts the stock to unrestricted, blocked, or returned stock accordingly.",
     processArea: "Usage Decision",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/usage-decision-qa11",
+      "https://help.sap.com/search/?q=QA11+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA32", "QE51N", "QM01"],
     tags: ["usage decision", "accept", "reject", "stock posting", "inspection"],
     awpRelevance: "High",
@@ -384,7 +384,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Worklist transaction that allows batch processing of inspection lots — record results and usage decisions for multiple lots simultaneously. Key transaction for QM clerks.",
     processArea: "Inspection Lot Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/inspection-lot-worklist-qa32",
+      "https://help.sap.com/search/?q=QA32+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA11", "QE51N"],
     tags: ["inspection lot", "worklist", "batch", "usage decision", "results"],
     awpRelevance: "High",
@@ -403,7 +403,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Records inspection results for individual characteristics within an inspection lot. Supports quantitative (measured values) and qualitative (attribute/defect) result entry.",
     processArea: "Results Recording",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/results-recording-qe01",
+      "https://help.sap.com/search/?q=QE01+SAP+S4HANA",
     relatedTransactions: ["QE11", "QE51N", "QA11", "QS21"],
     tags: ["results recording", "characteristics", "quantitative", "qualitative", "inspection"],
     awpRelevance: "High",
@@ -438,7 +438,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Worklist view for recording inspection results. Displays all open inspection lots requiring results entry. Supports recording across multiple lots and operations in one session.",
     processArea: "Results Recording",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/results-recording-worklist-qe51n",
+      "https://help.sap.com/search/?q=QE51N+SAP+S4HANA",
     relatedTransactions: ["QE01", "QE11", "QA32", "QA11"],
     tags: ["results recording", "worklist", "inspection lot", "batch recording"],
     awpRelevance: "High",
@@ -457,7 +457,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a quality notification (defect report / non-conformance) for a material or process. Notifications can trigger corrective/preventive actions (CAPA) and 8D reports.",
     processArea: "Quality Notification",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/create-quality-notification-qm01",
+      "https://help.sap.com/search/?q=QM01+SAP+S4HANA",
     relatedTransactions: ["QM02", "QMEL", "QA11"],
     tags: ["quality notification", "non-conformance", "defect", "capa", "corrective action"],
     awpRelevance: "High",
@@ -476,7 +476,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing quality notification — update tasks, add defects, record root cause analysis, assign responsible parties, and track corrective actions to completion.",
     processArea: "Quality Notification",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/change-quality-notification-qm02",
+      "https://help.sap.com/search/?q=QM02+SAP+S4HANA",
     relatedTransactions: ["QM01", "QMEL"],
     tags: ["quality notification", "change", "CAPA", "root cause", "tasks"],
     awpRelevance: "High",
@@ -494,7 +494,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Displays a list of all quality notifications with filtering by status, type, material, plant, and date range. Provides overview for QM monitoring and reporting.",
     processArea: "Quality Notification",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/notification-list-qmel",
+      "https://help.sap.com/search/?q=QMEL+SAP+S4HANA",
     relatedTransactions: ["QM01", "QM02"],
     tags: ["notification list", "quality", "overview", "reporting", "monitoring"],
     awpRelevance: "High",
@@ -513,7 +513,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a quality info record (Q-Info) that links a material-vendor combination to QM controls — inspection type, certificate requirements, blocking functions, and vendor evaluation rules.",
     processArea: "Vendor Quality Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/quality-info-record-qi01",
+      "https://help.sap.com/search/?q=QI01+SAP+S4HANA",
     relatedTransactions: ["QI02", "QI08", "ME21N", "MIGO"],
     tags: ["quality info record", "vendor", "supplier", "certificate", "inspection control"],
     awpRelevance: "High",
@@ -533,7 +533,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a master inspection characteristic (MIC) — defines what is inspected, measurement method, tolerance limits, sampling procedure, and control chart type. Reusable across inspection plans.",
     processArea: "QM Master Data",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/master-inspection-characteristic-qs21",
+      "https://help.sap.com/search/?q=QS21+SAP+S4HANA",
     relatedTransactions: ["QS23", "QS26", "QP01"],
     tags: ["master inspection characteristic", "mic", "tolerance", "sampling", "master data"],
     awpRelevance: "High",
@@ -588,7 +588,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates an inspection plan for a material — defines operations, inspection characteristics, sampling procedures, and work centers. Used to control what quality checks are performed during production and goods receipt.",
     processArea: "QM Master Data",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/create-inspection-plan-qp01",
+      "https://help.sap.com/search/?q=QP01+SAP+S4HANA",
     relatedTransactions: ["QP02", "QP03", "QS21", "CA01"],
     tags: ["inspection plan", "create", "operations", "characteristics", "master data"],
     awpRelevance: "High",
@@ -607,7 +607,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Modifies an existing inspection plan — add or remove operations, update characteristics, change sampling procedures, or adjust validity dates. Changes take effect for new inspection lots.",
     processArea: "QM Master Data",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/change-inspection-plan-qp02",
+      "https://help.sap.com/search/?q=QP02+SAP+S4HANA",
     relatedTransactions: ["QP01", "QP03", "QS21"],
     tags: ["inspection plan", "change", "update", "master data"],
     awpRelevance: "High",
@@ -626,7 +626,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates and prints quality certificates for outgoing deliveries — CoA (Certificate of Analysis) or CoC (Certificate of Conformance). Pulls inspection results and usage decision data automatically.",
     processArea: "Quality Certificate",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/quality-certificate-outgoing-qv51",
+      "https://help.sap.com/search/?q=QV51+SAP+S4HANA",
     relatedTransactions: ["QV52", "QA11", "VL01N"],
     tags: ["quality certificate", "CoA", "CoC", "outgoing", "delivery", "customer"],
     awpRelevance: "High",
@@ -663,7 +663,7 @@ export const logbookEntries: LogbookEntry[] = [
       "When a production order is created (CO01) and a routing with in-process inspection points exists (inspection type 03), SAP automatically creates inspection lots at defined routing operations. Links PP execution with QM quality gates.",
     processArea: "In-Process Inspection",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/in-process-inspection",
+      "",
     relatedTransactions: ["CO01", "CA01", "QP01", "QA32", "QE51N"],
     tags: ["in-process inspection", "production order", "routing", "inspection type 03", "integration"],
     awpRelevance: "High",
@@ -682,7 +682,7 @@ export const logbookEntries: LogbookEntry[] = [
       "When goods are received via MIGO with inspection type 01 active, SAP creates an inspection lot automatically. Stock is posted to quality inspection stock until usage decision is recorded in QA11/QA32.",
     processArea: "Goods Receipt",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/goods-receipt-inspection",
+      "",
     relatedTransactions: ["MIGO", "QA32", "QA11", "QE51N", "ME21N"],
     tags: ["goods receipt", "inspection type 01", "quality stock", "vendor inspection", "integration"],
     awpRelevance: "High",
@@ -701,7 +701,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a batch (lot) for a batch-managed material. In QM integration, batch characteristics can be automatically updated from inspection results — enabling quality-based batch classification.",
     processArea: "Batch Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/materials-management/create-batch-msc1n",
+      "https://help.sap.com/search/?q=MSC1N+SAP+S4HANA",
     relatedTransactions: ["MSC2N", "MSC3N", "QA11", "CL01"],
     tags: ["batch", "batch management", "classification", "traceability", "shelf life"],
     awpRelevance: "High",
@@ -755,7 +755,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Allows a usage decision to be recorded for multiple inspection lots simultaneously. Efficient for end-of-day batch processing when many lots share the same decision.",
     processArea: "Usage Decision",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/collective-usage-decision-qa16",
+      "https://help.sap.com/search/?q=QA16+SAP+S4HANA",
     relatedTransactions: ["QA11", "QA32", "QA01"],
     tags: ["usage decision", "collective", "batch", "acceptance", "rejection"],
     awpRelevance: "High",
@@ -773,7 +773,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Creates a sampling procedure that determines how many units to inspect from a lot (sample size). Supports fixed, percentage-based, and statistical sampling plans (AQL, ISO 2859).",
     processArea: "QM Master Data",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/quality-management/sampling-procedure-qs31",
+      "https://help.sap.com/search/?q=QS31+SAP+S4HANA",
     relatedTransactions: ["QS33", "QS21", "QP01"],
     tags: ["sampling", "AQL", "sample size", "ISO 2859", "master data"],
     awpRelevance: "High",
@@ -791,7 +791,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Displays current stock quantities across all stock types (unrestricted, quality inspection, blocked, restricted). Key for understanding material availability and quality hold stock.",
     processArea: "Inventory Management",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/materials-management/warehouse-stocks-mb52",
+      "https://help.sap.com/search/?q=MB52+SAP+S4HANA",
     relatedTransactions: ["MIGO", "QA11", "MB51"],
     tags: ["stock", "inventory", "warehouse", "quality inspection stock", "blocked stock"],
     awpRelevance: "High",
@@ -843,7 +843,7 @@ export const logbookEntries: LogbookEntry[] = [
       "Displays all MRP exception messages for a plant — short, late, rescheduling-in, rescheduling-out, and cancellation proposals. Used by planners to work through planning exceptions each morning.",
     processArea: "MRP Evaluation",
     sapDocUrl:
-      "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/production-planning-and-control/mrp-exception-messages-md06",
+      "https://help.sap.com/search/?q=MD06+SAP+S4HANA",
     relatedTransactions: ["MD04", "MD01", "MD05"],
     tags: ["mrp", "exceptions", "rescheduling", "planner", "evaluation"],
     awpRelevance: "High",
