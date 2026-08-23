@@ -53,7 +53,7 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
       {/* Drawer */}
       <div className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-[#F7F5F0] border-l border-[#D9D4C8] z-50 flex flex-col overflow-hidden animate-slide-in">
 
-        {/* Drawer Header — keylime bg */}
+        {/* Drawer Header */}
         <div className="px-7 pt-7 pb-5 border-b border-[#C8DFC5] bg-[#E8F0E4]">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -69,7 +69,6 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                 </span>
               </div>
 
-              {/* T-Code — large display */}
               <div
                 className="text-5xl font-light text-[#1C3A2B] leading-none tracking-wide mb-1"
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
@@ -111,6 +110,52 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
             <SectionLabel>Description</SectionLabel>
             <p className="text-[#2A2E2B] text-sm leading-relaxed">{entry.description}</p>
           </section>
+
+          {/* Steps */}
+          {entry.steps && entry.steps.length > 0 && (
+            <section>
+              <SectionLabel>How to Use</SectionLabel>
+              <ol className="space-y-2">
+                {entry.steps.map((step, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-[#2A2E2B]">
+                    <span
+                      className="shrink-0 w-5 h-5 rounded-full bg-[#1C3A2B] text-[#F7F5F0] text-[10px] font-semibold flex items-center justify-center mt-0.5"
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="leading-relaxed">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {/* Key Fields */}
+          {entry.keyFields && entry.keyFields.length > 0 && (
+            <section>
+              <SectionLabel>Key Fields</SectionLabel>
+              <div className="space-y-2 bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
+                {entry.keyFields.map((kf, i) => (
+                  <div key={i} className="flex gap-3 text-sm">
+                    <span className="shrink-0 font-mono text-xs text-[#1C3A2B] bg-[#E8F0E4] border border-[#C8DFC5] px-2 py-0.5 rounded-lg self-start mt-0.5">
+                      {kf.field.split(" ")[0]}
+                    </span>
+                    <span className="text-[#6B7A6F] text-xs leading-relaxed">{kf.description}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Output */}
+          {entry.output && (
+            <section>
+              <SectionLabel>Output / Result</SectionLabel>
+              <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-4">
+                <p className="text-sm text-[#1C3A2B] leading-relaxed">{entry.output}</p>
+              </div>
+            </section>
+          )}
 
           {/* Details */}
           <section>
@@ -156,6 +201,14 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                   </span>
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* Notes */}
+          {entry.notes && (
+            <section>
+              <SectionLabel>Notes</SectionLabel>
+              <p className="text-xs text-[#4E7862] italic leading-relaxed">{entry.notes}</p>
             </section>
           )}
 

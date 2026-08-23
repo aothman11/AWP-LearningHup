@@ -217,38 +217,6 @@ export const ppIntegrations: IntegrationModule[] = [
     ],
   },
   {
-    id: "ps",
-    code: "PS",
-    name: "Project System",
-    nameAr: "نظام المشاريع",
-    color: "#E8F0E4",
-    textColor: "#3D6B52",
-    direction: "bidirectional",
-    summary:
-      "In engineer-to-order or project manufacturing environments, PP production orders are assigned to PS WBS elements. This enables project-level cost collection, milestone-based production scheduling, and integrated earned-value reporting. All material costs and labour confirmations flow from PP orders up to the project structure.",
-    flows: [
-      {
-        label: "Production Order → WBS Assignment",
-        direction: "↔",
-        description:
-          "A production order (CO01) can be assigned to a WBS element. All actual costs — GI (MIGO), confirmations (CO11N), GR (CO15) — are posted to the production order and then settled to the WBS at period-end.",
-        tCodes: ["CO01", "CO02", "CO11N", "CO15"],
-      },
-      {
-        label: "Network Activities & Milestones",
-        direction: "→ PP",
-        description:
-          "PS network activities can trigger production order creation automatically at milestone dates. Completion of a production order can close a PS milestone, updating the project schedule.",
-        tCodes: ["CO01", "CO15"],
-      },
-    ],
-    keyPoints: [
-      "WBS-assigned production orders do not post to general inventory — they post to project stock (special stock indicator Q).",
-      "Budget availability check in PS can block production order release if project budget is exceeded.",
-      "Period-end settlement (CO88) sends production order costs to the WBS — essential for accurate project cost reporting.",
-    ],
-  },
-  {
     id: "wm",
     code: "WM",
     name: "Warehouse Management",

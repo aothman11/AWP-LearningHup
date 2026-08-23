@@ -8,6 +8,7 @@ import { LogbookSearch } from "@/components/logbook/LogbookSearch";
 import { LogbookCard } from "@/components/logbook/LogbookCard";
 import { EntryDrawer } from "@/components/logbook/EntryDrawer";
 import { IntegrationMap } from "@/components/logbook/IntegrationMap";
+import { TablesView } from "@/components/logbook/TablesView";
 
 interface Filters {
   module: Module | "All";
@@ -29,7 +30,7 @@ export default function LogbookPage() {
   });
   const [selectedEntry, setSelectedEntry] = useState<LogbookEntry | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [tab, setTab] = useState<"tcodes" | "integrations">("tcodes");
+  const [tab, setTab] = useState<"tcodes" | "integrations" | "tables">("tcodes");
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -112,7 +113,7 @@ export default function LogbookPage() {
       {/* ── Tab Bar ─────────────────────────────────────────────────────────── */}
       <div className="border-b border-[#D9D4C8] bg-[#FAFAF8]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-1">
-          {(["tcodes", "integrations"] as const).map((t) => (
+          {(["tcodes", "integrations", "tables"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -122,7 +123,7 @@ export default function LogbookPage() {
                   : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B]"
               }`}
             >
-              {t === "tcodes" ? "T-Code Reference" : "PP Integrations"}
+              {t === "tcodes" ? "T-Code Reference" : t === "integrations" ? "PP Integrations" : "Database Tables"}
             </button>
           ))}
         </div>
@@ -142,9 +143,10 @@ export default function LogbookPage() {
       {/* ── Main Layout ─────────────────────────────────────────────────────── */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6">
         {/* Integrations tab */}
-        {tab === "integrations" && (
-          <IntegrationMap />
-        )}
+        {tab === "integrations" && <IntegrationMap />}
+
+        {/* Tables tab */}
+        {tab === "tables" && <TablesView />}
 
         {tab === "tcodes" && <div className="flex gap-8">
           {/* Sidebar Desktop */}

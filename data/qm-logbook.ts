@@ -12,14 +12,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Executes an MRP run for all materials in a plant. Regenerates planned orders, purchase requisitions, and dependent requirements based on demand from sales orders, forecasts, and production orders.",
     processArea: "MRP Run",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MD01+SAP+S4HANA",
-    relatedTransactions: ["MD02", "MD03", "MD04", "MD05"],
+    sapDocUrl: "https://help.sap.com/search/?q=MD01+SAP+S4HANA",
+    relatedTransactions: ["MD02", "MD03", "MD04", "MD05", "MD06"],
     tags: ["mrp", "planning", "regenerative", "demand", "plant"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Plant and MRP Area (leave MRP Area blank for full plant run).",
+      "Select Processing Key: NEUPL (regenerative — deletes all planned orders and recreates) or NETCH (net change — only changed materials).",
+      "Set Planning Date (usually today or next working day).",
+      "Check 'Create Purchase Requisitions' = 1 (for PR creation) and 'Delivery Schedule Lines' as needed.",
+      "Choose Scheduling: 1 = Basic dates, 2 = Lead-time scheduling.",
+      "Press Execute (F8). Review the MRP log for exceptions and error messages.",
+    ],
+    keyFields: [
+      { field: "Plant", description: "SAP plant code — MRP runs at plant level." },
+      { field: "Processing Key", description: "NEUPL (full regeneration) or NETCH (net change) or NETPL (net change for planning period)." },
+      { field: "Planning Date", description: "Date MRP uses as the planning horizon start." },
+      { field: "Create Purchase Req.", description: "1 = Create PRs immediately; 2 = Create only in opening period." },
+      { field: "Scheduling", description: "1 = Basic dates (lead time from material master); 2 = Lead-time scheduling using routing." },
+    ],
+    output:
+      "Planned orders for in-house production, purchase requisitions for externally procured components, dependent requirements for sub-assemblies, and exception messages for planners to review.",
   },
   {
     id: "pp-md02",
@@ -31,14 +46,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Runs MRP planning for a single material including all BOM levels. Useful for targeted replanning when only one material has changed demand or supply situation.",
     processArea: "MRP Run",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MD02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MD02+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD03", "MD04"],
     tags: ["mrp", "single item", "multi-level", "replanning"],
     awpRelevance: "High",
-    notes:
-      "Used by planners when an urgent order needs immediate replanning without running full plant MRP.",
+    notes: "Used by planners when an urgent order needs immediate replanning without running full plant MRP.",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material number and Plant.",
+      "Select Processing Key (NETCH recommended for single-item runs).",
+      "Set Planning Horizon if needed (limits how far forward MRP plans).",
+      "Set Firming Horizon to protect near-term planned orders from being deleted.",
+      "Press Execute (F8). Review the planning result in MD04.",
+    ],
+    keyFields: [
+      { field: "Material", description: "The finished/semi-finished material to replan." },
+      { field: "Plant", description: "Plant in which MRP runs." },
+      { field: "Processing Key", description: "NETCH (net change) is typical for single-item replanning." },
+      { field: "Planning Horizon", description: "Number of days forward MRP plans; 0 = use material master value." },
+      { field: "Firming Horizon", description: "Days within which existing planned orders are protected from deletion." },
+    ],
+    output:
+      "Updated planned orders and purchase requisitions for the selected material and all BOM sub-levels. Result visible in MD04.",
   },
   {
     id: "pp-md03",
@@ -50,13 +79,25 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Executes MRP for a single material at one BOM level only. Does not explode lower BOM levels. Faster than MD02 for quick top-level planning.",
     processArea: "MRP Run",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MD03+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MD03+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD02", "MD04"],
     tags: ["mrp", "single item", "single level", "fast planning"],
     awpRelevance: "Medium",
     notes: "Used for finished goods level quick check; not typically for sub-assemblies.",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material and Plant.",
+      "Select Processing Key.",
+      "Execute — MRP does NOT explode BOM sub-levels.",
+      "Review top-level planned orders in MD04.",
+    ],
+    keyFields: [
+      { field: "Material", description: "Finished or semi-finished material to plan." },
+      { field: "Plant", description: "Planning plant." },
+      { field: "Processing Key", description: "Usually NETCH for quick replanning." },
+    ],
+    output:
+      "Planned orders for the selected material only — component requirements are NOT recalculated at lower BOM levels.",
   },
   {
     id: "pp-md04",
@@ -68,13 +109,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Displays the current MRP situation for a material — stock levels, planned orders, purchase requisitions, sales orders, and production orders — in a time-phased view.",
     processArea: "MRP Evaluation",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MD04+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MD04+SAP+S4HANA",
     relatedTransactions: ["MD01", "MD05", "MD06"],
     tags: ["mrp", "stock", "requirements", "evaluation", "display"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material and Plant (and optionally MRP Area).",
+      "Press Enter — list displays in date sequence showing all receipts and issues.",
+      "Review the 'Available Qty' column — negative values indicate a shortage.",
+      "Double-click any planned order to open it for conversion or review.",
+      "Use the navigation toolbar to jump to exceptions or filter by element type.",
+    ],
+    keyFields: [
+      { field: "Material", description: "Material to evaluate." },
+      { field: "Plant", description: "Planning plant." },
+      { field: "MRP Area", description: "Optional sub-plant planning area." },
+      { field: "Available Qty", description: "Running stock balance — negative = shortage at that date." },
+    ],
+    output:
+      "Time-phased demand/supply list showing current stock, all open orders, and projected available quantity for each future date.",
   },
   // ─── PP: Production Orders ──────────────────────────────────────────────────
   {
@@ -87,13 +142,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a production order manually for a finished or semi-finished material. Defines quantity, dates, routing, and BOM explosion. The order is the basis for shop-floor execution.",
     processArea: "Production Order Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CO01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CO01+SAP+S4HANA",
     relatedTransactions: ["CO02", "CO03", "CO11N", "CO15"],
     tags: ["production order", "create", "shop floor", "manufacturing"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Production Plant, and Order Type (usually PP01 for standard production orders).",
+      "Enter Total Quantity and unit of measure.",
+      "Enter Scheduled Start or Finish date — the system back-schedules using the routing.",
+      "Review the BOM explosion (Components tab) and Routing (Operations tab).",
+      "Click 'Release' (flag icon) to release the order for production, then Save.",
+    ],
+    keyFields: [
+      { field: "Material", description: "Finished or semi-finished material to produce." },
+      { field: "Plant", description: "Production plant." },
+      { field: "Order Type", description: "PP01 = Standard, PP02 = Prototype, etc. Controls default parameters." },
+      { field: "Total Quantity", description: "Planned production quantity in the material's base unit." },
+      { field: "Scheduled Start/Finish", description: "Planning dates — routing lead time schedules the operations." },
+    ],
+    output:
+      "Production order with unique number, BOM explosion into components, routing copy with scheduled operation dates, and capacity requirements posted to work centres.",
   },
   {
     id: "pp-co02",
@@ -105,13 +175,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing production order — adjusts quantities, dates, routing steps, or component assignments. Used to handle production plan changes or shop-floor exceptions.",
     processArea: "Production Order Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CO02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CO02+SAP+S4HANA",
     relatedTransactions: ["CO01", "CO03", "CO11N"],
     tags: ["production order", "change", "modify", "update"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Production Order number (or use the search help F4).",
+      "Navigate to the relevant tab: Header (dates, qty), Components, Operations, or Costs.",
+      "Make the required changes — note that partially confirmed orders have restrictions on quantity changes.",
+      "If rescheduling, update the scheduled dates and click 'Schedule' to recalculate operation dates.",
+      "Save. The system logs the change with a timestamp.",
+    ],
+    keyFields: [
+      { field: "Order Number", description: "Unique 12-digit production order number." },
+      { field: "Scheduled Dates", description: "Start/Finish dates that drive operation scheduling." },
+      { field: "Total Quantity", description: "Can be increased or decreased (subject to order status)." },
+      { field: "Components", description: "Component list — add, remove, or change quantities." },
+    ],
+    output:
+      "Updated production order. Changes are logged with user and timestamp. Capacity requirements and costs are recalculated.",
   },
   {
     id: "pp-co11n",
@@ -123,13 +207,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Records actual production quantities, times, and activities against a production order. Triggers goods receipt of finished goods to stock and backflush of components if configured.",
     processArea: "Production Confirmation",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CO11N+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CO11N+SAP+S4HANA",
     relatedTransactions: ["CO01", "CO02", "MIGO", "MB31"],
     tags: ["confirmation", "goods receipt", "backflush", "actual", "shop floor"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Production Order number and select the Operation to confirm.",
+      "Enter the Yield Quantity (good production) and Scrap Quantity separately.",
+      "Enter actual Machine Time and Labour Time (in the unit defined on the routing).",
+      "Set Posting Date (defaults to today).",
+      "If 'Final Confirmation' checkbox is checked, the operation is marked complete — no further confirmation allowed.",
+      "Post (Save) — GR is created for the yield quantity and components are backflushed if configured.",
+    ],
+    keyFields: [
+      { field: "Order / Operation", description: "Production order number and specific operation being confirmed." },
+      { field: "Yield Quantity", description: "Good units produced — posted as GR to unrestricted or quality stock." },
+      { field: "Scrap Quantity", description: "Defective units produced — posted to scrap; costs remain on order." },
+      { field: "Actual Machine / Labour Time", description: "Actual duration for cost calculation and efficiency analysis." },
+      { field: "Final Confirmation", description: "Flag that marks operation complete and prevents further entries." },
+    ],
+    output:
+      "Confirmation record against the operation. Goods receipt posting of yield to stock (movement type 101 if GR on confirmation is active). Backflush of BOM components. Actual cost posting to the production order.",
   },
   {
     id: "pp-co15",
@@ -145,8 +245,23 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO11N", "MIGO", "MB31", "CO02"],
     tags: ["goods receipt", "production", "stock", "post"],
     awpRelevance: "Medium",
-    notes: "URL to be verified from help.sap.com",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Production Order number.",
+      "Enter the Quantity being received into stock.",
+      "Confirm the Storage Location where the finished goods will be placed.",
+      "Set the Posting Date.",
+      "Post — the system creates a material document (movement type 101).",
+    ],
+    keyFields: [
+      { field: "Order Number", description: "Production order to receive goods against." },
+      { field: "Quantity", description: "Finished goods quantity being received." },
+      { field: "Storage Location", description: "Physical location receiving the finished goods." },
+      { field: "Posting Date", description: "Date of inventory and financial posting." },
+    ],
+    output:
+      "Material document (movement type 101) posting finished goods to unrestricted stock (or QI stock if inspection type 04 is active). Production order quantity is partially or fully confirmed.",
   },
   // ─── PP: Routings ───────────────────────────────────────────────────────────
   {
@@ -159,13 +274,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a production routing — defines the sequence of operations, work centers, and standard times required to manufacture a material. Foundation for order scheduling and costing.",
     processArea: "Routing Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CA01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CA01+SAP+S4HANA",
     relatedTransactions: ["CA02", "CA03", "CA60"],
     tags: ["routing", "operations", "work center", "standard time", "capacity"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and Usage (1 = Production routing).",
+      "Set the Task List Status to 4 (Released) for production use.",
+      "Add Operations: each operation has a number (0010, 0020…), a Work Centre, a Control Key (PP01 = internal, PP02 = external), and standard values (setup time, machine time, labour time).",
+      "For QM integration: add inspection characteristics to relevant operations using the 'Inspection Characteristics' button.",
+      "Save — the routing is now available for production order creation and scheduling.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Material and plant the routing applies to." },
+      { field: "Usage", description: "1 = Production, 5 = Inspection plan. Controls which processes can use this routing." },
+      { field: "Operation Number", description: "Sequence number (0010, 0020…) defining operation order." },
+      { field: "Work Centre", description: "Machine or resource group that performs this operation." },
+      { field: "Control Key", description: "PP01 (internal processing), PP02 (external/subcontract), QM01 (inspection operation)." },
+      { field: "Standard Values", description: "Setup time, machine time, labour time — used for scheduling and costing." },
+    ],
+    output:
+      "Active routing assigned to the material. Copied into production orders on creation, driving operation scheduling, capacity load, and activity cost collection.",
   },
   {
     id: "pp-ca02",
@@ -177,13 +308,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing routing — add, change, or delete operations; update work centers, standard values, or inspection characteristics linked to routing operations.",
     processArea: "Routing Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CA02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CA02+SAP+S4HANA",
     relatedTransactions: ["CA01", "CA03", "QP01"],
     tags: ["routing", "change", "operations", "update"],
     awpRelevance: "Medium",
     notes: "Modified when new inspection points are added to PP operations — requires QM coordination.",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and Group/Counter (or search by material).",
+      "Navigate to the Operations overview.",
+      "Add, change, or delete operations as required.",
+      "Update standard values if process times have changed.",
+      "For QM changes: navigate to operation → 'Inspection Characteristics' tab to add or modify quality gates.",
+      "Save — changes take effect for new production orders (existing orders keep the original routing copy).",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Identifies the routing to change." },
+      { field: "Group / Counter", description: "Routing group and group counter number (displayed in routing header)." },
+      { field: "Valid From Date", description: "Engineering change date — changes can be effective-dated." },
+    ],
+    output:
+      "Updated routing. Active for new production orders from the change-effective date. Existing released orders are not automatically updated.",
   },
   // ─── PP: BOM ────────────────────────────────────────────────────────────────
   {
@@ -196,14 +341,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a Bill of Materials defining the components and quantities required to produce a finished or semi-finished material. BOM is exploded during MRP and production order creation.",
     processArea: "BOM Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CS01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CS01+SAP+S4HANA",
     relatedTransactions: ["CS02", "CS03", "CS11", "MD01"],
     tags: ["bom", "bill of materials", "components", "structure", "recipe"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the finished material number, Plant, and BOM Usage (1 = Production).",
+      "Enter the Valid From date.",
+      "Add BOM items: each line has a Component Material, Quantity, Unit of Measure, and Item Category (L = Stock item, N = Non-stock, T = Text).",
+      "For phantom assemblies: set the Item Category to 'Phantom' so the sub-assembly is transparent during MRP.",
+      "Save — the BOM is now active and will be exploded in MRP (MD01) and production order creation (CO01).",
+    ],
+    keyFields: [
+      { field: "Material / Plant / Usage", description: "The header material, plant, and BOM usage type (1=Production)." },
+      { field: "Valid From", description: "Effective date — the BOM is only used for orders planned after this date." },
+      { field: "Component Material", description: "Each raw material, sub-assembly, or packaging component in the BOM." },
+      { field: "Quantity / UoM", description: "Amount of each component per one unit of the finished material." },
+      { field: "Item Category", description: "L = Stock item, N = Non-stock, T = Text, K = Class item for variant BOMs." },
+    ],
+    output:
+      "Production BOM available for MRP explosion and production order component list generation.",
   },
   {
     id: "pp-cs02",
@@ -215,13 +374,26 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing BOM — add or remove components, change quantities, or update validity dates. Changes are effective based on engineering change management settings.",
     processArea: "BOM Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=CS02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=CS02+SAP+S4HANA",
     relatedTransactions: ["CS01", "CS03", "CC01"],
     tags: ["bom", "change", "components", "engineering change"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and BOM Usage.",
+      "The system displays the current active BOM.",
+      "Add, delete, or change component lines as required.",
+      "If using Engineering Change Management (ECM): specify a Change Number to make changes effective-dated.",
+      "Save — changes apply to new production orders (open orders must be updated manually via CO02).",
+    ],
+    keyFields: [
+      { field: "Material / Plant / Usage", description: "Identifies the BOM to change." },
+      { field: "Change Number (ECM)", description: "Engineering change order number — links the BOM change to an approved change request." },
+      { field: "Valid From", description: "Effective date for the change." },
+    ],
+    output:
+      "Updated BOM effective from the validity date. Existing open production orders are not automatically updated — use CO02 to re-explode the BOM if required.",
   },
   // ─── PP: Procurement ────────────────────────────────────────────────────────
   {
@@ -234,13 +406,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a purchase order to procure materials or services from a vendor. Can be created manually or converted from purchase requisitions generated by MRP.",
     processArea: "Procurement",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=ME21N+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=ME21N+SAP+S4HANA",
     relatedTransactions: ["ME22N", "ME23N", "ME2M", "MIGO"],
     tags: ["purchase order", "procurement", "vendor", "po"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Select Order Type (NB = Standard PO) and enter Vendor number.",
+      "In the Org Data tab, confirm Purchasing Organisation, Purchasing Group, and Company Code.",
+      "Add line items: Material, Quantity, Unit, Net Price, Delivery Date, Plant, and Storage Location.",
+      "Assign an Account Assignment Category if needed (K = Cost centre, P = WBS, F = Production order).",
+      "Check for errors (traffic light icon), then click 'Save' — the system assigns a PO number.",
+    ],
+    keyFields: [
+      { field: "Vendor", description: "Supplier number from the vendor master." },
+      { field: "Order Type", description: "NB = standard PO; FO = framework order; UB = stock transfer order." },
+      { field: "Material / Qty / Price", description: "Item details — price from info record if available." },
+      { field: "Delivery Date", description: "Required delivery date at the plant." },
+      { field: "Plant / Storage Location", description: "Where the goods will be received." },
+    ],
+    output:
+      "Purchase order with unique PO number. Vendor is notified. GR can be posted against this PO via MIGO once delivery arrives.",
   },
   {
     id: "pp-me22n",
@@ -252,13 +439,26 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing purchase order — change quantities, delivery dates, prices, or payment terms. Subject to release strategy if value thresholds are crossed.",
     processArea: "Procurement",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=ME22N+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=ME22N+SAP+S4HANA",
     relatedTransactions: ["ME21N", "ME23N"],
     tags: ["purchase order", "change", "modify", "procurement"],
     awpRelevance: "Medium",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the PO number directly or search using F4.",
+      "Navigate to the relevant item or header field.",
+      "Make the required changes (quantity, price, delivery date).",
+      "If the change triggers a new release strategy approval, the PO goes back to 'Blocked' status until re-approved.",
+      "Save — change is logged with user/timestamp.",
+    ],
+    keyFields: [
+      { field: "PO Number", description: "10-digit purchase order number." },
+      { field: "Quantity / Price", description: "Item-level changes — may trigger release workflow." },
+      { field: "Delivery Date", description: "Updated confirmed delivery date." },
+    ],
+    output:
+      "Updated PO with change history. If the change crosses a release threshold, the PO re-enters the approval workflow.",
   },
   // ─── PP: Goods Movement ─────────────────────────────────────────────────────
   {
@@ -271,14 +471,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Central transaction for all goods movements in SAP: goods receipts (GR), goods issues (GI), stock transfers, and reversals. Posts inventory changes and updates financial accounts.",
     processArea: "Goods Receipt / Goods Issue",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MIGO+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MIGO+SAP+S4HANA",
     relatedTransactions: ["MB1A", "MB1B", "MB1C", "CO11N", "QA01"],
     tags: ["goods movement", "goods receipt", "goods issue", "stock transfer", "inventory"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Select the Transaction (A01 = Goods Receipt, A07 = Goods Issue, A08 = Transfer Posting).",
+      "Select the Reference Document type: R10 = Purchase Order, R08 = Production Order, R04 = Material Document (reversal).",
+      "Enter the reference document number — the system prefills material and quantity details.",
+      "Enter or confirm: Quantity, Storage Location, and Batch (if batch-managed).",
+      "Check each line using the 'Item OK' checkbox.",
+      "Post — the system creates a material document and an accounting document simultaneously.",
+    ],
+    keyFields: [
+      { field: "Transaction / Reference", description: "e.g. A01/R10 = GR against Purchase Order; A07/R08 = GI to Production Order." },
+      { field: "Movement Type", description: "101 = GR to stock, 261 = GI to production order, 311 = stock transfer." },
+      { field: "Quantity", description: "Quantity being moved — can be partial." },
+      { field: "Storage Location", description: "Physical storage location receiving or issuing the goods." },
+      { field: "Batch", description: "Batch number for batch-managed materials — mandatory if batch classification active." },
+    ],
+    output:
+      "Material document (inventory update) and accounting document (FI postings). For GR from PO with QM active: inspection lot created automatically, stock lands in quality inspection until usage decision.",
   },
   // ─── PP: Repetitive Manufacturing ───────────────────────────────────────────
   {
@@ -291,13 +506,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Posts goods receipt and component backflush for repetitive manufacturing. Processes production quantities against a run schedule without individual production order confirmation.",
     processArea: "Repetitive Manufacturing",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MF60+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MF60+SAP+S4HANA",
     relatedTransactions: ["MF70", "CO11N", "MIGO"],
     tags: ["repetitive manufacturing", "backflush", "run schedule", "lean"],
     awpRelevance: "Low",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and Production Version.",
+      "Enter the Quantity produced and Posting Date.",
+      "The system automatically posts the GR for finished goods and backflushes BOM components.",
+      "Review any backflush errors (material not available) in the log.",
+      "Confirm the posting.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Finished material being produced." },
+      { field: "Production Version", description: "Specifies the BOM and routing combination to use." },
+      { field: "Quantity", description: "Volume produced in this run." },
+      { field: "Posting Date", description: "Inventory and accounting date." },
+    ],
+    output:
+      "GR posting for finished goods (movement type 131) and automatic goods issue for all BOM components (movement type 261) — no individual confirmation needed.",
   },
   {
     id: "pp-mf70",
@@ -315,6 +544,19 @@ export const logbookEntries: LogbookEntry[] = [
     awpRelevance: "Low",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and Production Version.",
+      "Select the Reporting Point (milestone defined in the repetitive manufacturing profile).",
+      "Enter quantity that has passed this point.",
+      "Post — the system backflushes components assigned up to this reporting point.",
+    ],
+    keyFields: [
+      { field: "Production Version", description: "BOM/routing combination for this product." },
+      { field: "Reporting Point", description: "Milestone operation where progress is measured." },
+      { field: "Quantity", description: "Units that have reached this reporting point." },
+    ],
+    output:
+      "Partial component backflush up to the reporting point operation. Provides in-progress visibility into the repetitive manufacturing run.",
   },
   // ─── QM: Inspection Lots ─────────────────────────────────────────────────────
   {
@@ -327,14 +569,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Manually creates an inspection lot for a material. Defines the inspection type, quantity, and inspection plan to be used. Can be triggered automatically by goods movement or production.",
     processArea: "Inspection Lot Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QA01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QA01+SAP+S4HANA",
     relatedTransactions: ["QA02", "QA11", "QA32", "QE51N"],
     tags: ["inspection lot", "create", "quality", "inspection"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Inspection Type (01 = GR from vendor, 03 = in-process, 04 = FG from production, 89 = manual).",
+      "Enter Material and Plant.",
+      "Enter the Lot Quantity and Batch (if batch-managed).",
+      "The system assigns an inspection plan automatically if one exists; otherwise select manually.",
+      "Save — the inspection lot is created with status 'REL' (released for inspection).",
+    ],
+    keyFields: [
+      { field: "Inspection Type", description: "01 = Goods Receipt (vendor), 03 = In-process, 04 = FG from production, 89 = Manual." },
+      { field: "Material / Plant", description: "Material being inspected." },
+      { field: "Lot Quantity", description: "Total quantity subject to inspection — used for sampling calculation." },
+      { field: "Batch", description: "Batch linked to the inspection lot for traceability." },
+    ],
+    output:
+      "Inspection lot with unique 12-digit number. Stock moves to quality-inspection stock type if GR-linked. Inspection plan is assigned and sample size calculated.",
   },
   {
     id: "qm-qa02",
@@ -346,13 +601,25 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing inspection lot — update quantities, inspection plan, or usage decision. Used to correct incorrectly created lots or update inspection scope.",
     processArea: "Inspection Lot Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QA02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QA02+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA11", "QE51N"],
     tags: ["inspection lot", "change", "modify", "update"],
     awpRelevance: "High",
     notes: "Used by QM supervisors to adjust lot quantities after partial returns.",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Inspection Lot number.",
+      "Modify the Lot Quantity if a correction is needed.",
+      "Re-assign the Inspection Plan if the wrong plan was automatically assigned.",
+      "Add or change inspection characteristics scope if needed.",
+      "Save.",
+    ],
+    keyFields: [
+      { field: "Inspection Lot Number", description: "12-digit lot number assigned on creation." },
+      { field: "Lot Quantity", description: "Correctable if partial return or split occurs." },
+      { field: "Inspection Plan", description: "Can be re-assigned if automatic assignment was incorrect." },
+    ],
+    output: "Updated inspection lot. If quantity changed, sample size is recalculated.",
   },
   {
     id: "qm-qa11",
@@ -364,14 +631,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Records the usage decision (Accept / Reject / Conditional Release) for a completed inspection lot. Posts the stock to unrestricted, blocked, or returned stock accordingly.",
     processArea: "Usage Decision",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QA11+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QA11+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA32", "QE51N", "QM01"],
     tags: ["usage decision", "accept", "reject", "stock posting", "inspection"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Inspection Lot number.",
+      "Select the Usage Decision Code (e.g., A = Accept, R = Reject, B = Conditional release).",
+      "Review the automatic Stock Posting proposal — the system suggests unrestricted/blocked/scrap based on the decision code.",
+      "Optionally modify the stock posting quantities (partial accept/reject).",
+      "Set the Quality Level update if dynamic modification rules are active.",
+      "Post — stock is transferred from quality-inspection to the target stock type immediately.",
+    ],
+    keyFields: [
+      { field: "Inspection Lot", description: "Lot for which the decision is being recorded." },
+      { field: "Usage Decision Code", description: "Organisation-defined codes mapped to stock postings (e.g., A=Accept→Unrestricted, R=Reject→Blocked)." },
+      { field: "Stock Posting", description: "Target stock type: unrestricted, blocked, scrap, or return to vendor." },
+      { field: "Quality Level", description: "Updated for dynamic modification rules — influences sampling for future lots." },
+    ],
+    output:
+      "Usage decision record closing the inspection lot. Automatic stock transfer from quality-inspection stock to target stock type. Quality level updated for future sampling frequency.",
   },
   {
     id: "qm-qa32",
@@ -383,13 +664,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Worklist transaction that allows batch processing of inspection lots — record results and usage decisions for multiple lots simultaneously. Key transaction for QM clerks.",
     processArea: "Inspection Lot Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QA32+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QA32+SAP+S4HANA",
     relatedTransactions: ["QA01", "QA11", "QE51N"],
     tags: ["inspection lot", "worklist", "batch", "usage decision", "results"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Set selection criteria: Plant, Material, Inspection Type, and/or Date Range.",
+      "Execute (F8) to generate the worklist.",
+      "Select one or more inspection lots.",
+      "For results entry: click 'Results' to navigate to QE51N for the selected lot.",
+      "For usage decision: click 'UD' to record the decision directly from the list.",
+      "Save — multiple lots can be processed in one session.",
+    ],
+    keyFields: [
+      { field: "Plant / Inspection Type", description: "Primary filter to narrow the worklist." },
+      { field: "Material", description: "Optional filter to focus on specific materials." },
+      { field: "Date Range", description: "Lot creation date range for the worklist." },
+    ],
+    output:
+      "Worklist of open inspection lots. Enables mass results recording and usage decision entry without opening each lot individually.",
   },
   // ─── QM: Results Recording ──────────────────────────────────────────────────
   {
@@ -402,13 +697,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Records inspection results for individual characteristics within an inspection lot. Supports quantitative (measured values) and qualitative (attribute/defect) result entry.",
     processArea: "Results Recording",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QE01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QE01+SAP+S4HANA",
     relatedTransactions: ["QE11", "QE51N", "QA11", "QS21"],
     tags: ["results recording", "characteristics", "quantitative", "qualitative", "inspection"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Inspection Lot number and optionally the Operation (if inspection plan has multiple operations).",
+      "The characteristic list displays. Select a characteristic to record results.",
+      "For quantitative characteristics: enter individual measured values or summary statistics (n, mean, standard deviation).",
+      "For qualitative characteristics: select the attribute value (OK/Not OK or defined code set).",
+      "The system calculates the valuation (Accept/Reject) based on tolerance limits.",
+      "Save — all recorded results are stored against the inspection lot.",
+    ],
+    keyFields: [
+      { field: "Inspection Lot", description: "Lot being inspected." },
+      { field: "Operation", description: "Inspection plan operation — each operation has its own set of characteristics." },
+      { field: "Measured Values", description: "Individual readings entered for quantitative characteristics." },
+      { field: "Valuation", description: "System-calculated Accept/Reject based on tolerance limits from the master characteristic (QS21)." },
+    ],
+    output:
+      "Inspection results stored against each characteristic. System valuates Accept or Reject per characteristic based on defined tolerances.",
   },
   {
     id: "qm-qe11",
@@ -426,6 +736,18 @@ export const logbookEntries: LogbookEntry[] = [
     awpRelevance: "Medium",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Inspection Characteristic (MIC number) and Plant.",
+      "Execute to retrieve all open inspection lots with this characteristic.",
+      "Enter measured values or attribute results for each lot row.",
+      "Save — results are posted to all affected lots simultaneously.",
+    ],
+    keyFields: [
+      { field: "Inspection Characteristic", description: "The master inspection characteristic (MIC) being recorded." },
+      { field: "Plant", description: "Filters lots to the specified plant." },
+    ],
+    output:
+      "Results recorded for one characteristic across multiple inspection lots in a single data-entry session.",
   },
   {
     id: "qm-qe51n",
@@ -437,13 +759,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Worklist view for recording inspection results. Displays all open inspection lots requiring results entry. Supports recording across multiple lots and operations in one session.",
     processArea: "Results Recording",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QE51N+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QE51N+SAP+S4HANA",
     relatedTransactions: ["QE01", "QE11", "QA32", "QA11"],
     tags: ["results recording", "worklist", "inspection lot", "batch recording"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Set filter criteria: Plant, Material, Inspection Type, date range.",
+      "Execute — the worklist shows all open lots awaiting results.",
+      "Select a lot and operation — the characteristics list opens on the right.",
+      "Enter measured values or attribute codes for each characteristic.",
+      "Navigate to the next lot without leaving the screen.",
+      "Save all results when complete.",
+    ],
+    keyFields: [
+      { field: "Plant / Material", description: "Primary worklist filters." },
+      { field: "Inspection Type", description: "Filters to GR, in-process, FG, or manual lots." },
+      { field: "Characteristics Display", description: "Right-side panel showing characteristics for the selected lot/operation." },
+    ],
+    output:
+      "Inspection results recorded for multiple lots and operations in a single efficient session.",
   },
   // ─── QM: Quality Notifications ──────────────────────────────────────────────
   {
@@ -456,14 +792,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a quality notification (defect report / non-conformance) for a material or process. Notifications can trigger corrective/preventive actions (CAPA) and 8D reports.",
     processArea: "Quality Notification",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QM01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QM01+SAP+S4HANA",
     relatedTransactions: ["QM02", "QMEL", "QA11"],
     tags: ["quality notification", "non-conformance", "defect", "capa", "corrective action"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Select Notification Type (Q1 = Customer complaint, Q2 = Vendor complaint, Q3 = Internal defect report).",
+      "Enter the reference Material, Plant, and Batch.",
+      "Describe the defect in the Subject field and add defect codes.",
+      "Assign the notification to a responsible person or department.",
+      "Add Tasks: each corrective action is a task with a planned completion date and responsible party.",
+      "Set Priority and save — the notification is assigned a unique number.",
+    ],
+    keyFields: [
+      { field: "Notification Type", description: "Q1 = Customer complaint, Q2 = Supplier complaint, Q3 = Internal non-conformance." },
+      { field: "Material / Batch", description: "Affected material and batch for traceability." },
+      { field: "Defect Description", description: "Free-text and code-based defect description." },
+      { field: "Tasks", description: "Corrective actions assigned to responsible parties with target dates." },
+      { field: "Priority", description: "Low / Medium / High — influences escalation and response time SLAs." },
+    ],
+    output:
+      "Quality notification with unique number. Tasks assigned for corrective actions. Status tracking from creation through completion. Feeds into QM reporting and KPIs.",
   },
   {
     id: "qm-qm02",
@@ -475,13 +826,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing quality notification — update tasks, add defects, record root cause analysis, assign responsible parties, and track corrective actions to completion.",
     processArea: "Quality Notification",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QM02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QM02+SAP+S4HANA",
     relatedTransactions: ["QM01", "QMEL"],
     tags: ["quality notification", "change", "CAPA", "root cause", "tasks"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Notification number.",
+      "Navigate to the Tasks tab to update task completion status — set each task to 'Completed' when done.",
+      "Go to the Activities tab to add root cause analysis findings.",
+      "Add any additional defect lines if more defects are discovered.",
+      "When all tasks are complete, set the notification status to 'Completed' and enter the completion date.",
+      "Save.",
+    ],
+    keyFields: [
+      { field: "Notification Number", description: "Unique notification ID from QM01." },
+      { field: "Task Status", description: "Open → In Process → Completed — updated as corrective actions are executed." },
+      { field: "Root Cause Code", description: "Structured code identifying the root cause (e.g., Process, Material, Human Error)." },
+      { field: "Completion Date", description: "Actual date all corrective actions were completed." },
+    ],
+    output:
+      "Updated notification with task completion records, root cause, and corrective action history. Full audit trail for quality management reporting.",
   },
   {
     id: "qm-qmel",
@@ -493,13 +859,26 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Displays a list of all quality notifications with filtering by status, type, material, plant, and date range. Provides overview for QM monitoring and reporting.",
     processArea: "Quality Notification",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QMEL+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QMEL+SAP+S4HANA",
     relatedTransactions: ["QM01", "QM02"],
     tags: ["notification list", "quality", "overview", "reporting", "monitoring"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Set filter criteria: Notification Type, Status (OSNO=open, NOCO=completed), Plant, Material, Date Range.",
+      "Execute — list of matching notifications is displayed.",
+      "Click on any notification number to navigate to QM02 for details or updates.",
+      "Use 'Export' to download the list to Excel for reporting.",
+    ],
+    keyFields: [
+      { field: "Notification Type", description: "Q1/Q2/Q3 — filter by notification category." },
+      { field: "System Status", description: "OSNO (open), NOCO (in process), NOPR (completed)." },
+      { field: "Plant / Material", description: "Location and material filters." },
+      { field: "Reported By / Responsible", description: "Filter by creator or assigned person." },
+    ],
+    output:
+      "Filtered list of quality notifications for monitoring, KPI reporting, and escalation management.",
   },
   // ─── QM: Quality Info Records ────────────────────────────────────────────────
   {
@@ -512,14 +891,28 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a quality info record (Q-Info) that links a material-vendor combination to QM controls — inspection type, certificate requirements, blocking functions, and vendor evaluation rules.",
     processArea: "Vendor Quality Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QI01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QI01+SAP+S4HANA",
     relatedTransactions: ["QI02", "QI08", "ME21N", "MIGO"],
     tags: ["quality info record", "vendor", "supplier", "certificate", "inspection control"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Vendor (or Plant for internal Q-Info), and the Validity period.",
+      "Set the QM Control Key: with or without QM inspection at GR.",
+      "Specify Certificate Required (CoA or CoC) and whether the GR is blocked without it.",
+      "Set Blocking Function: 1 = Inspection lot created; 2 = GR blocked without certificate.",
+      "Assign Quality System indicators (e.g., ISO 9001 certified vendor).",
+      "Save — the Q-Info record is now active and controls all future GRs for this material-vendor combination.",
+    ],
+    keyFields: [
+      { field: "Material / Vendor", description: "The specific material-vendor pairing this Q-Info controls." },
+      { field: "QM Control Key", description: "Determines whether GR inspection is mandatory (01 = with QM, 00 = without)." },
+      { field: "Certificate Required", description: "CoA / CoC requirement flag — blocks GR posting if certificate not received." },
+      { field: "Blocking Function", description: "Controls whether GR is blocked pending inspection or just puts stock in QI type." },
+    ],
+    output:
+      "Q-Info record that controls inspection behaviour for every subsequent GR of this material from this vendor.",
   },
   // ─── QM: Master Inspection Characteristics ──────────────────────────────────
   {
@@ -532,14 +925,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a master inspection characteristic (MIC) — defines what is inspected, measurement method, tolerance limits, sampling procedure, and control chart type. Reusable across inspection plans.",
     processArea: "QM Master Data",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QS21+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QS21+SAP+S4HANA",
     relatedTransactions: ["QS23", "QS26", "QP01"],
     tags: ["master inspection characteristic", "mic", "tolerance", "sampling", "master data"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter a Short Text (name) and select the MIC Category: Quantitative (measured values) or Qualitative (attribute pass/fail).",
+      "For quantitative: set Lower Specification Limit (LSL), Upper Specification Limit (USL), Target Value, and number of Decimal Places.",
+      "Assign a Sampling Procedure (QS31) to define the sample size.",
+      "Optionally assign a Control Chart Type for SPC monitoring.",
+      "Set Status to Released (4) so the MIC can be used in inspection plans.",
+      "Save — the MIC is now reusable across all inspection plans in the system.",
+    ],
+    keyFields: [
+      { field: "MIC Category", description: "Quantitative (measured values with tolerances) or Qualitative (yes/no or code-set attribute)." },
+      { field: "LSL / USL / Target", description: "Lower and upper specification limits and target value for quantitative MICs." },
+      { field: "Sampling Procedure", description: "Linked QS31 procedure defining sample size for this characteristic." },
+      { field: "Control Chart Type", description: "e.g., X-bar/R, Shewhart — for SPC control chart generation." },
+      { field: "Status", description: "Must be 4 (Released) for use in inspection plans." },
+    ],
+    output:
+      "Reusable master inspection characteristic available for inclusion in any inspection plan (QP01). Changes to the MIC propagate to all plans using it.",
   },
   {
     id: "qm-qs23",
@@ -555,9 +963,20 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QS21", "QS26", "QP01"],
     tags: ["master inspection characteristic", "change", "tolerance", "update"],
     awpRelevance: "Medium",
-    notes:
-      "URL to be verified from help.sap.com. Used when regulatory limits change (e.g., SFDA microbiological standards update).",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the MIC number (plant-specific or client-level).",
+      "Modify tolerance limits (LSL/USL), sampling procedure, or control chart settings.",
+      "Use 'Change with Engineering Change Number' to make effective-dated changes if required.",
+      "Save — changes take effect for new inspection lots immediately.",
+    ],
+    keyFields: [
+      { field: "MIC Number", description: "Unique identifier for the master inspection characteristic." },
+      { field: "Tolerance Limits", description: "New LSL/USL values — should be reviewed against regulatory requirements before changing." },
+    ],
+    output:
+      "Updated MIC. All inspection plans using this characteristic will use the new specification for future inspection lots.",
   },
   {
     id: "qm-qs26",
@@ -573,8 +992,17 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QS21", "QS23"],
     tags: ["master inspection characteristic", "display", "read-only", "audit"],
     awpRelevance: "Low",
-    notes: "URL to be verified from help.sap.com.",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the MIC number.",
+      "Press Enter — the characteristic definition is displayed in read-only mode.",
+      "Navigate tabs to see tolerance limits, sampling procedure, and control chart settings.",
+    ],
+    keyFields: [
+      { field: "MIC Number", description: "Master inspection characteristic identifier." },
+    ],
+    output: "Read-only view of the MIC definition, tolerances, and sampling settings.",
   },
   // ─── QM: Inspection Plans ───────────────────────────────────────────────────
   {
@@ -587,14 +1015,29 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates an inspection plan for a material — defines operations, inspection characteristics, sampling procedures, and work centers. Used to control what quality checks are performed during production and goods receipt.",
     processArea: "QM Master Data",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QP01+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QP01+SAP+S4HANA",
     relatedTransactions: ["QP02", "QP03", "QS21", "CA01"],
     tags: ["inspection plan", "create", "operations", "characteristics", "master data"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and Usage (5 = Inspection plan).",
+      "Set Status to 4 (Released) — only released plans are used for automatic lot creation.",
+      "Add Operations: each operation represents an inspection point (e.g., GR check, in-process check).",
+      "For each operation, add Inspection Characteristics (from master MICs QS21 or created inline).",
+      "Assign a Sampling Procedure to each characteristic (from QS31).",
+      "Save — the plan is automatically assigned to new inspection lots for this material.",
+    ],
+    keyFields: [
+      { field: "Material / Plant / Usage", description: "Usage 5 = QM inspection plan (distinct from PP routing usage 1)." },
+      { field: "Status", description: "4 = Released — required for the plan to be used in automatic lot creation." },
+      { field: "Operations", description: "Inspection points within the plan (e.g., operation 0010 = Incoming, 0020 = In-process)." },
+      { field: "Characteristics", description: "Linked MICs defining what is measured at each operation." },
+      { field: "Sampling Procedure", description: "QS31 procedure defining how many samples to take." },
+    ],
+    output:
+      "Active inspection plan assigned to the material. Automatically selected when inspection lots are created (QA01) or triggered by goods movements.",
   },
   {
     id: "qm-qp02",
@@ -606,13 +1049,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Modifies an existing inspection plan — add or remove operations, update characteristics, change sampling procedures, or adjust validity dates. Changes take effect for new inspection lots.",
     processArea: "QM Master Data",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QP02+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QP02+SAP+S4HANA",
     relatedTransactions: ["QP01", "QP03", "QS21"],
     tags: ["inspection plan", "change", "update", "master data"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material, Plant, and optionally the Group and Counter to identify the specific plan version.",
+      "Add, change, or delete operations as required.",
+      "Update characteristic assignments — new MICs can be added or existing ones removed.",
+      "Modify sampling procedures if quality requirements have changed.",
+      "Change the Valid From date to make the change effective-dated.",
+      "Save.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Identifies the material's inspection plan." },
+      { field: "Group / Counter", description: "Specific plan version if multiple exist for the same material." },
+      { field: "Valid From", description: "Effective date for the modified plan." },
+    ],
+    output:
+      "Updated inspection plan active for new inspection lots from the effective date.",
   },
   // ─── QM: Quality Certificates ───────────────────────────────────────────────
   {
@@ -625,14 +1082,26 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates and prints quality certificates for outgoing deliveries — CoA (Certificate of Analysis) or CoC (Certificate of Conformance). Pulls inspection results and usage decision data automatically.",
     processArea: "Quality Certificate",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QV51+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QV51+SAP+S4HANA",
     relatedTransactions: ["QV52", "QA11", "VL01N"],
     tags: ["quality certificate", "CoA", "CoC", "outgoing", "delivery", "customer"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Select the Certificate Profile (defines the certificate layout and which test results to include).",
+      "Enter the reference: Delivery Number (from SD) or Inspection Lot number.",
+      "The system automatically pulls inspection results and the usage decision into the certificate template.",
+      "Review the certificate for completeness — add supplementary information if needed.",
+      "Print or transmit electronically to the customer.",
+    ],
+    keyFields: [
+      { field: "Certificate Profile", description: "Template defining certificate format, which characteristics to print, and signature fields." },
+      { field: "Delivery Number", description: "SD outbound delivery the CoA is issued for." },
+      { field: "Inspection Lot", description: "Source of test results and usage decision data." },
+    ],
+    output:
+      "Printed or digital Certificate of Analysis / Conformance with actual test results, batch data, usage decision, and signature. Stored in SAP as a document.",
   },
   {
     id: "qm-qv52",
@@ -648,8 +1117,17 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QV51", "QA11"],
     tags: ["quality certificate", "change", "CoA", "outgoing"],
     awpRelevance: "Medium",
-    notes: "URL to be verified from help.sap.com.",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Certificate number.",
+      "Modify text fields or supplement with additional test data.",
+      "Save — the updated certificate can then be reprinted or re-transmitted.",
+    ],
+    keyFields: [
+      { field: "Certificate Number", description: "Unique certificate ID from QV51." },
+    ],
+    output: "Revised quality certificate ready for re-issue to the customer.",
   },
   // ─── PP/QM: Cross-functional ─────────────────────────────────────────────────
   {
@@ -662,14 +1140,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "When a production order is created (CO01) and a routing with in-process inspection points exists (inspection type 03), SAP automatically creates inspection lots at defined routing operations. Links PP execution with QM quality gates.",
     processArea: "In-Process Inspection",
-    sapDocUrl:
-      "",
+    sapDocUrl: "",
     relatedTransactions: ["CO01", "CA01", "QP01", "QA32", "QE51N"],
     tags: ["in-process inspection", "production order", "routing", "inspection type 03", "integration"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Prerequisite: Material master (QM view) must have Inspection Type 03 (in-process) activated.",
+      "Prerequisite: Routing (CA01) must include operations with control key QM01 — these are the inspection gates.",
+      "Prerequisite: An inspection plan (QP01) must be assigned to the material with the same operations.",
+      "Create the production order (CO01) — inspection lots are automatically created for each QM01 operation.",
+      "During production: record inspection results (QE51N) at each gate before confirming the next operation.",
+      "Record usage decision (QA11) — a reject decision can halt the production order from progressing.",
+    ],
+    keyFields: [
+      { field: "Inspection Type 03", description: "In-process inspection — activated on Material Master QM view." },
+      { field: "Control Key QM01", description: "Routing operation control key that triggers automatic inspection lot creation." },
+      { field: "Inspection Plan", description: "Must be assigned to the material with operations matching the routing." },
+    ],
+    output:
+      "Inspection lots created automatically for each QM01 routing operation when the production order is created. Each lot must be inspected and decided before the order can be confirmed.",
   },
   {
     id: "ppqm-gr-inspection",
@@ -681,14 +1172,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "When goods are received via MIGO with inspection type 01 active, SAP creates an inspection lot automatically. Stock is posted to quality inspection stock until usage decision is recorded in QA11/QA32.",
     processArea: "Goods Receipt",
-    sapDocUrl:
-      "",
+    sapDocUrl: "",
     relatedTransactions: ["MIGO", "QA32", "QA11", "QE51N", "ME21N"],
     tags: ["goods receipt", "inspection type 01", "quality stock", "vendor inspection", "integration"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Prerequisite: Material master must have Inspection Type 01 active (or controlled by Q-Info Record QI01).",
+      "Post goods receipt via MIGO against the purchase order — stock lands in quality-inspection stock (not unrestricted).",
+      "SAP automatically creates an inspection lot with inspection plan linked to the material.",
+      "Record inspection results in QE51N for each characteristic.",
+      "Record usage decision in QA11 or QA32 — Accept posts to unrestricted; Reject posts to blocked or returns to vendor.",
+      "Financial GR posting completes only after the inspection lot is created — the usage decision controls further stock availability.",
+    ],
+    keyFields: [
+      { field: "Inspection Type 01", description: "GR inspection from vendor — activated on material master QM view or Q-Info Record." },
+      { field: "Quality Inspection Stock", description: "Separate stock type holding goods until usage decision is made." },
+      { field: "Usage Decision", description: "Accept/Reject determines whether goods move to unrestricted or blocked stock." },
+    ],
+    output:
+      "Goods physically received but held in quality inspection stock. Available quantity in unrestricted stock is zero until usage decision (QA11) releases the lot.",
   },
   {
     id: "ppqm-batch-class",
@@ -700,14 +1204,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a batch (lot) for a batch-managed material. In QM integration, batch characteristics can be automatically updated from inspection results — enabling quality-based batch classification.",
     processArea: "Batch Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MSC1N+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MSC1N+SAP+S4HANA",
     relatedTransactions: ["MSC2N", "MSC3N", "QA11", "CL01"],
     tags: ["batch", "batch management", "classification", "traceability", "shelf life"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material and Plant.",
+      "Enter or let the system generate the Batch Number (based on number range).",
+      "Set Production Date and Shelf Life Expiration Date (SLED).",
+      "Assign Classification values if batch classification is configured (class type 023).",
+      "Save — the batch is active for all inventory transactions.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Material for which the batch is created." },
+      { field: "Batch Number", description: "Unique batch identifier — can be internal or externally assigned." },
+      { field: "Production Date / SLED", description: "Manufacturing date and shelf life expiration — used in FEFO picking." },
+      { field: "Classification", description: "Batch characteristics (class type 023) — can be auto-populated from QM inspection results." },
+    ],
+    output:
+      "Batch record available for all inventory movements. QM inspection results can automatically update batch classification characteristics.",
   },
   {
     id: "ppqm-mb57",
@@ -723,9 +1240,21 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MSC1N", "MSC3N", "CO01"],
     tags: ["batch", "where-used", "traceability", "recall", "genealogy"],
     awpRelevance: "High",
-    notes:
-      "",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Material and Batch number.",
+      "Set search direction: Forward (what did this batch produce?) or Backward (what batches went into this batch?).",
+      "Set the Plant and date range.",
+      "Execute — the system shows all related goods movements and production orders.",
+    ],
+    keyFields: [
+      { field: "Material / Batch", description: "The batch to trace." },
+      { field: "Plant", description: "Restricts tracing to this plant." },
+      { field: "Search Direction", description: "Forward = track forward through production; Backward = trace back to raw material source." },
+    ],
+    output:
+      "Hierarchical where-used list showing the complete production genealogy — from raw material batch through production orders to finished goods batch.",
   },
   {
     id: "qm-qp03",
@@ -741,8 +1270,17 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QP01", "QP02"],
     tags: ["inspection plan", "display", "read-only", "audit"],
     awpRelevance: "Low",
-    notes: "URL to be verified from help.sap.com.",
+    notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material and Plant.",
+      "The system shows available plan versions — select the relevant one.",
+      "Navigate through Operations and Characteristics tabs to review the plan content.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Identifies the material's inspection plan." },
+    ],
+    output: "Read-only inspection plan showing operations, characteristics, tolerances, and sampling procedures.",
   },
   {
     id: "qm-qa16",
@@ -754,13 +1292,25 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Allows a usage decision to be recorded for multiple inspection lots simultaneously. Efficient for end-of-day batch processing when many lots share the same decision.",
     processArea: "Usage Decision",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QA16+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QA16+SAP+S4HANA",
     relatedTransactions: ["QA11", "QA32", "QA01"],
     tags: ["usage decision", "collective", "batch", "acceptance", "rejection"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Set selection criteria: Plant, Inspection Type, Material, and date range.",
+      "Execute — a list of inspection lots ready for usage decision is displayed.",
+      "Select all relevant lots (Ctrl+A or individual selection).",
+      "Enter the Usage Decision Code to apply to all selected lots.",
+      "Post — the system records the decision and posts the stock for all selected lots simultaneously.",
+    ],
+    keyFields: [
+      { field: "Plant / Inspection Type", description: "Primary filter for the lot list." },
+      { field: "Usage Decision Code", description: "Decision applied to all selected lots (e.g., A = Accept, R = Reject)." },
+    ],
+    output:
+      "Usage decisions recorded and stock postings made for all selected lots in a single transaction.",
   },
   {
     id: "qm-qs31",
@@ -772,13 +1322,27 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Creates a sampling procedure that determines how many units to inspect from a lot (sample size). Supports fixed, percentage-based, and statistical sampling plans (AQL, ISO 2859).",
     processArea: "QM Master Data",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=QS31+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=QS31+SAP+S4HANA",
     relatedTransactions: ["QS33", "QS21", "QP01"],
     tags: ["sampling", "AQL", "sample size", "ISO 2859", "master data"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter a description and select the Valuation Mode: for each individual value, or against summary statistics.",
+      "Select the Sampling Scheme: Fixed sample size, Percentage, or Statistical (AQL-based, referencing ISO 2859 or ISO 3951).",
+      "For AQL-based: set the AQL level (e.g., 1.0%, 2.5%), Inspection Level (Normal/Tightened/Reduced), and code letter method.",
+      "Set Acceptance/Rejection criteria (Ac/Re numbers).",
+      "Save — the sampling procedure can now be assigned to MICs (QS21) and inspection plans (QP01).",
+    ],
+    keyFields: [
+      { field: "Sampling Scheme", description: "Fixed (constant n), Percentage (% of lot size), or AQL-based statistical plan." },
+      { field: "AQL Level", description: "Acceptable Quality Level — percentage defectives considered acceptable (e.g., 0.65, 1.0, 2.5)." },
+      { field: "Inspection Level", description: "Normal, Tightened, or Reduced — controls sample size relative to lot size." },
+      { field: "Ac / Re Numbers", description: "Acceptance and rejection numbers — maximum defectives allowed before lot is rejected." },
+    ],
+    output:
+      "Sampling procedure defining how many units to inspect and the accept/reject criteria. Referenced by MICs and inspection plans.",
   },
   {
     id: "ppqm-mb52",
@@ -790,13 +1354,25 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Displays current stock quantities across all stock types (unrestricted, quality inspection, blocked, restricted). Key for understanding material availability and quality hold stock.",
     processArea: "Inventory Management",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MB52+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MB52+SAP+S4HANA",
     relatedTransactions: ["MIGO", "QA11", "MB51"],
     tags: ["stock", "inventory", "warehouse", "quality inspection stock", "blocked stock"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Material(s), Plant, and optionally Storage Location.",
+      "Execute — the report shows stock broken down by stock type.",
+      "Review the 'Quality Inspection' column to identify stock held pending QM decision.",
+      "Review the 'Blocked' column for rejected stock pending disposition.",
+      "Export to Excel for reporting if needed.",
+    ],
+    keyFields: [
+      { field: "Material / Plant", description: "Scope of the stock report." },
+      { field: "Storage Location", description: "Optional — filters to a specific physical location." },
+    ],
+    output:
+      "Stock overview by material showing unrestricted, quality inspection, blocked, restricted, and in-transit quantities by storage location.",
   },
   {
     id: "qm-qga1",
@@ -814,6 +1390,18 @@ export const logbookEntries: LogbookEntry[] = [
     awpRelevance: "Medium",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Plant, Inspection Type, and date range.",
+      "Execute — the system identifies lots where all characteristics are valuated 'Accept' and no results are missing.",
+      "For these lots, the system automatically posts the usage decision and transfers stock to unrestricted.",
+      "Review the log to confirm which lots were processed and which were skipped (missing results, rejections).",
+    ],
+    keyFields: [
+      { field: "Plant / Inspection Type", description: "Scope for the automatic decision run." },
+      { field: "Date Range", description: "Limits to lots created within the date range." },
+    ],
+    output:
+      "Automatic usage decisions and stock postings for all lots passing acceptance criteria — reduces manual QA workload.",
   },
   {
     id: "pp-co26",
@@ -831,6 +1419,20 @@ export const logbookEntries: LogbookEntry[] = [
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Production Order number.",
+      "The system displays the component list with reservation quantities.",
+      "Enter the actual issue quantity for each component (can differ from planned if yield or scrap varies).",
+      "Confirm the Storage Location for each component.",
+      "Post — movement type 261 is applied; stock is reduced and costs are posted to the production order.",
+    ],
+    keyFields: [
+      { field: "Order Number", description: "Production order to which components are being issued." },
+      { field: "Movement Type", description: "261 = GI to production order; 262 = reversal." },
+      { field: "Quantity / Storage Location", description: "Actual quantity issued and source storage location." },
+    ],
+    output:
+      "Goods issue material document. Component stock reduced; WIP cost posted to the production order. Components are now available for the production run.",
   },
   {
     id: "pp-md06",
@@ -842,13 +1444,26 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Displays all MRP exception messages for a plant — short, late, rescheduling-in, rescheduling-out, and cancellation proposals. Used by planners to work through planning exceptions each morning.",
     processArea: "MRP Evaluation",
-    sapDocUrl:
-      "https://help.sap.com/search/?q=MD06+SAP+S4HANA",
+    sapDocUrl: "https://help.sap.com/search/?q=MD06+SAP+S4HANA",
     relatedTransactions: ["MD04", "MD01", "MD05"],
     tags: ["mrp", "exceptions", "rescheduling", "planner", "evaluation"],
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter Plant and Evaluation Date.",
+      "Execute — the exception message list is displayed sorted by urgency.",
+      "Filter by exception type: 20 (expedite), 30 (postpone), 10 (cancel), 15 (start date in past).",
+      "Double-click any exception to navigate to MD04 for that material.",
+      "From MD04 or directly from MD06, reschedule or convert planned orders as needed.",
+    ],
+    keyFields: [
+      { field: "Plant", description: "Plant for which exceptions are evaluated." },
+      { field: "Evaluation Date", description: "Exceptions are shown relative to this date." },
+      { field: "Exception Group", description: "1 = Start/finish date issues, 2 = Rescheduling proposals, 3 = Cancellation proposals." },
+    ],
+    output:
+      "Prioritised list of MRP exception messages for planner action — the daily planning worklist for production and procurement decisions.",
   },
   {
     id: "pp-co03",
@@ -866,5 +1481,17 @@ export const logbookEntries: LogbookEntry[] = [
     awpRelevance: "High",
     notes: "",
     lastVerified: "2025-01-15",
+    steps: [
+      "Enter the Production Order number.",
+      "Navigate through tabs: Header (dates, status, quantities), Components, Operations, Costs, and Goods Movements.",
+      "Review the system status (CRTD = Created, REL = Released, PCONF = Partially Confirmed, CNF = Confirmed, DLV = Delivered).",
+      "Use the Goods Movements tab to see all GI (261) and GR (101) postings against the order.",
+    ],
+    keyFields: [
+      { field: "Order Number", description: "Production order to display." },
+      { field: "System Status", description: "CRTD, REL, PCONF, CNF, DLV — indicates order lifecycle stage." },
+    ],
+    output:
+      "Read-only production order overview for monitoring execution, costs, and goods movement history without risk of unintended changes.",
   },
 ];

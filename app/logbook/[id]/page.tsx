@@ -99,6 +99,58 @@ export default async function EntryPage({ params }: Props) {
           <p className="text-[#2A2E2B] text-sm leading-relaxed mt-5">{entry.description}</p>
         </div>
 
+        {/* How to Use — Steps */}
+        {entry.steps && entry.steps.length > 0 && (
+          <section>
+            <h2 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-4">How to Use</h2>
+            <div className="bg-[#FAFAF8] border border-[#D9D4C8] rounded-2xl p-6">
+              <ol className="space-y-4">
+                {entry.steps.map((step, i) => (
+                  <li key={i} className="flex gap-4">
+                    <span className="shrink-0 w-6 h-6 rounded-full bg-[#1C3A2B] text-[#F7F5F0] text-[11px] font-semibold flex items-center justify-center mt-0.5">
+                      {i + 1}
+                    </span>
+                    <p className="text-sm text-[#2A2E2B] leading-relaxed">{step}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+        )}
+
+        {/* Key Fields */}
+        {entry.keyFields && entry.keyFields.length > 0 && (
+          <section>
+            <h2 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-4">Key Fields</h2>
+            <div className="bg-[#FAFAF8] border border-[#D9D4C8] rounded-2xl overflow-hidden">
+              {entry.keyFields.map((kf, i) => (
+                <div
+                  key={i}
+                  className={`flex gap-4 px-5 py-3.5 text-sm ${i < entry.keyFields!.length - 1 ? "border-b border-[#EDE9E1]" : ""}`}
+                >
+                  <span className="shrink-0 font-mono text-xs text-[#1C3A2B] bg-[#E8F0E4] border border-[#C8DFC5] px-2.5 py-1 rounded-lg self-start mt-0.5 whitespace-nowrap">
+                    {kf.field.split(" ")[0]}
+                  </span>
+                  <div>
+                    <p className="text-xs font-medium text-[#2A2E2B] mb-0.5">{kf.field.includes("(") ? kf.field.match(/\(([^)]+)\)/)?.[1] ?? kf.field : kf.field}</p>
+                    <p className="text-xs text-[#6B7A6F] leading-relaxed">{kf.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Output */}
+        {entry.output && (
+          <section>
+            <h2 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-4">Output / Result</h2>
+            <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-5">
+              <p className="text-sm text-[#1C3A2B] leading-relaxed">{entry.output}</p>
+            </div>
+          </section>
+        )}
+
         {/* Details */}
         <div className="grid sm:grid-cols-2 gap-4">
           <InfoCard title="Process Area">
