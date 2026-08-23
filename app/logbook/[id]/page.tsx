@@ -76,7 +76,7 @@ export default async function EntryPage({ params }: Props) {
               {entry.category}
             </span>
             <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
-              {entry.awpRelevance} Relevance
+              {entry.awpRelevance}
             </span>
           </div>
 

@@ -18,7 +18,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["mrp", "planning", "regenerative", "demand", "plant"],
     awpRelevance: "High",
     notes:
-      "AWP runs MD01 weekly on Sundays for poultry production plant to align feed and packaging requirements.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -73,7 +73,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MD01", "MD05", "MD06"],
     tags: ["mrp", "stock", "requirements", "evaluation", "display"],
     awpRelevance: "High",
-    notes: "Daily-use transaction for planners and production supervisors at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── PP: Production Orders ──────────────────────────────────────────────────
@@ -92,7 +92,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO02", "CO03", "CO11N", "CO15"],
     tags: ["production order", "create", "shop floor", "manufacturing"],
     awpRelevance: "High",
-    notes: "AWP creates daily slaughter and processing orders via CO01 or from converted planned orders.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -110,7 +110,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO01", "CO03", "CO11N"],
     tags: ["production order", "change", "modify", "update"],
     awpRelevance: "High",
-    notes: "Frequently used to adjust quantities due to live animal weight variance at AWP slaughter line.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -128,7 +128,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO01", "CO02", "MIGO", "MB31"],
     tags: ["confirmation", "goods receipt", "backflush", "actual", "shop floor"],
     awpRelevance: "High",
-    notes: "End-of-shift confirmations by AWP line supervisors. Links to QM inspection lot generation.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -164,7 +164,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CA02", "CA03", "CA60"],
     tags: ["routing", "operations", "work center", "standard time", "capacity"],
     awpRelevance: "High",
-    notes: "AWP routings defined for slaughter, evisceration, chilling, and portioning processes.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -202,7 +202,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["bom", "bill of materials", "components", "structure", "recipe"],
     awpRelevance: "High",
     notes:
-      "AWP BOMs include live birds, packaging, ice, and additives. Special handling for yield-based components.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -220,7 +220,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CS01", "CS03", "CC01"],
     tags: ["bom", "change", "components", "engineering change"],
     awpRelevance: "High",
-    notes: "Requires approval workflow at AWP before changes affect active production orders.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── PP: Procurement ────────────────────────────────────────────────────────
@@ -239,7 +239,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["ME22N", "ME23N", "ME2M", "MIGO"],
     tags: ["purchase order", "procurement", "vendor", "po"],
     awpRelevance: "High",
-    notes: "Used for packaging materials, live birds from farms, and feed ingredients procurement at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -257,7 +257,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["ME21N", "ME23N"],
     tags: ["purchase order", "change", "modify", "procurement"],
     awpRelevance: "Medium",
-    notes: "Changes to live bird POs require farm coordinator approval at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── PP: Goods Movement ─────────────────────────────────────────────────────
@@ -277,7 +277,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["goods movement", "goods receipt", "goods issue", "stock transfer", "inventory"],
     awpRelevance: "High",
     notes:
-      "AWP uses MIGO for live bird receipts (mvt 101), goods issues to production (mvt 261), and returns. Triggers QM inspection lots for GR of raw materials.",
+      "",
     lastVerified: "2025-01-15",
   },
   // ─── PP: Repetitive Manufacturing ───────────────────────────────────────────
@@ -296,7 +296,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MF70", "CO11N", "MIGO"],
     tags: ["repetitive manufacturing", "backflush", "run schedule", "lean"],
     awpRelevance: "Low",
-    notes: "Not currently used at AWP; discrete production orders are preferred for traceability.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -313,7 +313,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MF60", "CO11N"],
     tags: ["repetitive manufacturing", "reporting point", "backflush", "milestone"],
     awpRelevance: "Low",
-    notes: "URL to be verified from help.sap.com. Not in scope for current AWP rollout.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Inspection Lots ─────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["inspection lot", "create", "quality", "inspection"],
     awpRelevance: "High",
     notes:
-      "AWP creates manual lots for in-process checks at slaughter line and chilling stations when automatic lot creation fails.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -370,7 +370,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["usage decision", "accept", "reject", "stock posting", "inspection"],
     awpRelevance: "High",
     notes:
-      "Critical daily transaction at AWP. Rejected lots trigger automatic QM notification creation for non-conformance tracking.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -388,7 +388,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QA01", "QA11", "QE51N"],
     tags: ["inspection lot", "worklist", "batch", "usage decision", "results"],
     awpRelevance: "High",
-    notes: "Primary QM worklist for AWP QC lab. Used for end-of-day closing of all open lots.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Results Recording ──────────────────────────────────────────────────
@@ -407,7 +407,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QE11", "QE51N", "QA11", "QS21"],
     tags: ["results recording", "characteristics", "quantitative", "qualitative", "inspection"],
     awpRelevance: "High",
-    notes: "Used by AWP QC lab technicians to enter microbiological and physical test results.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -424,7 +424,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QE01", "QE51N", "QA32"],
     tags: ["results recording", "single characteristic", "multiple lots"],
     awpRelevance: "Medium",
-    notes: "URL to be verified from help.sap.com. Less commonly used than QE51N at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -442,7 +442,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QE01", "QE11", "QA32", "QA11"],
     tags: ["results recording", "worklist", "inspection lot", "batch recording"],
     awpRelevance: "High",
-    notes: "Primary results entry transaction for AWP QC team. Used 3× daily for each inspection shift.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Quality Notifications ──────────────────────────────────────────────
@@ -462,7 +462,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["quality notification", "non-conformance", "defect", "capa", "corrective action"],
     awpRelevance: "High",
     notes:
-      "AWP raises QM notifications for every rejected inspection lot and customer complaint. Linked to QM improvement KPIs.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -480,7 +480,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QM01", "QMEL"],
     tags: ["quality notification", "change", "CAPA", "root cause", "tasks"],
     awpRelevance: "High",
-    notes: "QM supervisors update notifications with corrective actions within 24 hours at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -498,7 +498,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QM01", "QM02"],
     tags: ["notification list", "quality", "overview", "reporting", "monitoring"],
     awpRelevance: "High",
-    notes: "Used by AWP QM Manager for weekly open notification review meetings.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Quality Info Records ────────────────────────────────────────────────
@@ -518,7 +518,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["quality info record", "vendor", "supplier", "certificate", "inspection control"],
     awpRelevance: "High",
     notes:
-      "AWP uses Q-Info records to control inspection requirements for all live bird suppliers. Mandatory for GR inspection lot creation.",
+      "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Master Inspection Characteristics ──────────────────────────────────
@@ -538,7 +538,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["master inspection characteristic", "mic", "tolerance", "sampling", "master data"],
     awpRelevance: "High",
     notes:
-      "AWP MICs include: core temperature, pH, color, weight, microbial count, moisture content. Set up by QM consultant.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -593,7 +593,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["inspection plan", "create", "operations", "characteristics", "master data"],
     awpRelevance: "High",
     notes:
-      "AWP inspection plans cover GR (live birds), in-process (evisceration, chilling), and FG (finished goods). Linked to routings for in-process inspection points.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -611,7 +611,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QP01", "QP03", "QS21"],
     tags: ["inspection plan", "change", "update", "master data"],
     awpRelevance: "High",
-    notes: "Plan updates require QM Manager sign-off at AWP due to food safety impact.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   // ─── QM: Quality Certificates ───────────────────────────────────────────────
@@ -631,7 +631,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["quality certificate", "CoA", "CoC", "outgoing", "delivery", "customer"],
     awpRelevance: "High",
     notes:
-      "AWP issues CoA for all export shipments and key retail customers (e.g., Panda, SPAR). Required by customer quality agreements.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -668,7 +668,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["in-process inspection", "production order", "routing", "inspection type 03", "integration"],
     awpRelevance: "High",
     notes:
-      "Core PP/QM integration at AWP. Evisceration and chilling operations trigger automatic QM lots for temperature and hygiene checks.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -687,7 +687,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["goods receipt", "inspection type 01", "quality stock", "vendor inspection", "integration"],
     awpRelevance: "High",
     notes:
-      "All live bird deliveries and key raw materials go through GR inspection at AWP. Stock release only after QA11 usage decision.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -706,7 +706,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["batch", "batch management", "classification", "traceability", "shelf life"],
     awpRelevance: "High",
     notes:
-      "AWP tracks batches by slaughter date and shift. QM results auto-update batch class characteristics for traceability (SFDA requirement).",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -724,7 +724,7 @@ export const logbookEntries: LogbookEntry[] = [
     tags: ["batch", "where-used", "traceability", "recall", "genealogy"],
     awpRelevance: "High",
     notes:
-      "URL to be verified from help.sap.com. Critical for AWP product recall procedures — allows tracing from FG batch back to live bird delivery.",
+      "",
     lastVerified: "2025-01-15",
   },
   {
@@ -759,7 +759,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QA11", "QA32", "QA01"],
     tags: ["usage decision", "collective", "batch", "acceptance", "rejection"],
     awpRelevance: "High",
-    notes: "Used at AWP shift-end to close all passed lots from the same production run simultaneously.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -777,7 +777,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QS33", "QS21", "QP01"],
     tags: ["sampling", "AQL", "sample size", "ISO 2859", "master data"],
     awpRelevance: "High",
-    notes: "AWP uses AQL 2.5 for critical characteristics (microbiology) and AQL 6.5 for minor attributes.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -795,7 +795,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MIGO", "QA11", "MB51"],
     tags: ["stock", "inventory", "warehouse", "quality inspection stock", "blocked stock"],
     awpRelevance: "High",
-    notes: "Used by AWP logistics and QM to monitor quality inspection stock levels and plan releases.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -812,7 +812,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["QA11", "QA32", "QA16"],
     tags: ["automatic usage decision", "automation", "acceptance", "batch processing"],
     awpRelevance: "Medium",
-    notes: "URL to be verified from help.sap.com. Under evaluation for AWP high-volume lots.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -829,7 +829,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO01", "CO11N", "MIGO"],
     tags: ["goods issue", "production order", "components", "stock reduction"],
     awpRelevance: "High",
-    notes: "URL to be verified from help.sap.com. Used for packaging material issuance at AWP packing line.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -847,7 +847,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["MD04", "MD01", "MD05"],
     tags: ["mrp", "exceptions", "rescheduling", "planner", "evaluation"],
     awpRelevance: "High",
-    notes: "AWP planners process MD06 exception list every morning before production starts.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
   {
@@ -864,7 +864,7 @@ export const logbookEntries: LogbookEntry[] = [
     relatedTransactions: ["CO01", "CO02", "CO11N"],
     tags: ["production order", "display", "read-only", "status", "tracking"],
     awpRelevance: "High",
-    notes: "URL to be verified from help.sap.com. Widely used by non-PP users (QM, logistics, finance) at AWP.",
+    notes: "",
     lastVerified: "2025-01-15",
   },
 ];

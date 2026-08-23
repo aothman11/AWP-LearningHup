@@ -14,8 +14,6 @@ interface Props {
   entries: LogbookEntry[];
   filters: Filters;
   onChange: (filters: Filters) => void;
-  showAwpContext: boolean;
-  onToggleAwp: () => void;
 }
 
 const MODULES: Array<Module | "All"> = ["All", "PP", "QM", "PP/QM"];
@@ -36,7 +34,7 @@ const RELEVANCE_ACTIVE: Record<string, string> = {
   All:       "bg-[#EDE9E1] text-[#2A2E2B] border-[#D9D4C8]",
 };
 
-export function LogbookFilters({ entries, filters, onChange, showAwpContext, onToggleAwp }: Props) {
+export function LogbookFilters({ entries, filters, onChange }: Props) {
   const allCategories = Array.from(new Set(entries.map((e) => e.category))).sort();
   const allTags = Array.from(new Set(entries.flatMap((e) => e.tags))).sort();
 
@@ -69,19 +67,6 @@ export function LogbookFilters({ entries, filters, onChange, showAwpContext, onT
             Clear all
           </button>
         )}
-      </div>
-
-      {/* AWP Context Toggle */}
-      <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-4">
-        <button onClick={onToggleAwp} className="flex items-center gap-2.5 w-full group">
-          <div className={`w-9 h-5 rounded-full transition-colors relative flex-shrink-0 ${showAwpContext ? "bg-[#1C3A2B]" : "bg-[#D9D4C8]"}`}>
-            <div className={`absolute top-0.5 w-4 h-4 bg-[#F7F5F0] rounded-full shadow-sm transition-transform ${showAwpContext ? "translate-x-4" : "translate-x-0.5"}`} />
-          </div>
-          <span className="text-xs font-medium text-[#2A2E2B]">AWP Context</span>
-        </button>
-        <p className="text-[10px] text-[#6B7A6F] mt-2 leading-relaxed">
-          Show AWP-specific usage notes on each card
-        </p>
       </div>
 
       {/* Module Filter */}
@@ -134,9 +119,9 @@ export function LogbookFilters({ entries, filters, onChange, showAwpContext, onT
         </div>
       </div>
 
-      {/* AWP Relevance */}
+      {/* Relevance */}
       <div>
-        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">AWP Relevance</h3>
+        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">Relevance</h3>
         <div className="space-y-1">
           {RELEVANCE_OPTIONS.map((r) => (
             <button

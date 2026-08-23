@@ -65,7 +65,7 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                   {entry.category}
                 </span>
                 <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
-                  AWP: {entry.awpRelevance}
+                  {entry.awpRelevance}
                 </span>
               </div>
 

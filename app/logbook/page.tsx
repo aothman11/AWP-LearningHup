@@ -7,6 +7,7 @@ import { LogbookFilters } from "@/components/logbook/LogbookFilters";
 import { LogbookSearch } from "@/components/logbook/LogbookSearch";
 import { LogbookCard } from "@/components/logbook/LogbookCard";
 import { EntryDrawer } from "@/components/logbook/EntryDrawer";
+import { IntegrationMap } from "@/components/logbook/IntegrationMap";
 
 interface Filters {
   module: Module | "All";
@@ -27,8 +28,8 @@ export default function LogbookPage() {
     activeTag: "",
   });
   const [selectedEntry, setSelectedEntry] = useState<LogbookEntry | null>(null);
-  const [showAwpContext, setShowAwpContext] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [tab, setTab] = useState<"tcodes" | "integrations">("tcodes");
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -108,6 +109,25 @@ export default function LogbookPage() {
         </div>
       </header>
 
+      {/* ── Tab Bar ─────────────────────────────────────────────────────────── */}
+      <div className="border-b border-[#D9D4C8] bg-[#FAFAF8]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-1">
+          {(["tcodes", "integrations"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+                tab === t
+                  ? "border-[#1C3A2B] text-[#1C3A2B]"
+                  : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B]"
+              }`}
+            >
+              {t === "tcodes" ? "T-Code Reference" : "PP Integrations"}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* ── Stat Bar ────────────────────────────────────────────────────────── */}
       <div className="border-b border-[#D9D4C8] bg-[#EDE9E1]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-6 overflow-x-auto">
@@ -115,21 +135,24 @@ export default function LogbookPage() {
           <StatPill label="PP" value={stats.pp} color="text-[#1C3A2B]" />
           <StatPill label="QM" value={stats.qm} color="text-[#4E7862]" />
           <StatPill label="PP/QM" value={stats.ppqm} color="text-[#3D6B52]" />
-          <StatPill label="High Relevance" value={stats.high} color="text-[#1C3A2B]" />
+          <StatPill label="High" value={stats.high} color="text-[#1C3A2B]" />
         </div>
       </div>
 
       {/* ── Main Layout ─────────────────────────────────────────────────────── */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6">
-        <div className="flex gap-8">
+        {/* Integrations tab */}
+        {tab === "integrations" && (
+          <IntegrationMap />
+        )}
+
+        {tab === "tcodes" && <div className="flex gap-8">
           {/* Sidebar Desktop */}
           <div className="hidden lg:block sticky top-[77px] self-start h-[calc(100vh-94px)] overflow-y-auto custom-scroll shrink-0 w-64 pb-6">
             <LogbookFilters
               entries={logbookEntries}
               filters={filters}
               onChange={setFilters}
-              showAwpContext={showAwpContext}
-              onToggleAwp={() => setShowAwpContext((v) => !v)}
             />
           </div>
 
@@ -146,8 +169,6 @@ export default function LogbookPage() {
                   entries={logbookEntries}
                   filters={filters}
                   onChange={setFilters}
-                  showAwpContext={showAwpContext}
-                  onToggleAwp={() => setShowAwpContext((v) => !v)}
                 />
               </div>
             </div>
@@ -178,13 +199,12 @@ export default function LogbookPage() {
                     onSelect={setSelectedEntry}
                     onTagClick={handleTagClick}
                     onTcodeClick={handleTcodeClick}
-                    showAwpContext={showAwpContext}
                   />
                 ))}
               </div>
             )}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* ── Entry Drawer ─────────────────────────────────────────────────────── */}

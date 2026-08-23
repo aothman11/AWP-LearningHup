@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { LogbookEntry } from "@/types/logbook";
 
 interface Props {
@@ -8,7 +7,6 @@ interface Props {
   onSelect: (entry: LogbookEntry) => void;
   onTagClick: (tag: string) => void;
   onTcodeClick: (code: string) => void;
-  showAwpContext: boolean;
 }
 
 const MODULE_STYLES: Record<string, string> = {
@@ -24,8 +22,7 @@ const RELEVANCE_STYLES: Record<string, string> = {
   "Not Used":"bg-[#FCDEDE] text-[#9B3030] border border-[#f5b8b8]",
 };
 
-export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, showAwpContext }: Props) {
-  const [notesOpen, setNotesOpen] = useState(false);
+export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick }: Props) {
   const hasUrl = Boolean(entry.sapDocUrl);
 
   return (
@@ -45,7 +42,7 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, showAwp
             </span>
           </div>
           <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
-            {entry.awpRelevance}
+            {entry.awpRelevance} relevance
           </span>
         </div>
 
@@ -106,23 +103,6 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, showAwp
           </div>
         )}
 
-        {/* AWP Notes */}
-        {showAwpContext && entry.notes && (
-          <div>
-            <button
-              onClick={(e) => { e.stopPropagation(); setNotesOpen(!notesOpen); }}
-              className="text-xs text-[#4E7862] hover:text-[#1C3A2B] transition-colors flex items-center gap-1"
-            >
-              <span>{notesOpen ? "▾" : "▸"}</span>
-              AWP Notes
-            </button>
-            {notesOpen && (
-              <p className="mt-2 text-xs text-[#4E7862] bg-[#E8F0E4] border border-[#C8DFC5] rounded-lg p-3 leading-relaxed italic">
-                {entry.notes}
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Card Footer */}

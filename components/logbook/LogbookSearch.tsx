@@ -13,7 +13,7 @@ const SORT_OPTIONS = [
   { value: "module", label: "Module" },
   { value: "category", label: "Category" },
   { value: "transactionCode", label: "T-code" },
-  { value: "awpRelevance", label: "AWP Relevance" },
+  { value: "awpRelevance", label: "Relevance" },
 ];
 
 export function LogbookSearch({ value, onChange, count, total, sort, onSortChange }: Props) {
