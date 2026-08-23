@@ -197,7 +197,6 @@ export function IntegrationMap() {
                   { code: "SD", sends: "Confirmed availability (ATP), finished-goods stock", receives: "Sales orders, delivery requirements, demand schedule" },
                   { code: "FI/CO", sends: "Actual costs (GI, labour, overhead), production variances", receives: "Standard costs, budget checks, cost centre assignments" },
                   { code: "PM", sends: "Work centre capacity utilisation", receives: "Maintenance windows, equipment downtime notices" },
-                  { code: "PS", sends: "Production order costs → WBS, milestone completions", receives: "WBS assignments, project demand, budget availability" },
                   { code: "WM", sends: "GI/GR requests, staging requirements", receives: "Transfer orders, physical bin confirmation" },
                 ].map((row, i) => (
                   <tr

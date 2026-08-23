@@ -183,10 +183,10 @@ export const sapTables: SapTable[] = [
   {
     module: "QM",
     category: "Master Data",
-    name: "QS21",
-    description: "Master Inspection Characteristics Header (stored in MKAL cluster). Individual characteristic metadata including tolerances, sampling procedures, and control chart settings.",
-    keyFields: ["MERKMALNR (Characteristic Number)", "KURZTEXT (Short Text)", "STICHPRVERFAHREN (Sampling Procedure)", "UNTERGRENZW (LSL)", "OBERGRENZW (USL)"],
-    notes: "QS21 is the transaction name; underlying data is in the MKAL cluster table and related structures. Use SE16 on MKAL or dedicated QM APIs to query.",
+    name: "QPMK",
+    description: "Inspection Characteristics at Operation Level. Stores characteristics assigned to inspection plan operations — including characteristic number, short text, tolerances, and sampling procedure reference.",
+    keyFields: ["PLNTY (Task List Type)", "PLNNR (Group Number)", "PLNAL (Counter)", "VORNR (Operation Number)", "MERKMALNR (Characteristic Number)", "KURZTEXT (Short Text)"],
+    notes: "Join to PLKO/PLPO on PLNTY/PLNNR/PLNAL. Each row is one characteristic in one operation of one inspection plan. Actual tolerance values (LSL/USL) are resolved from the master characteristic definition.",
   },
   // ─── MM Tables ──────────────────────────────────────────────────────────────
   {

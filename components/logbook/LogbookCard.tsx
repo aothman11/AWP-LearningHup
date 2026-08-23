@@ -1,12 +1,15 @@
 "use client";
 
 import type { LogbookEntry } from "@/types/logbook";
+import { useLang } from "@/context/LangContext";
 
 interface Props {
   entry: LogbookEntry;
   onSelect: (entry: LogbookEntry) => void;
   onTagClick: (tag: string) => void;
   onTcodeClick: (code: string) => void;
+  isFavorited?: boolean;
+  onFavorite?: (id: string) => void;
 }
 
 const MODULE_STYLES: Record<string, string> = {
@@ -22,8 +25,10 @@ const RELEVANCE_STYLES: Record<string, string> = {
   "Not Used":"bg-[#FCDEDE] text-[#9B3030] border border-[#f5b8b8]",
 };
 
-export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick }: Props) {
+export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavorited = false, onFavorite }: Props) {
+  const { lang } = useLang();
   const hasUrl = Boolean(entry.sapDocUrl);
+  const displayTitle = lang === "AR" && entry.titleAr ? entry.titleAr : entry.title;
 
   return (
     <div
@@ -54,10 +59,14 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick }: Props
           {entry.transactionCode}
         </div>
 
-        <h3 className="text-[#2A2E2B] font-medium text-sm leading-snug group-hover:text-[#1C3A2B] transition-colors">
-          {entry.title}
+        <h3
+          className="text-[#2A2E2B] font-medium text-sm leading-snug group-hover:text-[#1C3A2B] transition-colors"
+          dir={lang === "AR" ? "rtl" : undefined}
+          style={lang === "AR" ? { fontFamily: "'Sakkal Majalla', serif", textAlign: "right" } : undefined}
+        >
+          {displayTitle}
         </h3>
-        {entry.titleAr && (
+        {lang === "EN" && entry.titleAr && (
           <p
             className="text-[#6B7A6F] text-xs mt-1 text-right leading-relaxed"
             style={{ fontFamily: "'Sakkal Majalla', 'Arial Unicode MS', serif", direction: "rtl" }}
@@ -126,9 +135,20 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick }: Props
             </span>
           )}
         </div>
-        <span className="text-[#D9D4C8] text-[10px] whitespace-nowrap">
-          {entry.lastVerified}
-        </span>
+        <div className="flex items-center gap-2">
+          {onFavorite && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onFavorite(entry.id); }}
+              title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              className={`text-base leading-none transition-colors ${isFavorited ? "text-[#4E7862]" : "text-[#D9D4C8] hover:text-[#4E7862]"}`}
+            >
+              {isFavorited ? "★" : "☆"}
+            </button>
+          )}
+          <span className="text-[#D9D4C8] text-[10px] whitespace-nowrap">
+            {entry.lastVerified}
+          </span>
+        </div>
       </div>
     </div>
   );

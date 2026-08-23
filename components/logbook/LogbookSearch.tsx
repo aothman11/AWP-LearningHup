@@ -1,5 +1,7 @@
 "use client";
 
+import { type RefObject } from "react";
+
 interface Props {
   value: string;
   onChange: (v: string) => void;
@@ -7,6 +9,7 @@ interface Props {
   total: number;
   sort: string;
   onSortChange: (s: string) => void;
+  inputRef?: RefObject<HTMLInputElement | null>;
 }
 
 const SORT_OPTIONS = [
@@ -16,7 +19,7 @@ const SORT_OPTIONS = [
   { value: "awpRelevance", label: "Relevance" },
 ];
 
-export function LogbookSearch({ value, onChange, count, total, sort, onSortChange }: Props) {
+export function LogbookSearch({ value, onChange, count, total, sort, onSortChange, inputRef }: Props) {
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
       {/* Search input */}
@@ -28,8 +31,9 @@ export function LogbookSearch({ value, onChange, count, total, sort, onSortChang
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input
+          ref={inputRef}
           type="text"
-          placeholder="Search T-codes, titles, keywords…"
+          placeholder="Search T-codes, titles, keywords… ( / )"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-full bg-[#FAFAF8] border border-[#D9D4C8] rounded-full pl-10 pr-9 py-2.5 text-sm text-[#2A2E2B] placeholder:text-[#6B7A6F] focus:outline-none focus:border-[#4E7862] transition-colors"
