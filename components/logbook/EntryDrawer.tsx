@@ -23,12 +23,7 @@ const RELEVANCE_STYLES: Record<string, string> = {
 };
 
 export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
-  const [notes, setNotes] = useState("");
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (entry) setNotes(entry.notes || "");
-  }, [entry?.id]);
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
@@ -185,20 +180,6 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
             </div>
           </section>
 
-          {/* AWP Notes — Editable */}
-          <section>
-            <SectionLabel>
-              AWP Notes{" "}
-              <span className="text-[#D9D4C8] font-normal normal-case tracking-normal ml-1">(local state)</span>
-            </SectionLabel>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-              placeholder="Add AWP-specific notes or consultant observations…"
-              className="w-full bg-[#FAFAF8] border border-[#D9D4C8] rounded-2xl px-4 py-3 text-sm text-[#2A2E2B] placeholder:text-[#D9D4C8] focus:outline-none focus:border-[#4E7862] transition-colors resize-none"
-            />
-          </section>
         </div>
 
         {/* Drawer Footer */}
