@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { logbookEntries } from "@/data/qm-logbook";
-import { learningPaths } from "@/data/learning-paths";
 import type { LogbookEntry, Module, AwpRelevance } from "@/types/logbook";
 import { LogbookFilters } from "@/components/logbook/LogbookFilters";
 import type { LogbookFiltersState } from "@/components/logbook/LogbookFilters";
@@ -13,8 +12,6 @@ import { IntegrationMap } from "@/components/logbook/IntegrationMap";
 import { TablesView } from "@/components/logbook/TablesView";
 import { ProcessFlow } from "@/components/logbook/ProcessFlow";
 import { SavedView } from "@/components/logbook/SavedView";
-import { LearningPaths } from "@/components/logbook/LearningPaths";
-import { CompareView } from "@/components/logbook/CompareView";
 import { useLang } from "@/context/LangContext";
 import { useT } from "@/lib/i18n";
 import { collectionsStore } from "@/lib/collections-store";
@@ -24,7 +21,7 @@ import { normalizeQuery, buildHaystack, matchesQuery } from "@/lib/search";
 
 const RELEVANCE_ORDER: Record<string, number> = { High: 0, Medium: 1, Low: 2, "Not Used": 3 };
 
-type TabType = "tcodes" | "integrations" | "tables" | "flow" | "saved" | "paths" | "compare";
+type TabType = "tcodes" | "integrations" | "tables" | "flow" | "saved";
 
 const DEFAULT_FILTERS: LogbookFiltersState = {
   module: "All",
@@ -186,8 +183,6 @@ export default function LogbookPage() {
 
   const TABS: Array<{ id: TabType; label: string }> = [
     { id: "tcodes", label: t("tabs.tcodes") },
-    { id: "paths", label: t("tabs.paths") },
-    { id: "compare", label: t("tabs.compare") },
     { id: "integrations", label: t("tabs.integrations") },
     { id: "tables", label: t("tabs.tables") },
     { id: "flow", label: t("tabs.flow") },
@@ -345,23 +340,6 @@ export default function LogbookPage() {
             onRenameCollection={handleRenameCollection}
             onDeleteCollection={handleDeleteCollection}
             onRemoveFromCollection={handleRemoveFromCollection}
-          />
-        )}
-
-        {/* Learning paths tab */}
-        {tab === "paths" && (
-          <LearningPaths
-            paths={learningPaths}
-            allEntries={logbookEntries}
-            onSelectEntry={setSelectedEntry}
-          />
-        )}
-
-        {/* Compare tab */}
-        {tab === "compare" && (
-          <CompareView
-            allEntries={logbookEntries}
-            onSelectEntry={setSelectedEntry}
           />
         )}
 
