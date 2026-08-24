@@ -1,5 +1,6 @@
 export type Module = "PP" | "QM" | "PP/QM";
 export type AwpRelevance = "High" | "Medium" | "Low" | "Not Used";
+export type ContentStatus = "quick-reference" | "detailed-guide" | "in-progress";
 
 export interface KeyField {
   field: string;
@@ -25,4 +26,10 @@ export interface LogbookEntry {
   steps?: string[];
   keyFields?: KeyField[];
   output?: string;
+  // Phase 3: content quality model
+  contentStatus?: ContentStatus;
+  prerequisites?: string[];
+  whenToUse?: string;
+  commonMistakes?: string[];
+  whatNext?: string[];
 }

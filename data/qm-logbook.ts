@@ -35,6 +35,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Planned orders for in-house production, purchase requisitions for externally procured components, dependent requirements for sub-assemblies, and exception messages for planners to review.",
+    whenToUse: "Use MD01 for the scheduled daily or weekly full-plant MRP run. Run it when major demand changes have occurred across many materials, or at the start of a new planning cycle.",
+    prerequisites: [
+      "MRP type activated in material master (MRP 1 view) for all relevant materials.",
+      "Demand signals loaded: sales orders, forecasts (MD61/MD62), or PIRs.",
+      "BOMs and routings released and current.",
+      "Plant calendar and work schedules configured.",
+    ],
+    commonMistakes: [
+      "Running NEUPL (regenerative) instead of NETCH in production — NEUPL deletes all existing planned orders before recreating, which can disrupt confirmed near-term orders.",
+      "Leaving the Planning Date blank — always enter today or the next working day.",
+      "Not reviewing the MRP log for exceptions after the run; exceptions indicate planning failures.",
+      "Running MD01 for a single-material replan — use MD02 or MD03 instead.",
+    ],
+    whatNext: [
+      "Review exception messages in MD06 or the MRP log.",
+      "Check the stock/requirements list in MD04 for critical materials.",
+      "Convert planned orders to production orders (CO41 / MD16).",
+      "Convert purchase requisitions to purchase orders (ME21N).",
+    ],
   },
   {
     id: "pp-md02",
@@ -130,6 +149,21 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Time-phased demand/supply list showing current stock, all open orders, and projected available quantity for each future date.",
+    whenToUse: "Use MD04 daily to check the planning situation of specific materials — especially before a customer commit, after a GR, or when troubleshooting a shortage.",
+    prerequisites: [
+      "Material must be MRP-relevant and have been planned at least once.",
+      "MRP run (MD01/MD02) must have been executed after demand was entered.",
+    ],
+    commonMistakes: [
+      "Confusing 'Available Qty' with physical stock — it is a projected balance including future receipts and issues.",
+      "Not refreshing after an MRP run — the display reflects the state at the time you open it.",
+      "Overlooking fixed planned orders (firming indicator) that cannot be automatically rescheduled.",
+    ],
+    whatNext: [
+      "Double-click any planned order to convert it to a production order.",
+      "Use MD06 to view the exception messages generated for this material.",
+      "Navigate to CO02 to change a production order if dates need adjusting.",
+    ],
   },
   // ─── PP: Production Orders ──────────────────────────────────────────────────
   {
@@ -164,6 +198,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Production order with unique number, BOM explosion into components, routing copy with scheduled operation dates, and capacity requirements posted to work centres.",
+    whenToUse: "Use CO01 to manually create a production order when MRP has not generated a planned order, for prototype or special production, or to override MRP planning for a specific quantity.",
+    prerequisites: [
+      "Material master with MRP views, production storage location, and MRP type.",
+      "Bill of Materials (BOM) released in CS01/CS02.",
+      "Routing released in CA01/CA02.",
+      "Order type configured (PP01 for standard).",
+    ],
+    commonMistakes: [
+      "Forgetting to release the order (flag icon) before saving — an unreleased order cannot be used for goods issues or confirmations.",
+      "Not checking the BOM explosion on the Components tab before releasing.",
+      "Setting incorrect scheduled dates that cause capacity overloads — check CM01 after creation.",
+      "Creating a duplicate order when MRP has already generated a planned order for the same requirement.",
+    ],
+    whatNext: [
+      "Issue components to the order using MIGO (movement type 261).",
+      "Confirm operations using CO11N as production progresses.",
+      "Record final confirmation and GR using CO15 when production is complete.",
+      "Monitor order status using CO03 or COOIS.",
+    ],
   },
   {
     id: "pp-co02",
@@ -494,6 +547,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Material document (inventory update) and accounting document (FI postings). For GR from PO with QM active: inspection lot created automatically, stock lands in quality inspection until usage decision.",
+    whenToUse: "Use MIGO for any inventory movement: goods receipt from vendors or production, goods issue to production orders, stock transfers between locations, and reversal of incorrect postings.",
+    prerequisites: [
+      "Reference document exists: Purchase Order (ME21N), Production Order (CO01), or existing material document.",
+      "Storage location configured and assigned to plant.",
+      "Material master with correct MRP type and stock settings.",
+      "For QM-managed materials: inspection plan released (QP01).",
+    ],
+    commonMistakes: [
+      "Not selecting 'Item OK' checkbox for each line before posting — the post button will be greyed out.",
+      "Using wrong movement type — 101 for PO receipt, 261 for production GI, 311 for transfer posting.",
+      "Posting to wrong storage location — especially critical for QM-inspected stock.",
+      "Not entering batch number for batch-managed materials before posting.",
+    ],
+    whatNext: [
+      "For GR from PO with QM: go to QA32 to view the created inspection lot and record results.",
+      "For GR from production order: check the production order status in CO03.",
+      "For reversals: use movement type 102 (reverse GR) referencing the original material document.",
+      "Check updated stock levels in MB52 (warehouse stocks) or MD04.",
+    ],
   },
   // ─── PP: Repetitive Manufacturing ───────────────────────────────────────────
   {
@@ -653,6 +725,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Usage decision record closing the inspection lot. Automatic stock transfer from quality-inspection stock to target stock type. Quality level updated for future sampling frequency.",
+    whenToUse: "Use QA11 to close a single inspection lot after all results have been recorded. Use for individual high-value or critical lots where careful review is needed before releasing stock.",
+    prerequisites: [
+      "Inspection lot exists (created via QA01 or automatically from MIGO/CO01).",
+      "All required inspection results recorded (via QE51N or QE01).",
+      "Inspection lot status shows results-recorded.",
+      "Usage decision codes configured in QM customizing.",
+    ],
+    commonMistakes: [
+      "Recording usage decision before all results are complete — the lot will show incomplete and may not allow stock transfer.",
+      "Selecting wrong decision code — A (Accept) posts to unrestricted, R (Reject) posts to blocked stock.",
+      "Not reviewing the automatic stock posting proposal before confirming — partial accept/reject quantities may need adjustment.",
+      "Forgetting to update the Quality Level if dynamic modification rules are active.",
+    ],
+    whatNext: [
+      "For rejected lots: create a quality notification (QM01) to initiate corrective action.",
+      "For conditionally released lots: monitor the conditions and check QM02 for task completion.",
+      "Verify the stock transfer in MB52 or MD04.",
+      "If a vendor complaint applies, create a notification type Q2 in QM01.",
+    ],
   },
   {
     id: "qm-qa32",
@@ -685,6 +776,22 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Worklist of open inspection lots. Enables mass results recording and usage decision entry without opening each lot individually.",
+    whenToUse: "Use QA32 as the primary daily worklist for QM inspectors to process multiple open lots efficiently. Preferred over QA11 when many lots need to be processed in one session.",
+    prerequisites: [
+      "Open inspection lots must exist for the selected plant and material.",
+      "Inspection results recorded (or record directly from QA32 via QE51N link).",
+      "Authorization for usage decision in the relevant plant.",
+    ],
+    commonMistakes: [
+      "Too-broad selection criteria returning hundreds of lots — narrow by Inspection Type or date range.",
+      "Making usage decisions without first verifying that results are complete.",
+      "Confusing QA32 (worklist) with QA01 (create a new lot manually).",
+    ],
+    whatNext: [
+      "Navigate to QE51N from QA32 to record results for selected lots.",
+      "Record usage decisions for accepted lots directly from the worklist.",
+      "For rejected lots, create quality notifications from QM01.",
+    ],
   },
   // ─── QM: Results Recording ──────────────────────────────────────────────────
   {
@@ -780,6 +887,23 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Inspection results recorded for multiple lots and operations in a single efficient session.",
+    whenToUse: "Use QE51N as the primary results-recording interface. Ideal for daily inspection recording across multiple incoming or in-process lots. More efficient than QE01 for routine work.",
+    prerequisites: [
+      "Open inspection lots with an assigned inspection plan (QP01).",
+      "Inspection characteristics defined and assigned to operations.",
+      "Sampling procedure assigned (determining sample size).",
+    ],
+    commonMistakes: [
+      "Entering results without checking the sample size — QE51N shows required samples; all must be filled before saving.",
+      "Not navigating to each operation — results must be recorded per operation if multiple operations exist.",
+      "Forgetting to save before navigating to the next lot.",
+      "Recording results in wrong units of measure — check the characteristic specification.",
+    ],
+    whatNext: [
+      "After recording all results, return to QA32 or QA11 to make the usage decision.",
+      "If results indicate defects, create a quality notification via QM01.",
+      "Check the inspection lot status — it should show 'Results recorded' before usage decision.",
+    ],
   },
   // ─── QM: Quality Notifications ──────────────────────────────────────────────
   {
@@ -815,6 +939,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Quality notification with unique number. Tasks assigned for corrective actions. Status tracking from creation through completion. Feeds into QM reporting and KPIs.",
+    whenToUse: "Use QM01 when a quality problem needs to be formally documented, tracked, and resolved. Create a notification for customer complaints, vendor non-conformances, or internal defect reports.",
+    prerequisites: [
+      "Notification types configured in QM customizing (Q1/Q2/Q3 or organisation-specific types).",
+      "Defect codes and cause codes maintained in the catalog.",
+      "Responsible parties and partners configured.",
+    ],
+    commonMistakes: [
+      "Creating a notification without linking it to the affected material and batch — traceability is lost.",
+      "Not assigning tasks with target dates — notifications without tasks often remain open indefinitely.",
+      "Using wrong notification type — Q1 for customer, Q2 for vendor, Q3 for internal.",
+      "Closing the notification before all tasks are completed and root cause documented.",
+    ],
+    whatNext: [
+      "Assign tasks to responsible parties with realistic target completion dates.",
+      "Monitor task completion in QM02.",
+      "Link to inspection lot if defect was found during inspection.",
+      "Use QMEL for list reporting of all open notifications.",
+      "Close the notification in QM02 once all corrective actions are verified.",
+    ],
   },
   {
     id: "qm-qm02",
@@ -1038,6 +1181,25 @@ export const logbookEntries: LogbookEntry[] = [
     ],
     output:
       "Active inspection plan assigned to the material. Automatically selected when inspection lots are created (QA01) or triggered by goods movements.",
+    whenToUse: "Use QP01 when setting up QM for a new material, or when creating a new inspection scope. Required before automatic inspection lot creation can occur for goods receipts or production confirmations.",
+    prerequisites: [
+      "Master inspection characteristics (MICs) created in QS21.",
+      "Sampling procedures created in QS31.",
+      "QM control key activated in material master (QM view) for relevant inspection types.",
+      "Work centers assigned if inspection operations need to be tracked.",
+    ],
+    commonMistakes: [
+      "Saving the plan without setting Status = 4 (Released) — an unreleased plan will not be used for automatic lot creation.",
+      "Not assigning sampling procedures to characteristics — inspection lot creation will fail or sample size will be zero.",
+      "Forgetting to assign the plan to the correct Usage (5 = inspection plan, not 1 = production routing).",
+      "Creating duplicate plans for the same material/plant/inspection type combination.",
+    ],
+    whatNext: [
+      "Test the plan by creating a manual inspection lot via QA01.",
+      "Trigger a test goods receipt to verify automatic lot creation and plan assignment.",
+      "Maintain the plan in QP02 when inspection requirements change.",
+      "Deactivate outdated plans rather than deleting them to preserve history.",
+    ],
   },
   {
     id: "qm-qp02",

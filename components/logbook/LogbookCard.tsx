@@ -1,7 +1,12 @@
 "use client";
 
+import { useRef, useState } from "react";
 import type { LogbookEntry } from "@/types/logbook";
 import { useLang } from "@/context/LangContext";
+import { useT } from "@/lib/i18n";
+import { deriveContentStatus } from "@/lib/content-status";
+import { SavePopover } from "./SavePopover";
+import type { CollectionsState } from "@/lib/collections-store";
 
 interface Props {
   entry: LogbookEntry;
@@ -10,6 +15,10 @@ interface Props {
   onTcodeClick: (code: string) => void;
   isFavorited?: boolean;
   onFavorite?: (id: string) => void;
+  collectionsState?: CollectionsState;
+  savedCollectionIds?: string[];
+  onToggleCollection?: (collectionId: string, entryId: string, inCollection: boolean) => void;
+  onCreateCollection?: (name: string) => void;
 }
 
 const MODULE_STYLES: Record<string, string> = {
@@ -25,10 +34,47 @@ const RELEVANCE_STYLES: Record<string, string> = {
   "Not Used":"bg-[#FCDEDE] text-[#9B3030] border border-[#f5b8b8]",
 };
 
-export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavorited = false, onFavorite }: Props) {
+function ContentStatusBadge({ entry }: { entry: LogbookEntry }) {
+  const t = useT();
+  const status = deriveContentStatus(entry);
+
+  const config = {
+    "detailed-guide":  { label: t("status.detailedGuide"),  icon: "●", cls: "bg-[#D4EFE0] text-[#1C3A2B] border-[#C8DFC5]" },
+    "quick-reference": { label: t("status.quickReference"), icon: "◐", cls: "bg-[#F8EBC5] text-[#7A5E0A] border-[#e5d08a]" },
+    "in-progress":     { label: t("status.inProgress"),     icon: "○", cls: "bg-[#EDE9E1] text-[#6B7A6F] border-[#D9D4C8]" },
+  }[status];
+
+  return (
+    <span
+      className={`text-[9px] font-medium px-2 py-0.5 rounded-full border flex items-center gap-1 ${config.cls}`}
+      title={config.label}
+      aria-label={config.label}
+    >
+      <span aria-hidden="true">{config.icon}</span>
+      {config.label}
+    </span>
+  );
+}
+
+export function LogbookCard({
+  entry,
+  onSelect,
+  onTagClick,
+  onTcodeClick,
+  isFavorited = false,
+  onFavorite,
+  collectionsState,
+  savedCollectionIds = [],
+  onToggleCollection,
+  onCreateCollection,
+}: Props) {
   const { lang } = useLang();
+  const t = useT();
   const hasUrl = Boolean(entry.sapDocUrl);
   const displayTitle = lang === "AR" && entry.titleAr ? entry.titleAr : entry.title;
+  const [saveOpen, setSaveOpen] = useState(false);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const isSaved = savedCollectionIds.length > 0;
 
   return (
     <div
@@ -45,9 +91,10 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavor
             <span className="text-[10px] text-[#6B7A6F] bg-[#EDE9E1] px-2.5 py-1 rounded-full border border-[#D9D4C8]">
               {entry.category}
             </span>
+            <ContentStatusBadge entry={entry} />
           </div>
           <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
-            {entry.awpRelevance} relevance
+            {entry.awpRelevance}
           </span>
         </div>
 
@@ -88,6 +135,7 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavor
                 key={tag}
                 onClick={(e) => { e.stopPropagation(); onTagClick(tag); }}
                 className="text-[10px] text-[#4E7862] bg-[#E8F0E4] border border-[#C8DFC5] px-2 py-0.5 rounded-full hover:bg-[#C8DFC5] hover:text-[#1C3A2B] transition-colors"
+                aria-label={`Filter by tag: ${tag}`}
               >
                 #{tag}
               </button>
@@ -98,20 +146,20 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavor
         {/* Related */}
         {entry.relatedTransactions.length > 0 && (
           <div className="flex flex-wrap gap-1.5 items-center">
-            <span className="text-[#6B7A6F] text-[10px]">Related:</span>
+            <span className="text-[#6B7A6F] text-[10px]">{t("card.related")}</span>
             {entry.relatedTransactions.slice(0, 4).map((tc) => (
               <button
                 key={tc}
                 onClick={(e) => { e.stopPropagation(); onTcodeClick(tc); }}
                 className="text-[11px] font-light text-[#1C3A2B] bg-[#EDE9E1] border border-[#D9D4C8] px-2 py-0.5 rounded hover:bg-[#C8DFC5] hover:border-[#4E7862] transition-colors"
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                aria-label={`Filter by ${tc}`}
               >
                 {tc}
               </button>
             ))}
           </div>
         )}
-
       </div>
 
       {/* Card Footer */}
@@ -126,20 +174,51 @@ export function LogbookCard({ entry, onSelect, onTagClick, onTcodeClick, isFavor
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-[#4E7862] hover:text-[#1C3A2B] border border-[#C8DFC5] hover:border-[#4E7862] bg-[#E8F0E4] px-2.5 py-1 rounded-full transition-colors"
+              aria-label={`${t("card.sapDocs")} for ${entry.transactionCode}`}
             >
-              SAP Docs ↗
+              {t("card.sapDocs")} ↗
             </a>
           ) : (
-            <span className="text-xs text-[#7A5E0A] bg-[#F8EBC5] border border-[#e5d08a] px-2.5 py-1 rounded-full">
-              ⚠ Doc pending
+            <span className="text-xs text-[#7A5E0A] bg-[#F8EBC5] border border-[#e5d08a] px-2.5 py-1 rounded-full" aria-label={t("card.docPending")}>
+              ⚠ {t("card.docPending")}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative">
+          {/* Save to workspace */}
+          {collectionsState && onToggleCollection && onCreateCollection && (
+            <div className="relative">
+              <button
+                ref={saveButtonRef}
+                onClick={() => setSaveOpen((o) => !o)}
+                aria-label={t("drawer.saveToWorkspace")}
+                aria-expanded={saveOpen}
+                title={t("drawer.saveToWorkspace")}
+                className={`text-base leading-none transition-colors ${isSaved ? "text-[#4E7862]" : "text-[#D9D4C8] hover:text-[#4E7862]"}`}
+              >
+                {isSaved ? "⊕" : "⊕"}
+              </button>
+              {saveOpen && (
+                <SavePopover
+                  entryId={entry.id}
+                  collectionsState={collectionsState}
+                  savedCollectionIds={savedCollectionIds}
+                  onToggleCollection={onToggleCollection}
+                  onCreateCollection={onCreateCollection}
+                  onClose={() => setSaveOpen(false)}
+                  triggerRef={saveButtonRef}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Favorite */}
           {onFavorite && (
             <button
               onClick={(e) => { e.stopPropagation(); onFavorite(entry.id); }}
-              title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              title={isFavorited ? t("favorites.remove") : t("favorites.add")}
+              aria-label={isFavorited ? t("favorites.remove") : t("favorites.add")}
+              aria-pressed={isFavorited}
               className={`text-base leading-none transition-colors ${isFavorited ? "text-[#4E7862]" : "text-[#D9D4C8] hover:text-[#4E7862]"}`}
             >
               {isFavorited ? "★" : "☆"}

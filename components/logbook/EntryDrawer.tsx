@@ -1,12 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { LogbookEntry } from "@/types/logbook";
+import { useT } from "@/lib/i18n";
+import { deriveContentStatus } from "@/lib/content-status";
+import { SavePopover } from "./SavePopover";
+import type { CollectionsState } from "@/lib/collections-store";
 
 interface Props {
   entry: LogbookEntry | null;
   onClose: () => void;
   onTcodeFilter: (code: string) => void;
+  collectionsState?: CollectionsState;
+  savedCollectionIds?: string[];
+  onToggleCollection?: (collectionId: string, entryId: string, inCollection: boolean) => void;
+  onCreateCollection?: (name: string) => void;
 }
 
 const MODULE_STYLES: Record<string, string> = {
@@ -22,8 +30,19 @@ const RELEVANCE_STYLES: Record<string, string> = {
   "Not Used":"bg-[#FCDEDE] text-[#9B3030] border border-[#f5b8b8]",
 };
 
-export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
+export function EntryDrawer({
+  entry,
+  onClose,
+  onTcodeFilter,
+  collectionsState,
+  savedCollectionIds = [],
+  onToggleCollection,
+  onCreateCollection,
+}: Props) {
   const [copied, setCopied] = useState(false);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const t = useT();
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
@@ -41,6 +60,14 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
   }
 
   const hasUrl = Boolean(entry.sapDocUrl);
+  const status = deriveContentStatus(entry);
+  const isSaved = savedCollectionIds.length > 0;
+
+  const statusConfig = {
+    "detailed-guide":  { label: t("status.detailedGuide"),  icon: "●", cls: "bg-[#D4EFE0] text-[#1C3A2B] border-[#C8DFC5]" },
+    "quick-reference": { label: t("status.quickReference"), icon: "◐", cls: "bg-[#F8EBC5] text-[#7A5E0A] border-[#e5d08a]" },
+    "in-progress":     { label: t("status.inProgress"),     icon: "○", cls: "bg-[#EDE9E1] text-[#6B7A6F] border-[#D9D4C8]" },
+  }[status];
 
   return (
     <>
@@ -48,11 +75,17 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
       <div
         className="fixed inset-0 bg-[#1C3A2B]/20 backdrop-blur-[2px] z-40"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-[#F7F5F0] border-l border-[#D9D4C8] z-50 flex flex-col overflow-hidden animate-slide-in">
-
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${entry.transactionCode} – ${entry.title}`}
+        className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-[#F7F5F0] border-l border-[#D9D4C8] z-50 flex flex-col overflow-hidden"
+        style={{ animation: "slideIn 0.2s ease-out" }}
+      >
         {/* Drawer Header */}
         <div className="px-7 pt-7 pb-5 border-b border-[#C8DFC5] bg-[#E8F0E4]">
           <div className="flex items-start justify-between gap-4">
@@ -67,6 +100,9 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                 <span className={`text-[10px] font-medium px-2.5 py-1 rounded-full ${RELEVANCE_STYLES[entry.awpRelevance]}`}>
                   {entry.awpRelevance}
                 </span>
+                <span className={`text-[9px] font-medium px-2 py-0.5 rounded-full border flex items-center gap-1 ${statusConfig.cls}`} aria-label={statusConfig.label}>
+                  <span aria-hidden="true">{statusConfig.icon}</span> {statusConfig.label}
+                </span>
               </div>
 
               <div
@@ -77,9 +113,10 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
               </div>
               <button
                 onClick={copyTcode}
+                aria-label={copied ? t("drawer.copied") : t("drawer.copyTcode")}
                 className="text-[10px] text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#FAFAF8] hover:bg-[#C8DFC5] px-2.5 py-1 rounded-full transition-colors mt-1.5 inline-flex items-center gap-1"
               >
-                {copied ? "✓ Copied" : "Copy T-code"}
+                {copied ? `✓ ${t("drawer.copied")}` : t("drawer.copyTcode")}
               </button>
 
               <h2 className="text-[#2A2E2B] font-medium text-base mt-3 leading-snug">{entry.title}</h2>
@@ -87,6 +124,7 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                 <p
                   className="text-[#6B7A6F] text-sm mt-1 text-right leading-relaxed"
                   style={{ fontFamily: "'Sakkal Majalla', 'Arial Unicode MS', serif", direction: "rtl" }}
+                  lang="ar"
                 >
                   {entry.titleAr}
                 </p>
@@ -95,6 +133,7 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
             <button
               onClick={onClose}
+              aria-label={t("drawer.close")}
               className="text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#FAFAF8] hover:bg-[#C8DFC5] w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0 mt-0.5"
             >
               ×
@@ -106,19 +145,45 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
         <div className="flex-1 overflow-y-auto px-7 py-6 space-y-6 custom-scroll">
 
           {/* Description */}
-          <section>
-            <SectionLabel>Description</SectionLabel>
+          <section aria-labelledby="desc-label">
+            <SectionLabel id="desc-label">{t("drawer.description")}</SectionLabel>
             <p className="text-[#2A2E2B] text-sm leading-relaxed">{entry.description}</p>
           </section>
 
+          {/* When to Use */}
+          {entry.whenToUse && (
+            <section aria-labelledby="when-label">
+              <SectionLabel id="when-label">{t("drawer.whenToUse")}</SectionLabel>
+              <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-4">
+                <p className="text-sm text-[#1C3A2B] leading-relaxed">{entry.whenToUse}</p>
+              </div>
+            </section>
+          )}
+
+          {/* Prerequisites */}
+          {entry.prerequisites && entry.prerequisites.length > 0 && (
+            <section aria-labelledby="prereq-label">
+              <SectionLabel id="prereq-label">{t("drawer.prerequisites")}</SectionLabel>
+              <ul className="space-y-2">
+                {entry.prerequisites.map((p, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-[#2A2E2B]">
+                    <span aria-hidden="true" className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#4E7862] mt-2" />
+                    <span className="leading-relaxed">{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* Steps */}
           {entry.steps && entry.steps.length > 0 && (
-            <section>
-              <SectionLabel>How to Use</SectionLabel>
+            <section aria-labelledby="steps-label">
+              <SectionLabel id="steps-label">{t("drawer.howToUse")}</SectionLabel>
               <ol className="space-y-2">
                 {entry.steps.map((step, i) => (
                   <li key={i} className="flex gap-3 text-sm text-[#2A2E2B]">
                     <span
+                      aria-hidden="true"
                       className="shrink-0 w-5 h-5 rounded-full bg-[#1C3A2B] text-[#F7F5F0] text-[10px] font-semibold flex items-center justify-center mt-0.5"
                     >
                       {i + 1}
@@ -132,8 +197,8 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
           {/* Key Fields */}
           {entry.keyFields && entry.keyFields.length > 0 && (
-            <section>
-              <SectionLabel>Key Fields</SectionLabel>
+            <section aria-labelledby="fields-label">
+              <SectionLabel id="fields-label">{t("drawer.keyFields")}</SectionLabel>
               <div className="space-y-2 bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
                 {entry.keyFields.map((kf, i) => (
                   <div key={i} className="flex gap-3 text-sm">
@@ -149,28 +214,58 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
           {/* Output */}
           {entry.output && (
-            <section>
-              <SectionLabel>Output / Result</SectionLabel>
+            <section aria-labelledby="output-label">
+              <SectionLabel id="output-label">{t("drawer.output")}</SectionLabel>
               <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-4">
                 <p className="text-sm text-[#1C3A2B] leading-relaxed">{entry.output}</p>
               </div>
             </section>
           )}
 
+          {/* Common Mistakes */}
+          {entry.commonMistakes && entry.commonMistakes.length > 0 && (
+            <section aria-labelledby="mistakes-label">
+              <SectionLabel id="mistakes-label">{t("drawer.commonMistakes")}</SectionLabel>
+              <ul className="space-y-2 bg-[#FCDEDE]/30 border border-[#f5b8b8] rounded-2xl p-4">
+                {entry.commonMistakes.map((m, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-[#2A2E2B]">
+                    <span aria-hidden="true" className="shrink-0 text-[#9B3030] font-semibold text-xs mt-0.5">!</span>
+                    <span className="leading-relaxed">{m}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* What Next */}
+          {entry.whatNext && entry.whatNext.length > 0 && (
+            <section aria-labelledby="next-label">
+              <SectionLabel id="next-label">{t("drawer.whatNext")}</SectionLabel>
+              <ul className="space-y-2">
+                {entry.whatNext.map((n, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-[#2A2E2B]">
+                    <span aria-hidden="true" className="shrink-0 text-[#4E7862] font-semibold text-xs mt-0.5">→</span>
+                    <span className="leading-relaxed">{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* Details */}
-          <section>
-            <SectionLabel>Details</SectionLabel>
+          <section aria-labelledby="details-label">
+            <SectionLabel id="details-label">{t("drawer.details")}</SectionLabel>
             <div className="space-y-2 bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
-              <Row label="Process Area" value={entry.processArea} />
-              <Row label="Module" value={entry.module} />
-              <Row label="Category" value={entry.category} />
+              <Row label={t("drawer.processArea")} value={entry.processArea} />
+              <Row label={t("drawer.module")} value={entry.module} />
+              <Row label={t("drawer.category")} value={entry.category} />
             </div>
           </section>
 
           {/* Related Transactions */}
           {entry.relatedTransactions.length > 0 && (
-            <section>
-              <SectionLabel>Related T-Codes</SectionLabel>
+            <section aria-labelledby="related-label">
+              <SectionLabel id="related-label">{t("drawer.relatedTcodes")}</SectionLabel>
               <div className="flex flex-wrap gap-2">
                 {entry.relatedTransactions.map((tc) => (
                   <button
@@ -189,8 +284,8 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
           {/* Tags */}
           {entry.tags.length > 0 && (
-            <section>
-              <SectionLabel>Tags</SectionLabel>
+            <section aria-labelledby="tags-label">
+              <SectionLabel id="tags-label">{t("drawer.tags")}</SectionLabel>
               <div className="flex flex-wrap gap-1.5">
                 {entry.tags.map((tag) => (
                   <span
@@ -206,17 +301,17 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
 
           {/* Notes */}
           {entry.notes && (
-            <section>
-              <SectionLabel>Notes</SectionLabel>
+            <section aria-labelledby="notes-label">
+              <SectionLabel id="notes-label">{t("drawer.notes")}</SectionLabel>
               <p className="text-xs text-[#4E7862] italic leading-relaxed">{entry.notes}</p>
             </section>
           )}
 
           {/* Documentation */}
-          <section>
-            <SectionLabel>SAP Documentation</SectionLabel>
+          <section aria-labelledby="docs-label">
+            <SectionLabel id="docs-label">{t("drawer.sapDocumentation")}</SectionLabel>
             <div className="bg-[#FAFAF8] border border-[#EDE9E1] rounded-2xl p-4">
-              <p className="text-[10px] text-[#6B7A6F] mb-2">SAP Help Portal</p>
+              <p className="text-[10px] text-[#6B7A6F] mb-2">{t("drawer.sapHelpPortal")}</p>
               {hasUrl ? (
                 <a
                   href={entry.sapDocUrl}
@@ -224,12 +319,12 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                   rel="noopener noreferrer"
                   className="text-[#4E7862] hover:text-[#1C3A2B] text-sm transition-colors"
                 >
-                  Open Official Documentation ↗
+                  {t("drawer.openDocs")} ↗
                 </a>
               ) : (
-                <span className="text-[#7A5E0A] text-sm">⚠ Doc link pending verification</span>
+                <span className="text-[#7A5E0A] text-sm">⚠ {t("drawer.docPending")}</span>
               )}
-              <p className="text-[10px] text-[#D9D4C8] mt-2">Last verified: {entry.lastVerified}</p>
+              <p className="text-[10px] text-[#D9D4C8] mt-2">{t("drawer.lastVerified")} {entry.lastVerified}</p>
             </div>
           </section>
 
@@ -245,31 +340,68 @@ export function EntryDrawer({ entry, onClose, onTcodeFilter }: Props) {
                 rel="noopener noreferrer"
                 className="text-sm text-[#F7F5F0] bg-[#1C3A2B] hover:bg-[#3D6B52] px-4 py-2 rounded-full transition-colors"
               >
-                SAP Docs ↗
+                {t("general.sapDocs")} ↗
               </a>
             )}
             <button
               onClick={copyTcode}
               className="text-sm text-[#2A2E2B] bg-[#FAFAF8] hover:bg-[#C8DFC5] border border-[#D9D4C8] hover:border-[#4E7862] px-4 py-2 rounded-full transition-colors"
             >
-              {copied ? "✓ Copied" : "Copy T-code"}
+              {copied ? `✓ ${t("drawer.copied")}` : t("drawer.copyTcode")}
             </button>
+
+            {/* Save to workspace */}
+            {collectionsState && onToggleCollection && onCreateCollection && (
+              <div className="relative">
+                <button
+                  ref={saveButtonRef}
+                  onClick={() => setSaveOpen((o) => !o)}
+                  aria-label={t("drawer.saveToWorkspace")}
+                  aria-expanded={saveOpen}
+                  className={`text-sm border px-4 py-2 rounded-full transition-colors ${
+                    isSaved
+                      ? "bg-[#E8F0E4] text-[#1C3A2B] border-[#C8DFC5]"
+                      : "bg-[#FAFAF8] text-[#6B7A6F] border-[#D9D4C8] hover:border-[#4E7862] hover:bg-[#E8F0E4]"
+                  }`}
+                >
+                  {isSaved ? `✓ ${t("drawer.saveToWorkspace")}` : t("drawer.saveToWorkspace")}
+                </button>
+                {saveOpen && (
+                  <SavePopover
+                    entryId={entry.id}
+                    collectionsState={collectionsState}
+                    savedCollectionIds={savedCollectionIds}
+                    onToggleCollection={onToggleCollection}
+                    onCreateCollection={onCreateCollection}
+                    onClose={() => setSaveOpen(false)}
+                    triggerRef={saveButtonRef}
+                  />
+                )}
+              </div>
+            )}
           </div>
           <button
             onClick={onClose}
             className="text-sm text-[#6B7A6F] hover:text-[#2A2E2B] transition-colors"
           >
-            Close
+            {t("drawer.close")}
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+      `}</style>
     </>
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function SectionLabel({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
-    <h3 className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-2.5">
+    <h3 id={id} className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-2.5">
       {children}
     </h3>
   );
