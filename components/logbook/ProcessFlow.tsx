@@ -31,24 +31,31 @@ const phases: Phase[] = [
     steps: [
       {
         id: "demand",
-        label: "Demand Signal",
-        labelAr: "إشارة الطلب",
-        tCodes: ["MD04"],
-        note: "Sales orders, forecasts, and planned independent requirements create demand visible in the stock/requirements list.",
+        label: "Demand Entry",
+        labelAr: "إدخال الطلب",
+        tCodes: ["MD61", "MC87"],
+        note: "Planners enter planned independent requirements (PIRs) as forecasts via MD61, or transfer demand from Sales & Operations Planning (SOP). Sales orders also create dependent demand automatically.",
       },
       {
         id: "mrp",
         label: "MRP Run",
         labelAr: "تشغيل MRP",
-        tCodes: ["MD01", "MD02", "MD03"],
-        note: "Net requirements are calculated. Planned orders for production and purchase requisitions for procurement are generated.",
+        tCodes: ["MD01", "MD02"],
+        note: "Net requirements are calculated. Planned orders for in-house production and purchase requisitions for external procurement are generated automatically.",
       },
       {
         id: "exceptions",
         label: "Review Exceptions",
         labelAr: "مراجعة الاستثناءات",
         tCodes: ["MD06", "MD04"],
-        note: "Planners work through rescheduling proposals, shortage alerts, and cancellation messages every morning.",
+        note: "Planners work through rescheduling proposals, shortage alerts, and cancellation messages every morning using the MRP list (MD06) and stock/requirements list (MD04).",
+      },
+      {
+        id: "convert",
+        label: "Convert Orders",
+        labelAr: "تحويل الأوامر",
+        tCodes: ["MD16", "CO41"],
+        note: "Planned orders are converted: MD16 converts purchase requisitions for external procurement; CO41 mass-converts planned orders into production orders for the shop floor.",
       },
     ],
   },
@@ -61,11 +68,18 @@ const phases: Phase[] = [
     dotColor: "#7A5E0A",
     steps: [
       {
+        id: "pr",
+        label: "Purchase Requisition",
+        labelAr: "طلب الشراء",
+        tCodes: ["ME51N", "ME52N", "ME53N"],
+        note: "MRP generates purchase requisitions automatically. Buyers review and adjust quantities, dates, and source of supply before converting to PO.",
+      },
+      {
         id: "po",
         label: "Purchase Order",
         labelAr: "أمر الشراء",
         tCodes: ["ME21N", "ME22N"],
-        note: "Buyers convert MRP-generated purchase requisitions into purchase orders sent to vendors.",
+        note: "Buyers convert purchase requisitions into purchase orders sent to vendors. Source list and info records drive automatic source determination.",
       },
       {
         id: "gr-mm",
@@ -188,7 +202,7 @@ const phases: Phase[] = [
 // ─── master-data sidebar ──────────────────────────────────────────────────────
 const masterData = [
   { label: "Inspection Plans", tCodes: ["QP01", "QP02"], note: "Define what is inspected — characteristics, tolerances, and sampling." },
-  { label: "Master Inspection Characteristics", tCodes: ["QS21", "QS23"], note: "Reusable measurement definitions with limits and sampling procedures." },
+  { label: "Master Inspection Characteristics", tCodes: ["QS23", "QS41"], note: "Reusable measurement definitions with limits and sampling procedures. QS23 manages characteristic master data; QS41 manages inspection methods." },
   { label: "Routings", tCodes: ["CA01", "CA02"], note: "Define production operations and work centres. Inspection gates sit here." },
   { label: "Bills of Materials", tCodes: ["CS01", "CS02"], note: "Component lists exploded by MRP and production orders." },
   { label: "Quality Info Records", tCodes: ["QI01"], note: "Control vendor inspection at GR — certificate requirements and block rules." },
