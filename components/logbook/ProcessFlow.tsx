@@ -116,8 +116,8 @@ const phases: Phase[] = [
         id: "gi",
         label: "Issue Components",
         labelAr: "إصدار المكونات",
-        tCodes: ["CO11N", "CO27"],
-        note: "With backflush active, components are issued automatically when the operation is confirmed via CO11N — no separate GI step needed. For non-backflush materials, CO27 posts collective goods issue (movement type 261) to the production order.",
+        tCodes: ["CO27"],
+        note: "CO27 posts collective goods issue (movement type 261) for non-backflush components. For backflush-flagged materials, the goods issue happens automatically during confirmation (step 4 — CO11N) with no separate GI posting required.",
       },
       {
         id: "inprocess",
