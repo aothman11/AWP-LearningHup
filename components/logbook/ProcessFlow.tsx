@@ -116,8 +116,8 @@ const phases: Phase[] = [
         id: "gi",
         label: "Issue Components",
         labelAr: "إصدار المكونات",
-        tCodes: ["MIGO", "CO26"],
-        note: "Raw materials and components are issued from warehouse stock to the production order (movement type 261).",
+        tCodes: ["CO11N", "CO27"],
+        note: "With backflush active, components are issued automatically when the operation is confirmed via CO11N — no separate GI step needed. For non-backflush materials, CO27 posts collective goods issue (movement type 261) to the production order.",
       },
       {
         id: "inprocess",
