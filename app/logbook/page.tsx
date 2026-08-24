@@ -41,6 +41,7 @@ export default function LogbookPage() {
     } catch { return new Set(); }
   });
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
@@ -233,12 +234,55 @@ export default function LogbookPage() {
 
         {tab === "tcodes" && <div className="flex gap-8">
           {/* Sidebar Desktop */}
-          <div className="hidden lg:block sticky top-[77px] self-start h-[calc(100vh-94px)] overflow-y-auto custom-scroll shrink-0 w-64 pb-6">
-            <LogbookFilters
-              entries={logbookEntries}
-              filters={filters}
-              onChange={setFilters}
-            />
+          <div
+            className={`hidden lg:block sticky top-[77px] self-start h-[calc(100vh-94px)] shrink-0 transition-all duration-300 ${sidebarOpen ? "w-64" : "w-10"}`}
+          >
+            {/* Collapse toggle */}
+            <button
+              onClick={() => setSidebarOpen((o) => !o)}
+              title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              className={`absolute -right-3 top-2 z-10 w-6 h-6 rounded-full bg-[#FAFAF8] border border-[#D9D4C8] hover:border-[#4E7862] hover:bg-[#E8F0E4] flex items-center justify-center text-[#6B7A6F] hover:text-[#1C3A2B] transition-all text-[10px]`}
+            >
+              {sidebarOpen ? "‹" : "›"}
+            </button>
+
+            {sidebarOpen ? (
+              <div className="overflow-y-auto h-full custom-scroll pb-6">
+                <LogbookFilters
+                  entries={logbookEntries}
+                  filters={filters}
+                  onChange={setFilters}
+                />
+              </div>
+            ) : (
+              /* Collapsed: show active-filter dots and icons */
+              <div className="flex flex-col items-center gap-3 pt-10">
+                {filters.module !== "All" && (
+                  <div
+                    className="w-6 h-6 rounded-full bg-[#1C3A2B] text-[#F7F5F0] text-[8px] font-bold flex items-center justify-center"
+                    title={`Module: ${filters.module}`}
+                  >
+                    M
+                  </div>
+                )}
+                {filters.categories.length > 0 && (
+                  <div
+                    className="w-6 h-6 rounded-full bg-[#4E7862] text-[#F7F5F0] text-[8px] font-bold flex items-center justify-center"
+                    title={`${filters.categories.length} categor${filters.categories.length > 1 ? "ies" : "y"}`}
+                  >
+                    {filters.categories.length}
+                  </div>
+                )}
+                {filters.relevance !== "All" && (
+                  <div
+                    className="w-6 h-6 rounded-full bg-[#EDE9E1] border border-[#D9D4C8] text-[#6B7A6F] text-[8px] font-bold flex items-center justify-center"
+                    title={`Relevance: ${filters.relevance}`}
+                  >
+                    R
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile Filter Panel */}

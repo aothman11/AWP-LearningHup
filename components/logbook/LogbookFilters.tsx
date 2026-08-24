@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Module, AwpRelevance } from "@/types/logbook";
 import type { LogbookEntry } from "@/types/logbook";
 
@@ -20,10 +21,10 @@ const MODULES: Array<Module | "All"> = ["All", "PP", "QM", "PP/QM"];
 const RELEVANCE_OPTIONS: Array<AwpRelevance | "All"> = ["All", "High", "Medium", "Low", "Not Used"];
 
 const MODULE_ACTIVE: Record<string, string> = {
-  PP:     "bg-[#1C3A2B] text-[#F7F5F0] border-[#1C3A2B]",
-  QM:     "bg-[#4E7862] text-[#F7F5F0] border-[#4E7862]",
-  "PP/QM":"bg-[#C8DFC5] text-[#1C3A2B] border-[#4E7862]",
-  All:    "bg-[#EDE9E1] text-[#2A2E2B] border-[#D9D4C8]",
+  PP:      "bg-[#1C3A2B] text-[#F7F5F0] border-[#1C3A2B]",
+  QM:      "bg-[#4E7862] text-[#F7F5F0] border-[#4E7862]",
+  "PP/QM": "bg-[#C8DFC5] text-[#1C3A2B] border-[#4E7862]",
+  All:     "bg-[#EDE9E1] text-[#2A2E2B] border-[#D9D4C8]",
 };
 
 const RELEVANCE_ACTIVE: Record<string, string> = {
@@ -34,9 +35,50 @@ const RELEVANCE_ACTIVE: Record<string, string> = {
   All:       "bg-[#EDE9E1] text-[#2A2E2B] border-[#D9D4C8]",
 };
 
+function SectionHeader({
+  label,
+  open,
+  onToggle,
+  badge,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  badge?: number;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      className="w-full flex items-center justify-between group py-1"
+    >
+      <div className="flex items-center gap-2">
+        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest group-hover:text-[#2A2E2B] transition-colors">
+          {label}
+        </h3>
+        {badge ? (
+          <span className="text-[9px] font-semibold bg-[#1C3A2B] text-[#F7F5F0] px-1.5 py-0.5 rounded-full leading-none">
+            {badge}
+          </span>
+        ) : null}
+      </div>
+      <span
+        className={`text-[#6B7A6F] text-[10px] transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
+      >
+        ▾
+      </span>
+    </button>
+  );
+}
+
 export function LogbookFilters({ entries, filters, onChange }: Props) {
+  const [open, setOpen] = useState({ module: true, category: true, relevance: true, tags: false });
+
   const allCategories = Array.from(new Set(entries.map((e) => e.category))).sort();
   const allTags = Array.from(new Set(entries.flatMap((e) => e.tags))).sort();
+
+  function toggle(section: keyof typeof open) {
+    setOpen((s) => ({ ...s, [section]: !s[section] }));
+  }
 
   function setModule(m: Module | "All") { onChange({ ...filters, module: m }); }
   function toggleCategory(cat: string) {
@@ -54,14 +96,12 @@ export function LogbookFilters({ entries, filters, onChange }: Props) {
     filters.relevance !== "All" || Boolean(filters.activeTag);
 
   return (
-    <aside className="w-64 shrink-0 space-y-6">
+    <aside className="w-64 shrink-0 space-y-1">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest"
-        >
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest">
           Filters
-        </h2>
+        </span>
         {hasActiveFilters && (
           <button onClick={clearAll} className="text-xs text-[#9B3030] hover:text-[#7B2020] transition-colors">
             Clear all
@@ -69,94 +109,122 @@ export function LogbookFilters({ entries, filters, onChange }: Props) {
         )}
       </div>
 
-      {/* Module Filter */}
-      <div>
-        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">Module</h3>
-        <div className="space-y-1">
-          {MODULES.map((m) => (
-            <button
-              key={m}
-              onClick={() => setModule(m)}
-              className={`w-full text-left text-sm px-3 py-2 rounded-xl border transition-all ${
-                filters.module === m
-                  ? MODULE_ACTIVE[m]
-                  : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Category Filter */}
-      <div>
-        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">Category</h3>
-        <div className="space-y-0.5 max-h-52 overflow-y-auto pr-1 custom-scroll">
-          {allCategories.map((cat) => {
-            const active = filters.categories.includes(cat);
-            return (
+      {/* Module */}
+      <div className="border-t border-[#EDE9E1] pt-3 pb-2">
+        <SectionHeader
+          label="Module"
+          open={open.module}
+          onToggle={() => toggle("module")}
+          badge={filters.module !== "All" ? 1 : undefined}
+        />
+        {open.module && (
+          <div className="mt-2 space-y-1">
+            {MODULES.map((m) => (
               <button
-                key={cat}
-                onClick={() => toggleCategory(cat)}
-                className={`w-full text-left text-xs px-3 py-2 rounded-xl border transition-all flex items-center gap-2 ${
-                  active
-                    ? "border-[#C8DFC5] text-[#1C3A2B] bg-[#E8F0E4]"
+                key={m}
+                onClick={() => setModule(m)}
+                className={`w-full text-left text-sm px-3 py-2 rounded-xl border transition-all ${
+                  filters.module === m
+                    ? MODULE_ACTIVE[m]
                     : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
                 }`}
               >
-                <span className={`w-3 h-3 rounded border flex-shrink-0 flex items-center justify-center ${active ? "bg-[#1C3A2B] border-[#1C3A2B]" : "border-[#D9D4C8]"}`}>
-                  {active && (
-                    <svg viewBox="0 0 10 8" className="w-2 h-2 text-[#F7F5F0] fill-current">
-                      <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </span>
-                {cat}
+                {m}
               </button>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Category */}
+      <div className="border-t border-[#EDE9E1] pt-3 pb-2">
+        <SectionHeader
+          label="Category"
+          open={open.category}
+          onToggle={() => toggle("category")}
+          badge={filters.categories.length || undefined}
+        />
+        {open.category && (
+          <div className="mt-2 space-y-0.5 max-h-52 overflow-y-auto pr-1 custom-scroll">
+            {allCategories.map((cat) => {
+              const active = filters.categories.includes(cat);
+              return (
+                <button
+                  key={cat}
+                  onClick={() => toggleCategory(cat)}
+                  className={`w-full text-left text-xs px-3 py-2 rounded-xl border transition-all flex items-center gap-2 ${
+                    active
+                      ? "border-[#C8DFC5] text-[#1C3A2B] bg-[#E8F0E4]"
+                      : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
+                  }`}
+                >
+                  <span className={`w-3 h-3 rounded border flex-shrink-0 flex items-center justify-center ${active ? "bg-[#1C3A2B] border-[#1C3A2B]" : "border-[#D9D4C8]"}`}>
+                    {active && (
+                      <svg viewBox="0 0 10 8" className="w-2 h-2 text-[#F7F5F0] fill-current">
+                        <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Relevance */}
-      <div>
-        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">Relevance</h3>
-        <div className="space-y-1">
-          {RELEVANCE_OPTIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRelevance(r)}
-              className={`w-full text-left text-xs px-3 py-2 rounded-xl border transition-all ${
-                filters.relevance === r
-                  ? RELEVANCE_ACTIVE[r]
-                  : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
+      <div className="border-t border-[#EDE9E1] pt-3 pb-2">
+        <SectionHeader
+          label="Relevance"
+          open={open.relevance}
+          onToggle={() => toggle("relevance")}
+          badge={filters.relevance !== "All" ? 1 : undefined}
+        />
+        {open.relevance && (
+          <div className="mt-2 space-y-1">
+            {RELEVANCE_OPTIONS.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRelevance(r)}
+                className={`w-full text-left text-xs px-3 py-2 rounded-xl border transition-all ${
+                  filters.relevance === r
+                    ? RELEVANCE_ACTIVE[r]
+                    : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Tag Cloud */}
-      <div>
-        <h3 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-2.5">Keywords</h3>
-        <div className="flex flex-wrap gap-1 max-h-40 overflow-y-auto custom-scroll pr-1">
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setTag(tag)}
-              className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${
-                filters.activeTag === tag
-                  ? "border-[#4E7862] text-[#1C3A2B] bg-[#C8DFC5]"
-                  : "border-[#D9D4C8] text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
-              }`}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
+      {/* Keywords */}
+      <div className="border-t border-[#EDE9E1] pt-3 pb-2">
+        <SectionHeader
+          label="Keywords"
+          open={open.tags}
+          onToggle={() => toggle("tags")}
+          badge={filters.activeTag ? 1 : undefined}
+        />
+        {open.tags && (
+          <div className="mt-2 flex flex-wrap gap-1 max-h-40 overflow-y-auto custom-scroll pr-1">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setTag(tag)}
+                className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${
+                  filters.activeTag === tag
+                    ? "border-[#4E7862] text-[#1C3A2B] bg-[#C8DFC5]"
+                    : "border-[#D9D4C8] text-[#6B7A6F] hover:text-[#2A2E2B] hover:bg-[#EDE9E1]"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </aside>
   );
