@@ -21,8 +21,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Dynamically pick the first available chat model so we never hard-code a stale ID
+    let model = "gemma2-9b-it";
+    try {
+      const available = await groq.models.list();
+      const first = available.data.find((m) => m.id.includes("llama") || m.id.includes("gemma") || m.id.includes("mistral") || m.id.includes("qwen"));
+      if (first) model = first.id;
+    } catch {
+      // fall through to default
+    }
+
     const response = await groq.chat.completions.create({
-      model: "gemma2-9b-it",
+      model,
       temperature: 0.3,
       max_tokens: 1400,
       messages: [
@@ -62,7 +72,7 @@ Focus on S/4HANA 2023–2025 releases, new or improved Fiori apps, changed trans
     }
 
     const items: unknown = JSON.parse(match[0]);
-    return NextResponse.json({ items });
+    return NextResponse.json({ items, model });
   } catch (err) {
     const raw = err instanceof Error ? err.message : "Unknown error";
 
