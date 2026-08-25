@@ -57,7 +57,24 @@ Each item must follow this exact shape:
     const items: unknown = JSON.parse(match[0]);
     return NextResponse.json({ items });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    const raw = err instanceof Error ? err.message : "Unknown error";
+
+    // Quota / rate-limit
+    if (raw.includes("429") || raw.toLowerCase().includes("quota") || raw.toLowerCase().includes("too many requests")) {
+      return NextResponse.json(
+        { error: "Rate limit reached — the free Gemini tier resets daily. Wait a few minutes and try again, or check your quota at ai.dev/rate-limit." },
+        { status: 429 },
+      );
+    }
+
+    // Model not found
+    if (raw.includes("404") || raw.toLowerCase().includes("not found")) {
+      return NextResponse.json(
+        { error: "Gemini model not available — this is a temporary Google API issue. Try again in a moment." },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json({ error: raw }, { status: 500 });
   }
 }
