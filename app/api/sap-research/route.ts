@@ -1,88 +1,137 @@
-import Groq from "groq-sdk";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+interface RSSItem {
+  area: "PP" | "QM" | "Integration";
+  title: string;
+  summary: string;
+  url: string;
+  date: string;
+  relevance: "high" | "medium";
+}
 
-export async function POST(req: NextRequest) {
-  let topics: string[];
-  try {
-    const body = await req.json();
-    topics = body.topics;
-  } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
+// SAP Community public RSS feeds — no API key required
+const RSS_FEEDS = [
+  "https://community.sap.com/t5/enterprise-resource-planning-blogs-by-sap/bg-p/erp-blog-by-sap/rss",
+  "https://community.sap.com/t5/enterprise-resource-planning-blogs-by-members/bg-p/erp-blog-by-members/rss",
+];
 
-  if (!Array.isArray(topics) || topics.length === 0) {
-    return NextResponse.json({ error: "topics must be a non-empty array" }, { status: 400 });
-  }
+function detectArea(text: string): "PP" | "QM" | "Integration" {
+  const t = text.toLowerCase();
+  const qmScore = (t.match(/\b(qm|quality|inspection|lot|notification|certificate|defect)\b/g) ?? []).length;
+  const ppScore = (t.match(/\b(pp|mrp|production order|planning|bom|routing|confirmation|backflush)\b/g) ?? []).length;
+  if (qmScore > ppScore) return "QM";
+  if (ppScore > 0) return "PP";
+  return "Integration";
+}
 
-  if (!process.env.GROQ_API_KEY) {
-    return NextResponse.json({ error: "GROQ_API_KEY is not configured" }, { status: 500 });
-  }
+function detectRelevance(text: string): "high" | "medium" {
+  const t = text.toLowerCase();
+  const highKeywords = ["s/4hana", "s4hana", "fiori", "2024", "2025", "new feature", "simplified", "changed"];
+  return highKeywords.some((k) => t.includes(k)) ? "high" : "medium";
+}
 
-  try {
-    // Dynamically pick the first available chat model so we never hard-code a stale ID
-    let model = "gemma2-9b-it";
-    try {
-      const available = await groq.models.list();
-      const first = available.data.find((m) => m.id.includes("llama") || m.id.includes("gemma") || m.id.includes("mistral") || m.id.includes("qwen"));
-      if (first) model = first.id;
-    } catch {
-      // fall through to default
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseRSS(xml: string, topics: string[]): RSSItem[] {
+  const items: RSSItem[] = [];
+  const itemBlocks = xml.match(/<item[\s\S]*?<\/item>/g) ?? [];
+
+  for (const block of itemBlocks) {
+    const title = stripHtml(block.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] ?? "");
+    const link = block.match(/<link[^>]*>([\s\S]*?)<\/link>/)?.[1]?.trim() ?? "";
+    const pubDate = block.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() ?? "";
+    const descRaw = block.match(/<description[^>]*>([\s\S]*?)<\/description>/)?.[1] ?? "";
+    const desc = stripHtml(descRaw).slice(0, 280);
+
+    if (!title || !link) continue;
+
+    const combined = (title + " " + desc).toLowerCase();
+
+    // Keep only posts relevant to PP/QM/production/quality
+    const relevant = ["production", "planning", "quality", "pp", "qm", "mrp", "inspection", "manufacturing", "s/4hana", "s4hana"]
+      .some((k) => combined.includes(k));
+    if (!relevant) continue;
+
+    // If topics are selected, filter further
+    if (topics.length > 0) {
+      const topicKeywords: Record<string, string[]> = {
+        "MRP & Demand Planning": ["mrp", "demand", "planning", "forecast", "ddmrp"],
+        "Production Orders": ["production order", "confirmation", "backflush", "goods issue", "co11n"],
+        "Quality Inspection Lots": ["inspection lot", "usage decision", "qe51", "qa11", "inspection"],
+        "S/4HANA Fiori Apps": ["fiori", "app", "tile", "launchpad"],
+        "Batch Management": ["batch", "traceability", "genealogy"],
+        "QM Notifications": ["notification", "defect", "corrective", "capa"],
+      };
+      const selectedKeywords = topics.flatMap((t) => topicKeywords[t] ?? []);
+      if (selectedKeywords.length > 0 && !selectedKeywords.some((k) => combined.includes(k))) continue;
     }
 
-    const response = await groq.chat.completions.create({
-      model,
-      temperature: 0.3,
-      max_tokens: 1400,
-      messages: [
-        {
-          role: "system",
-          content: `You are an SAP PP/QM expert. Provide structured information about recent SAP S/4HANA updates (2023–2025) relevant to Production Planning (PP) and Quality Management (QM).
+    const date = pubDate ? new Date(pubDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "";
 
-Respond ONLY with a valid JSON array — no markdown fences, no backticks, no prose before or after.
-The array must have 4–6 items.
-
-Each item must follow this exact shape:
-[
-  {
-    "area": "PP" | "QM" | "Integration",
-    "title": "short title of the update",
-    "summary": "2–3 sentence summary of what changed and why it matters",
-    "relevance": "high" | "medium"
-  }
-]`,
-        },
-        {
-          role: "user",
-          content: `Give me the most important SAP S/4HANA PP/QM updates and improvements covering these topics: ${topics.join("; ")}.
-Focus on S/4HANA 2023–2025 releases, new or improved Fiori apps, changed transactions, process simplifications, and integration improvements between PP and QM.`,
-        },
-      ],
+    items.push({
+      area: detectArea(title + " " + desc),
+      title,
+      summary: desc || "Read more on SAP Community.",
+      url: link,
+      date,
+      relevance: detectRelevance(title + " " + desc),
     });
 
-    let raw = (response.choices[0].message.content ?? "").trim();
-
-    // Strip accidental markdown fences
-    raw = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-
-    const match = raw.match(/\[[\s\S]*\]/);
-    if (!match) {
-      return NextResponse.json({ error: "Could not parse response — please try again." }, { status: 502 });
-    }
-
-    const items: unknown = JSON.parse(match[0]);
-    return NextResponse.json({ items, model });
-  } catch (err) {
-    const raw = err instanceof Error ? err.message : "Unknown error";
-
-    if (raw.includes("429") || raw.toLowerCase().includes("rate limit")) {
-      return NextResponse.json(
-        { error: "Rate limit reached — please wait a moment and try again." },
-        { status: 429 },
-      );
-    }
-
-    return NextResponse.json({ error: raw }, { status: 500 });
+    if (items.length >= 8) break;
   }
+
+  return items;
+}
+
+export async function POST(req: Request) {
+  let topics: string[] = [];
+  try {
+    const body = await req.json();
+    topics = Array.isArray(body.topics) ? body.topics : [];
+  } catch {
+    // ignore — topics optional
+  }
+
+  const results = await Promise.allSettled(
+    RSS_FEEDS.map((url) =>
+      fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; SAP-QM-Guide/1.0)" },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        next: { revalidate: 3600 } as any,
+      }).then((r) => (r.ok ? r.text() : Promise.reject(new Error(`${r.status}`))))
+    )
+  );
+
+  const items: RSSItem[] = [];
+  for (const result of results) {
+    if (result.status === "fulfilled") {
+      items.push(...parseRSS(result.value, topics));
+    }
+  }
+
+  if (items.length === 0) {
+    return NextResponse.json(
+      { error: "Could not reach SAP Community RSS — check your network or try again." },
+      { status: 502 }
+    );
+  }
+
+  // Deduplicate by title, high-relevance first
+  const seen = new Set<string>();
+  const deduped = items
+    .filter((i) => { if (seen.has(i.title)) return false; seen.add(i.title); return true; })
+    .sort((a, b) => (a.relevance === b.relevance ? 0 : a.relevance === "high" ? -1 : 1))
+    .slice(0, 8);
+
+  return NextResponse.json({ items: deduped });
 }

@@ -2,6 +2,15 @@
 
 import { useState, useMemo } from "react";
 
+interface LiveItem {
+  area: "PP" | "QM" | "Integration";
+  title: string;
+  summary: string;
+  url: string;
+  date: string;
+  relevance: "high" | "medium";
+}
+
 interface Update {
   area: "PP" | "QM" | "Integration";
   title: string;
@@ -196,14 +205,43 @@ const AREA_COLORS: Record<string, string> = {
   Integration: "bg-violet-900/60 text-violet-300 border border-violet-700",
 };
 
+const AREA_COLORS_LIVE: Record<string, string> = {
+  PP: "bg-emerald-900/60 text-emerald-300 border border-emerald-700",
+  QM: "bg-blue-900/60 text-blue-300 border border-blue-700",
+  Integration: "bg-violet-900/60 text-violet-300 border border-violet-700",
+};
+
 export function ResearchDrawer() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [tab, setTab] = useState<"curated" | "live">("curated");
+  const [liveItems, setLiveItems] = useState<LiveItem[]>([]);
+  const [liveLoading, setLiveLoading] = useState(false);
+  const [liveError, setLiveError] = useState<string | null>(null);
 
   function toggleTopic(t: string) {
     setSelected((prev) =>
       prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
     );
+  }
+
+  async function fetchLive() {
+    setLiveLoading(true);
+    setLiveError(null);
+    try {
+      const res = await fetch("/api/sap-research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topics: selected }),
+      });
+      const data = await res.json();
+      if (!res.ok) setLiveError(data.error ?? `Error ${res.status}`);
+      else setLiveItems(data.items ?? []);
+    } catch {
+      setLiveError("Network error — please try again.");
+    } finally {
+      setLiveLoading(false);
+    }
   }
 
   const filtered = useMemo(() => {
@@ -213,7 +251,6 @@ export function ResearchDrawer() {
     );
   }, [selected]);
 
-  // High relevance first, then medium
   const sorted = useMemo(
     () => [...filtered].sort((a, b) => (a.relevance === b.relevance ? 0 : a.relevance === "high" ? -1 : 1)),
     [filtered]
@@ -250,22 +287,35 @@ export function ResearchDrawer() {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
-          <div>
+        <div className="border-b border-zinc-800 px-5 pt-4 pb-0">
+          <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-semibold text-white">S/4HANA PP/QM Updates</h2>
-            <p className="mt-0.5 text-xs text-zinc-400">
-              Curated changes · 2020–2025 releases · {ALL_UPDATES.length} entries
-            </p>
+            <button
+              onClick={() => setOpen(false)}
+              className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
+              aria-label="Close"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={() => setOpen(false)}
-            className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
-            aria-label="Close"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
+          {/* Tabs */}
+          <div className="flex gap-0">
+            {(["curated", "live"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-4 py-2 text-xs font-medium border-b-2 transition-colors ${
+                  tab === t
+                    ? "border-emerald-500 text-white"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                {t === "curated" ? `📚 Curated (${ALL_UPDATES.length})` : "🌐 Live from SAP Community"}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Scrollable body */}
@@ -298,32 +348,98 @@ export function ResearchDrawer() {
             )}
           </div>
 
-          {/* Results */}
-          <div className="space-y-4">
-            {sorted.map((item, i) => (
-              <div key={i} className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${AREA_COLORS[item.area]}`}>
-                      {item.area}
-                    </span>
-                    {item.relevance === "high" && (
-                      <span className="text-amber-400 text-xs" title="High relevance">★</span>
-                    )}
+          {/* Curated tab */}
+          {tab === "curated" && (
+            <div className="space-y-4">
+              {sorted.map((item, i) => (
+                <div key={i} className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${AREA_COLORS[item.area]}`}>
+                        {item.area}
+                      </span>
+                      {item.relevance === "high" && <span className="text-amber-400 text-xs">★</span>}
+                    </div>
+                    <span className="text-[10px] text-zinc-600 shrink-0">{item.release}</span>
                   </div>
-                  <span className="text-[10px] text-zinc-600 shrink-0">{item.release}</span>
+                  <h3 className="mb-1.5 text-sm font-medium text-white leading-snug">{item.title}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{item.summary}</p>
                 </div>
-                <h3 className="mb-1.5 text-sm font-medium text-white leading-snug">{item.title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{item.summary}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Live tab */}
+          {tab === "live" && (
+            <div>
+              <button
+                onClick={fetchLive}
+                disabled={liveLoading}
+                className="mb-5 w-full rounded-xl py-2.5 text-sm font-medium text-white transition-opacity disabled:opacity-60"
+                style={{ background: "#047836" }}
+              >
+                {liveLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Fetching from SAP Community…
+                  </span>
+                ) : liveItems.length > 0 ? "Refresh" : "Fetch latest posts"}
+              </button>
+
+              {liveError && (
+                <div className="mb-4 rounded-xl border border-red-800/60 bg-red-950/40 p-4 text-sm text-red-300">
+                  {liveError}
+                </div>
+              )}
+
+              {liveItems.length > 0 && (
+                <div className="space-y-4">
+                  {liveItems.map((item, i) => (
+                    <a
+                      key={i}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-2xl border border-zinc-800 bg-zinc-900 p-4 hover:border-zinc-600 transition-colors"
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${AREA_COLORS_LIVE[item.area]}`}>
+                            {item.area}
+                          </span>
+                          {item.relevance === "high" && <span className="text-amber-400 text-xs">★</span>}
+                        </div>
+                        <span className="text-[10px] text-zinc-600 shrink-0">{item.date}</span>
+                      </div>
+                      <h3 className="mb-1.5 text-sm font-medium text-white leading-snug">{item.title}</h3>
+                      <p className="text-xs text-zinc-400 leading-relaxed">{item.summary}</p>
+                      <p className="mt-2 text-[10px] text-emerald-600">Read on SAP Community ↗</p>
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {!liveLoading && !liveError && liveItems.length === 0 && (
+                <div className="flex flex-col items-center py-12 text-center">
+                  <div className="mb-3 text-4xl opacity-30">🌐</div>
+                  <p className="text-sm text-zinc-500">
+                    Pulls the latest PP/QM posts directly from SAP Community — no API key needed. Results are cached for 1 hour.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="border-t border-zinc-800 px-5 py-3">
           <p className="text-[10px] text-zinc-600 leading-relaxed">
-            Curated from SAP release notes and help.sap.com. Always verify against the release note for your specific S/4HANA version.
+            {tab === "curated"
+              ? "Curated from SAP release notes. Verify against your S/4HANA version's release note."
+              : "Live posts from SAP Community · cached 1 h · no API key required."}
           </p>
         </div>
       </div>
