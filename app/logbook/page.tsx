@@ -202,32 +202,32 @@ export default function LogbookPage() {
   }, [collectionsState]);
 
   return (
-    <div className="min-h-screen bg-[#F7F5F0] text-[#2A2E2B]">
+    <div className="min-h-screen bg-[#f6f3f1] text-[#242424]" style={{ fontFamily: "var(--font-mono)" }}>
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <header className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-0 z-30">
+      <header className="border-b border-[#cecac8] bg-[#f6f3f1] sticky top-0 z-30">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div>
             {lang === "EN" ? (
               <>
                 <h1
-                  className="text-2xl font-light text-[#1C3A2B] leading-none tracking-wide"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                  className="font-normal leading-none tracking-wide text-[#242424]"
+                  style={{ fontFamily: "var(--font-serif)", fontSize: "26px", fontWeight: 400 }}
                 >
-                  PP<span className="text-[#4E7862]">/</span>QM {t("header.title")}
+                  PP<span style={{ color: "#2b59d1" }}>/</span>QM {t("header.title")}
                 </h1>
-                <p className="text-xs text-[#6B7A6F] mt-0.5">{t("header.subtitle")}</p>
+                <p className="text-xs text-[#797776] mt-0.5" style={{ fontFamily: "var(--font-mono)" }}>{t("header.subtitle")}</p>
               </>
             ) : (
               <>
                 <h1
-                  className="text-2xl font-light text-[#1C3A2B] leading-none tracking-wide text-right"
-                  style={{ fontFamily: "'Sakkal Majalla', serif", direction: "rtl" }}
+                  className="font-normal leading-none tracking-wide text-right text-[#242424]"
+                  style={{ fontFamily: "'Sakkal Majalla', serif", fontSize: "26px", direction: "rtl" }}
                   lang="ar"
                 >
                   {t("header.title")}
                 </h1>
                 <p
-                  className="text-xs text-[#6B7A6F] mt-0.5 text-right"
+                  className="text-xs text-[#797776] mt-0.5 text-right"
                   style={{ fontFamily: "'Sakkal Majalla', serif", direction: "rtl" }}
                   lang="ar"
                 >
@@ -237,29 +237,32 @@ export default function LogbookPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* AR / EN toggle */}
             <button
               onClick={toggleLang}
-              className="flex items-center text-xs font-medium border border-[#D9D4C8] hover:border-[#4E7862] bg-[#F7F5F0] hover:bg-[#E8F0E4] rounded-full transition-colors overflow-hidden"
+              className="flex items-center text-[11px] border border-[#cecac8] hover:border-[#2b59d1] bg-[#f6f3f1] rounded-full transition-colors overflow-hidden"
               aria-label={t("header.switchLang")}
               title={t("header.switchLang")}
+              style={{ fontFamily: "var(--font-mono)" }}
             >
-              <span className={`px-3 py-1.5 transition-colors ${lang === "EN" ? "bg-[#1C3A2B] text-[#F7F5F0]" : "text-[#6B7A6F]"}`}>EN</span>
-              <span className={`px-3 py-1.5 transition-colors ${lang === "AR" ? "bg-[#1C3A2B] text-[#F7F5F0]" : "text-[#6B7A6F]"}`}>AR</span>
+              <span className={`px-3 py-1.5 transition-colors ${lang === "EN" ? "bg-[#2b59d1] text-white" : "text-[#797776]"}`}>EN</span>
+              <span className={`px-3 py-1.5 transition-colors ${lang === "AR" ? "bg-[#2b59d1] text-white" : "text-[#797776]"}`}>AR</span>
             </button>
             <button
               onClick={() => setShortcutsOpen(true)}
               title={`${t("header.shortcuts")} (?)`}
               aria-label={t("header.shortcuts")}
-              className="hidden sm:flex items-center gap-1.5 text-xs text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#F7F5F0] hover:bg-[#E8F0E4] px-3 py-1.5 rounded-full transition-colors"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#797776] hover:text-[#242424] border border-[#cecac8] hover:border-[#2b59d1] px-3 py-1.5 rounded-full transition-colors"
+              style={{ fontFamily: "var(--font-mono)" }}
             >
               ? {t("header.shortcuts")}
             </button>
             <button
               onClick={() => window.print()}
               aria-label={t("header.exportPdf")}
-              className="hidden sm:flex items-center gap-1.5 text-xs text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#F7F5F0] hover:bg-[#E8F0E4] px-3 py-1.5 rounded-full transition-colors"
+              className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#797776] hover:text-[#242424] border border-[#cecac8] hover:border-[#2b59d1] px-3 py-1.5 rounded-full transition-colors"
+              style={{ fontFamily: "var(--font-mono)" }}
             >
               {t("header.exportPdf")}
             </button>
@@ -267,7 +270,8 @@ export default function LogbookPage() {
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
               aria-label={t("header.filters")}
               aria-expanded={mobileFiltersOpen}
-              className="lg:hidden text-xs text-[#6B7A6F] border border-[#D9D4C8] px-3 py-1.5 rounded-full"
+              className="lg:hidden text-[11px] text-[#797776] border border-[#cecac8] px-3 py-1.5 rounded-full"
+              style={{ fontFamily: "var(--font-mono)" }}
             >
               {t("header.filters")}
             </button>
@@ -276,18 +280,19 @@ export default function LogbookPage() {
       </header>
 
       {/* ── Tab Bar ─────────────────────────────────────────────────────────── */}
-      <nav className="border-b border-[#D9D4C8] bg-[#FAFAF8]" aria-label="Main navigation">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-1 overflow-x-auto">
+      <nav className="border-b border-[#cecac8] bg-[#f6f3f1]" aria-label="Main navigation">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-0 overflow-x-auto">
           {TABS.map((tb) => (
             <button
               key={tb.id}
               onClick={() => setTab(tb.id)}
               aria-current={tab === tb.id ? "page" : undefined}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors shrink-0 ${
+              className={`px-5 py-3 text-[11px] uppercase tracking-widest border-b-2 transition-colors shrink-0 ${
                 tab === tb.id
-                  ? "border-[#1C3A2B] text-[#1C3A2B]"
-                  : "border-transparent text-[#6B7A6F] hover:text-[#2A2E2B]"
+                  ? "border-[#2b59d1] text-[#2b59d1]"
+                  : "border-transparent text-[#797776] hover:text-[#242424]"
               }`}
+              style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}
             >
               {tb.label}
             </button>
@@ -296,13 +301,15 @@ export default function LogbookPage() {
       </nav>
 
       {/* ── Stat Bar ────────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#D9D4C8] bg-[#EDE9E1]">
+      <div className="border-b border-[#cecac8] bg-[#f6f3f1]">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-6 overflow-x-auto">
-          <StatPill label={t("stats.total")} value={logbookEntries.length} color="text-[#2A2E2B]" />
-          <StatPill label="PP" value={stats.pp} color="text-[#1C3A2B]" />
-          <StatPill label="QM" value={stats.qm} color="text-[#4E7862]" />
-          <StatPill label="PP/QM" value={stats.ppqm} color="text-[#3D6B52]" />
-          <StatPill label={t("stats.high")} value={stats.high} color="text-[#1C3A2B]" />
+          <StatPill label={t("stats.total")} value={logbookEntries.length} />
+          <div className="w-px h-4 bg-[#cecac8] shrink-0" aria-hidden="true" />
+          <StatPill label="PP" value={stats.pp} accent />
+          <StatPill label="QM" value={stats.qm} accent />
+          <StatPill label="PP/QM" value={stats.ppqm} />
+          <div className="w-px h-4 bg-[#cecac8] shrink-0" aria-hidden="true" />
+          <StatPill label={t("stats.high")} value={stats.high} accent />
         </div>
       </div>
 
@@ -347,7 +354,7 @@ export default function LogbookPage() {
           <div className="flex gap-8">
             {/* Sidebar Desktop */}
             <div
-              className={`hidden lg:block sticky top-[77px] self-start h-[calc(100vh-94px)] shrink-0 transition-all duration-300 ${sidebarOpen ? "w-64" : "w-10"}`}
+              className={`hidden lg:block sticky top-[115px] self-start h-[calc(100vh-132px)] shrink-0 transition-all duration-300 ${sidebarOpen ? "w-64" : "w-10"}`}
             >
               {/* Collapse toggle */}
               <button
@@ -355,7 +362,7 @@ export default function LogbookPage() {
                 title={sidebarOpen ? t("filters.sidebar.collapse") : t("filters.sidebar.expand")}
                 aria-label={sidebarOpen ? t("filters.sidebar.collapse") : t("filters.sidebar.expand")}
                 aria-expanded={sidebarOpen}
-                className="absolute -right-3 top-2 z-10 w-6 h-6 rounded-full bg-[#FAFAF8] border border-[#D9D4C8] hover:border-[#4E7862] hover:bg-[#E8F0E4] flex items-center justify-center text-[#6B7A6F] hover:text-[#1C3A2B] transition-all text-[10px]"
+                className="absolute -right-3 top-2 z-10 w-6 h-6 rounded-full bg-[#f6f3f1] border border-[#cecac8] hover:border-[#2b59d1] flex items-center justify-center text-[#797776] hover:text-[#2b59d1] transition-all text-[10px]"
               >
                 {sidebarOpen ? "‹" : "›"}
               </button>
@@ -373,7 +380,7 @@ export default function LogbookPage() {
                 <div className="flex flex-col items-center gap-3 pt-10" aria-hidden="true">
                   {filters.module !== "All" && (
                     <div
-                      className="w-6 h-6 rounded-full bg-[#1C3A2B] text-[#F7F5F0] text-[8px] font-bold flex items-center justify-center"
+                      className="w-6 h-6 rounded-full bg-[#2b59d1] text-white text-[8px] font-bold flex items-center justify-center"
                       title={`Module: ${filters.module}`}
                     >
                       M
@@ -381,7 +388,7 @@ export default function LogbookPage() {
                   )}
                   {filters.categories.length > 0 && (
                     <div
-                      className="w-6 h-6 rounded-full bg-[#4E7862] text-[#F7F5F0] text-[8px] font-bold flex items-center justify-center"
+                      className="w-6 h-6 rounded-full bg-[#cfdaf5] border border-[#2b59d1] text-[#2b59d1] text-[8px] font-bold flex items-center justify-center"
                       title={`${filters.categories.length} categories`}
                     >
                       {filters.categories.length}
@@ -389,7 +396,7 @@ export default function LogbookPage() {
                   )}
                   {filters.relevance !== "All" && (
                     <div
-                      className="w-6 h-6 rounded-full bg-[#EDE9E1] border border-[#D9D4C8] text-[#6B7A6F] text-[8px] font-bold flex items-center justify-center"
+                      className="w-6 h-6 rounded-full bg-[#f6f3f1] border border-[#cecac8] text-[#797776] text-[8px] font-bold flex items-center justify-center"
                       title={`Relevance: ${filters.relevance}`}
                     >
                       R
@@ -402,11 +409,11 @@ export default function LogbookPage() {
             {/* Mobile Filter Panel */}
             {mobileFiltersOpen && (
               <div className="fixed inset-0 z-40 lg:hidden">
-                <div className="absolute inset-0 bg-[#1C3A2B]/20" onClick={() => setMobileFiltersOpen(false)} aria-hidden="true" />
-                <div className="absolute left-0 top-0 bottom-0 w-72 bg-[#FAFAF8] border-r border-[#D9D4C8] p-5 overflow-y-auto" role="dialog" aria-modal="true" aria-label={t("filters.title")}>
+                <div className="absolute inset-0 bg-[#242424]/10" onClick={() => setMobileFiltersOpen(false)} aria-hidden="true" />
+                <div className="absolute left-0 top-0 bottom-0 w-72 bg-[#f6f3f1] border-r border-[#cecac8] p-5 overflow-y-auto" role="dialog" aria-modal="true" aria-label={t("filters.title")}>
                   <div className="flex justify-between items-center mb-5">
-                    <h2 className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest">{t("filters.title")}</h2>
-                    <button onClick={() => setMobileFiltersOpen(false)} aria-label={t("drawer.close")} className="text-[#6B7A6F] text-lg leading-none">×</button>
+                    <h2 className="text-[10px] text-[#797776] uppercase tracking-widest" style={{ fontFamily: "var(--font-mono)" }}>{t("filters.title")}</h2>
+                    <button onClick={() => setMobileFiltersOpen(false)} aria-label={t("drawer.close")} className="text-[#797776] text-lg leading-none hover:text-[#242424]">×</button>
                   </div>
                   <LogbookFilters
                     entries={logbookEntries}
@@ -454,7 +461,8 @@ export default function LogbookPage() {
                   )}
                   <button
                     onClick={clearAllFilters}
-                    className="text-xs text-[#9B3030] hover:text-[#7B2020] transition-colors"
+                    className="text-[11px] text-[#9b3030] hover:text-[#7a2020] transition-colors"
+                    style={{ fontFamily: "var(--font-mono)" }}
                   >
                     {t("filters.clearAll")}
                   </button>
@@ -464,7 +472,7 @@ export default function LogbookPage() {
               {/* Pinned favorites strip */}
               {pinnedEntries.length > 0 && (
                 <section aria-labelledby="favorites-label">
-                  <p id="favorites-label" className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-3">
+                  <p id="favorites-label" className="text-[10px] text-[#797776] uppercase tracking-widest mb-3" style={{ fontFamily: "var(--font-mono)" }}>
                     ★ {t("favorites.title")}
                   </p>
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -484,28 +492,32 @@ export default function LogbookPage() {
                       />
                     ))}
                   </div>
-                  <div className="border-t border-[#D9D4C8] my-6" />
+                  <div className="border-t border-[#cecac8] my-6" />
                 </section>
               )}
 
               {/* No-results state */}
               {filtered.length === 0 ? (
-                <div className="text-center py-20 text-[#6B7A6F]">
-                  <p className="text-4xl mb-3 font-light" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                <div className="text-center py-20 text-[#797776]">
+                  <p
+                    className="mb-3 font-normal text-[#242424]"
+                    style={{ fontFamily: "var(--font-serif)", fontSize: "40px", fontWeight: 400 }}
+                  >
                     {t("noResults.title")}
                   </p>
-                  <p className="text-sm mb-6">{t("noResults.body")}</p>
+                  <p className="text-sm mb-6 text-[#797776]" style={{ fontFamily: "var(--font-mono)" }}>{t("noResults.body")}</p>
                   {hasActiveFilters && (
                     <div className="space-y-3">
                       {(search || filters.module !== "All" || filters.categories.length > 0) && (
-                        <p className="text-xs text-[#6B7A6F]">
+                        <p className="text-xs text-[#797776]" style={{ fontFamily: "var(--font-mono)" }}>
                           {t("noResults.activeFilters")}{" "}
                           {[search && `"${search}"`, filters.module !== "All" && filters.module, ...filters.categories].filter(Boolean).join(", ")}
                         </p>
                       )}
                       <button
                         onClick={clearAllFilters}
-                        className="text-sm text-[#F7F5F0] bg-[#1C3A2B] hover:bg-[#3D6B52] px-6 py-2.5 rounded-full transition-colors"
+                        className="text-sm text-white bg-[#2b59d1] hover:bg-[#1e46b0] px-8 py-2.5 transition-colors"
+                        style={{ fontFamily: "var(--font-mono)", borderRadius: "100px" }}
                       >
                         {t("noResults.resetAll")}
                       </button>
@@ -552,7 +564,7 @@ export default function LogbookPage() {
       {shortcutsOpen && (
         <>
           <div
-            className="fixed inset-0 bg-[#1C3A2B]/20 backdrop-blur-[2px] z-50"
+            className="fixed inset-0 bg-[#242424]/15 backdrop-blur-[2px] z-50"
             onClick={() => setShortcutsOpen(false)}
             aria-hidden="true"
           />
@@ -560,27 +572,38 @@ export default function LogbookPage() {
             role="dialog"
             aria-modal="true"
             aria-label={t("shortcuts.title")}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-[#FAFAF8] border border-[#C8DFC5] rounded-2xl z-50 shadow-xl overflow-hidden"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-[#f6f3f1] border border-[#cecac8] z-50 overflow-hidden"
+            style={{ borderRadius: "40px" }}
           >
-            <div className="bg-[#E8F0E4] px-6 py-4 border-b border-[#C8DFC5] flex items-center justify-between">
-              <h2 className="text-sm font-medium text-[#1C3A2B]">{t("shortcuts.title")}</h2>
+            <div className="bg-[#cfdaf5] px-6 py-4 border-b border-[#cecac8] flex items-center justify-between">
+              <h2
+                className="text-sm text-[#242424]"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                {t("shortcuts.title")}
+              </h2>
               <button
                 onClick={() => setShortcutsOpen(false)}
                 aria-label={t("drawer.close")}
-                className="text-[#6B7A6F] hover:text-[#1C3A2B] text-lg leading-none"
+                className="text-[#797776] hover:text-[#242424] text-lg leading-none"
               >
                 ×
               </button>
             </div>
-            <div className="px-6 py-4 space-y-3">
+            <div className="px-6 py-5 space-y-3">
               {[
                 { key: "/", desc: t("shortcuts.focusSearch") },
                 { key: "Esc", desc: t("shortcuts.closeDrawer") },
                 { key: "?", desc: t("shortcuts.toggleShortcuts") },
               ].map(({ key, desc }) => (
                 <div key={key} className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-[#6B7A6F]">{desc}</span>
-                  <kbd className="text-[11px] font-mono text-[#1C3A2B] bg-[#EDE9E1] border border-[#D9D4C8] px-2.5 py-1 rounded-lg">{key}</kbd>
+                  <span className="text-sm text-[#4e4d4d]" style={{ fontFamily: "var(--font-mono)" }}>{desc}</span>
+                  <kbd
+                    className="text-[11px] text-[#2b59d1] bg-[#cfdaf5] border border-[#cecac8] px-2.5 py-1"
+                    style={{ fontFamily: "var(--font-mono)", borderRadius: "6px" }}
+                  >
+                    {key}
+                  </kbd>
                 </div>
               ))}
             </div>
@@ -591,29 +614,32 @@ export default function LogbookPage() {
   );
 }
 
-function StatPill({ label, value, color }: { label: string; value: number; color: string }) {
+function StatPill({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
   return (
-    <div className="flex items-center gap-1.5 shrink-0">
+    <div className="flex items-center gap-2 shrink-0">
       <span
-        className={`text-sm font-light ${color}`}
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "18px" }}
+        className={accent ? "text-[#2b59d1]" : "text-[#242424]"}
+        style={{ fontFamily: "var(--font-mono)", fontSize: "17px", fontVariantNumeric: "tabular-nums" }}
         aria-label={`${value} ${label}`}
       >
         {value}
       </span>
-      <span className="text-xs text-[#6B7A6F]">{label}</span>
+      <span className="text-[11px] text-[#797776] uppercase tracking-widest" style={{ fontFamily: "var(--font-mono)" }}>{label}</span>
     </div>
   );
 }
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs bg-[#E8F0E4] border border-[#C8DFC5] text-[#1C3A2B] px-2.5 py-1 rounded-full">
+    <span
+      className="inline-flex items-center gap-1.5 text-[11px] border border-[#cecac8] text-[#4e4d4d] px-2.5 py-1"
+      style={{ fontFamily: "var(--font-mono)", borderRadius: "9999px" }}
+    >
       {label}
       <button
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="text-[#4E7862] hover:text-[#1C3A2B] leading-none text-sm"
+        className="text-[#797776] hover:text-[#242424] leading-none text-sm"
       >
         ×
       </button>

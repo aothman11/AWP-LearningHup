@@ -12,22 +12,18 @@ interface Step {
 
 interface Phase {
   id: string;
+  eyebrow: string;   // "PHASE 01"
   title: string;
   titleAr: string;
-  color: string;       // border + header bg
-  textColor: string;
-  dotColor: string;
   steps: Step[];
 }
 
 const phases: Phase[] = [
   {
     id: "planning",
+    eyebrow: "PHASE 01",
     title: "Planning",
     titleAr: "التخطيط",
-    color: "#E8F0E4",
-    textColor: "#1C3A2B",
-    dotColor: "#1C3A2B",
     steps: [
       {
         id: "demand",
@@ -61,11 +57,9 @@ const phases: Phase[] = [
   },
   {
     id: "procurement",
+    eyebrow: "PHASE 02",
     title: "Procurement",
     titleAr: "الشراء",
-    color: "#F8EBC5",
-    textColor: "#7A5E0A",
-    dotColor: "#7A5E0A",
     steps: [
       {
         id: "pr",
@@ -99,11 +93,9 @@ const phases: Phase[] = [
   },
   {
     id: "production",
+    eyebrow: "PHASE 03",
     title: "Production",
     titleAr: "الإنتاج",
-    color: "#EDE9E1",
-    textColor: "#2A2E2B",
-    dotColor: "#3D6B52",
     steps: [
       {
         id: "order",
@@ -137,11 +129,9 @@ const phases: Phase[] = [
   },
   {
     id: "quality",
+    eyebrow: "PHASE 04",
     title: "QM Release",
     titleAr: "قرار الجودة",
-    color: "#D4EFE0",
-    textColor: "#1C3A2B",
-    dotColor: "#4E7862",
     steps: [
       {
         id: "fg-lot",
@@ -168,11 +158,9 @@ const phases: Phase[] = [
   },
   {
     id: "dispatch",
+    eyebrow: "PHASE 05",
     title: "Dispatch",
     titleAr: "الشحن",
-    color: "#EDE9E1",
-    textColor: "#2A2E2B",
-    dotColor: "#6B7A6F",
     steps: [
       {
         id: "stock-check",
@@ -199,10 +187,9 @@ const phases: Phase[] = [
   },
 ];
 
-// ─── master-data sidebar ──────────────────────────────────────────────────────
 const masterData = [
   { label: "Inspection Plans", tCodes: ["QP01", "QP02"], note: "Define what is inspected — characteristics, tolerances, and sampling." },
-  { label: "Master Inspection Characteristics", tCodes: ["QS23", "QS41"], note: "Reusable measurement definitions with limits and sampling procedures. QS23 manages characteristic master data; QS41 manages inspection methods." },
+  { label: "Master Inspection Characteristics", tCodes: ["QS23", "QS41"], note: "Reusable measurement definitions with limits and sampling procedures." },
   { label: "Routings", tCodes: ["CA01", "CA02"], note: "Define production operations and work centres. Inspection gates sit here." },
   { label: "Bills of Materials", tCodes: ["CS01", "CS02"], note: "Component lists exploded by MRP and production orders." },
   { label: "Quality Info Records", tCodes: ["QI01"], note: "Control vendor inspection at GR — certificate requirements and block rules." },
@@ -214,153 +201,393 @@ interface Props {
 }
 
 export function ProcessFlow({ onTcodeSelect }: Props) {
-  const [activeStep, setActiveStep] = useState<Step | null>(null);
+  const [activeStep, setActiveStep] = useState<{ phaseId: string; step: Step } | null>(null);
 
-  function handleTcode(tc: string) {
-    onTcodeSelect(tc);
+  function selectStep(phaseId: string, step: Step) {
+    setActiveStep((prev) =>
+      prev?.step.id === step.id ? null : { phaseId, step }
+    );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Title */}
-      <div className="bg-[#E8F0E4] border border-[#C8DFC5] rounded-2xl p-6">
-        <h2
-          className="text-5xl font-light text-[#1C3A2B] mb-1"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-        >
-          PP / QM Process Chain
+    <div style={{ fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)" }}>
+
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div style={{ marginBottom: "40px" }}>
+        <p style={{
+          fontSize: "11px",
+          fontFamily: "var(--font-mono)",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "#797776",
+          marginBottom: "8px",
+        }}>
+          End-to-End Process Chain
+        </p>
+        <h2 style={{
+          fontFamily: "var(--font-serif, 'Cormorant Garamond', Georgia, serif)",
+          fontSize: "48px",
+          fontWeight: 400,
+          letterSpacing: "-0.96px",
+          lineHeight: 1.2,
+          color: "#242424",
+          margin: 0,
+        }}>
+          PP / QM Pipeline
         </h2>
-        <p
-          className="text-sm text-[#6B7A6F] text-right mb-3"
-          style={{ fontFamily: "'Sakkal Majalla', serif", direction: "rtl" }}
-        >
+        <p style={{
+          fontFamily: "'Sakkal Majalla', serif",
+          direction: "rtl",
+          fontSize: "14px",
+          color: "#797776",
+          marginTop: "4px",
+        }}>
           سلسلة عمليات التخطيط والإنتاج وإدارة الجودة
         </p>
-        <p className="text-xs text-[#6B7A6F] leading-relaxed max-w-2xl">
-          The end-to-end process from demand signal through dispatch. Click any T-code to jump to its entry in the reference. Hover a step to read the context.
+        <p style={{
+          fontSize: "12px",
+          color: "#797776",
+          marginTop: "10px",
+          maxWidth: "560px",
+          lineHeight: 1.6,
+        }}>
+          Click any step to expand its context. Click any T-code tag to jump to its reference entry.
         </p>
       </div>
 
-      {/* Flow — horizontal phases */}
-      <div className="overflow-x-auto pb-2">
-        <div className="flex gap-4 min-w-max">
+      {/* ── Pipeline ───────────────────────────────────────────────────────── */}
+      <div style={{ overflowX: "auto", paddingBottom: "8px" }}>
+        <div style={{ display: "flex", gap: "0", minWidth: "max-content", alignItems: "flex-start" }}>
           {phases.map((phase, pi) => (
-            <div key={phase.id} className="flex items-start gap-4">
+            <div key={phase.id} style={{ display: "flex", alignItems: "flex-start" }}>
+
               {/* Phase column */}
-              <div className="w-52 shrink-0">
+              <div style={{ width: "216px", flexShrink: 0 }}>
+
                 {/* Phase header */}
-                <div
-                  className="rounded-2xl border px-4 py-2 mb-3"
-                  style={{ background: phase.color, borderColor: phase.color }}
-                >
-                  <div className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: phase.textColor }}>
-                    Phase {pi + 1}
-                  </div>
-                  <div className="text-base font-medium" style={{ color: phase.textColor, fontFamily: "'Cormorant Garamond', serif", fontSize: "20px" }}>
+                <div style={{
+                  marginBottom: "16px",
+                  paddingBottom: "12px",
+                  borderBottom: "1px solid #cecac8",
+                }}>
+                  <p style={{
+                    fontSize: "10px",
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "#797776",
+                    margin: "0 0 4px",
+                  }}>
+                    {phase.eyebrow}
+                  </p>
+                  <h3 style={{
+                    fontFamily: "var(--font-serif, 'Cormorant Garamond', Georgia, serif)",
+                    fontSize: "24px",
+                    fontWeight: 400,
+                    letterSpacing: "-0.48px",
+                    color: "#242424",
+                    margin: "0 0 2px",
+                  }}>
                     {phase.title}
-                  </div>
-                  <div className="text-xs" style={{ color: phase.textColor, opacity: 0.7, fontFamily: "'Sakkal Majalla', serif" }}>
+                  </h3>
+                  <p style={{
+                    fontFamily: "'Sakkal Majalla', serif",
+                    direction: "rtl",
+                    fontSize: "12px",
+                    color: "#797776",
+                    margin: 0,
+                  }}>
                     {phase.titleAr}
-                  </div>
+                  </p>
                 </div>
 
-                {/* Steps */}
-                <div className="space-y-2">
-                  {phase.steps.map((step, si) => (
-                    <button
-                      key={step.id}
-                      className={`w-full text-left bg-[#FAFAF8] border rounded-xl p-3 transition-all text-sm group ${
-                        activeStep?.id === step.id
-                          ? "border-[#4E7862] shadow-sm"
-                          : "border-[#D9D4C8] hover:border-[#4E7862] hover:bg-[#E8F0E4]"
-                      }`}
-                      onClick={() => setActiveStep(activeStep?.id === step.id ? null : step)}
-                    >
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span
-                          className="w-4 h-4 rounded-full text-[9px] font-bold text-white flex items-center justify-center shrink-0"
-                          style={{ background: phase.dotColor }}
-                        >
-                          {si + 1}
-                        </span>
-                        <span className="text-xs font-medium text-[#2A2E2B] leading-tight">{step.label}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 ml-6">
-                        {step.tCodes.map((tc) => (
-                          <span
-                            key={tc}
-                            role="button"
-                            tabIndex={0}
-                            onClick={(e) => { e.stopPropagation(); handleTcode(tc); }}
-                            onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); handleTcode(tc); } }}
-                            className="text-[10px] font-light text-[#1C3A2B] bg-[#E8F0E4] border border-[#C8DFC5] px-2 py-0.5 rounded-lg hover:bg-[#C8DFC5] cursor-pointer transition-colors"
-                            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "12px" }}
-                            title={`Jump to ${tc}`}
-                          >
-                            {tc}
+                {/* Step nodes */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  {phase.steps.map((step, si) => {
+                    const isActive = activeStep?.step.id === step.id;
+                    return (
+                      <button
+                        key={step.id}
+                        onClick={() => selectStep(phase.id, step)}
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          background: isActive ? "#cfdaf5" : "#f6f3f1",
+                          border: `1px solid ${isActive ? "#a0b5eb" : "#cecac8"}`,
+                          borderRadius: "12px",
+                          padding: "12px 14px",
+                          cursor: "pointer",
+                          transition: "border-color 0.15s, background 0.15s",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLButtonElement).style.borderColor = "#a0b5eb";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLButtonElement).style.borderColor = "#cecac8";
+                          }
+                        }}
+                      >
+                        {/* Step number + label */}
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginBottom: "8px" }}>
+                          <span style={{
+                            flexShrink: 0,
+                            width: "18px",
+                            height: "18px",
+                            borderRadius: "50%",
+                            background: isActive ? "#2b59d1" : "#cecac8",
+                            color: "#f6f3f1",
+                            fontSize: "9px",
+                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginTop: "1px",
+                            transition: "background 0.15s",
+                          }}>
+                            {si + 1}
                           </span>
-                        ))}
-                      </div>
-                    </button>
-                  ))}
+                          <span style={{
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            color: "#242424",
+                            lineHeight: 1.35,
+                          }}>
+                            {step.label}
+                          </span>
+                        </div>
+
+                        {/* T-code tags */}
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginLeft: "26px" }}>
+                          {step.tCodes.map((tc) => (
+                            <span
+                              key={tc}
+                              role="button"
+                              tabIndex={0}
+                              onClick={(e) => { e.stopPropagation(); onTcodeSelect(tc); }}
+                              onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onTcodeSelect(tc); } }}
+                              style={{
+                                fontSize: "10px",
+                                fontFamily: "var(--font-mono)",
+                                letterSpacing: "0.04em",
+                                color: isActive ? "#2b59d1" : "#4e4d4d",
+                                background: isActive ? "#f6f3f1" : "transparent",
+                                border: `1px solid ${isActive ? "#a0b5eb" : "#cecac8"}`,
+                                borderRadius: "9999px",
+                                padding: "2px 8px",
+                                cursor: "pointer",
+                                transition: "color 0.1s, border-color 0.1s, background 0.1s",
+                                whiteSpace: "nowrap",
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLElement).style.color = "#2b59d1";
+                                (e.currentTarget as HTMLElement).style.borderColor = "#2b59d1";
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLElement).style.color = isActive ? "#2b59d1" : "#4e4d4d";
+                                (e.currentTarget as HTMLElement).style.borderColor = isActive ? "#a0b5eb" : "#cecac8";
+                              }}
+                              title={`Jump to ${tc}`}
+                            >
+                              {tc}
+                            </span>
+                          ))}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Arrow between phases */}
+              {/* Phase connector arrow */}
               {pi < phases.length - 1 && (
-                <div className="self-center shrink-0 text-[#D9D4C8] text-2xl mt-8">→</div>
+                <div style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  paddingTop: "52px",
+                  width: "40px",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <svg width="40" height="16" viewBox="0 0 40 16" fill="none">
+                    <line x1="0" y1="8" x2="30" y2="8" stroke="#cecac8" strokeWidth="1" />
+                    <polyline points="24,3 32,8 24,13" stroke="#cecac8" strokeWidth="1" fill="none" />
+                  </svg>
+                </div>
               )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Step detail panel */}
+      {/* ── Step detail panel ──────────────────────────────────────────────── */}
       {activeStep && (
-        <div className="bg-[#FAFAF8] border border-[#4E7862] rounded-2xl p-5 flex items-start gap-4">
-          <div className="flex-1">
-            <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">Step Detail</p>
-            <h3 className="text-base font-medium text-[#1C3A2B] mb-1">{activeStep.label}</h3>
-            <p className="text-sm text-[#2A2E2B] leading-relaxed mb-3">{activeStep.note}</p>
-            <div className="flex flex-wrap gap-2">
-              {activeStep.tCodes.map((tc) => (
+        <div style={{
+          marginTop: "24px",
+          background: "#cfdaf5",
+          borderRadius: "16px",
+          padding: "24px 28px",
+          display: "flex",
+          gap: "24px",
+          alignItems: "flex-start",
+        }}>
+          <div style={{ flex: 1 }}>
+            <p style={{
+              fontSize: "10px",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "#797776",
+              margin: "0 0 6px",
+            }}>
+              {phases.find(p => p.id === activeStep.phaseId)?.eyebrow} · Step Detail
+            </p>
+            <h3 style={{
+              fontFamily: "var(--font-serif, 'Cormorant Garamond', Georgia, serif)",
+              fontSize: "28px",
+              fontWeight: 400,
+              letterSpacing: "-0.56px",
+              color: "#242424",
+              margin: "0 0 10px",
+            }}>
+              {activeStep.step.label}
+            </h3>
+            <p style={{
+              fontSize: "13px",
+              color: "#4e4d4d",
+              lineHeight: 1.65,
+              margin: "0 0 16px",
+              maxWidth: "640px",
+            }}>
+              {activeStep.step.note}
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {activeStep.step.tCodes.map((tc) => (
                 <button
                   key={tc}
-                  onClick={() => handleTcode(tc)}
-                  className="text-sm font-light text-[#1C3A2B] bg-[#E8F0E4] border border-[#C8DFC5] px-3 py-1.5 rounded-xl hover:bg-[#C8DFC5] transition-colors"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "15px" }}
+                  onClick={() => onTcodeSelect(tc)}
+                  style={{
+                    background: "#2b59d1",
+                    color: "#f6f3f1",
+                    border: "none",
+                    borderRadius: "100px",
+                    padding: "8px 20px",
+                    fontSize: "12px",
+                    fontFamily: "var(--font-mono)",
+                    letterSpacing: "0.04em",
+                    cursor: "pointer",
+                    transition: "opacity 0.15s",
+                  }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
                 >
-                  {tc} — view entry ↗
+                  {tc} ↗
                 </button>
               ))}
             </div>
           </div>
           <button
             onClick={() => setActiveStep(null)}
-            className="text-[#6B7A6F] hover:text-[#1C3A2B] text-lg leading-none shrink-0"
+            style={{
+              background: "transparent",
+              border: "1px solid #a0b5eb",
+              borderRadius: "9999px",
+              width: "32px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#4e4d4d",
+              cursor: "pointer",
+              flexShrink: 0,
+              fontSize: "16px",
+              lineHeight: 1,
+            }}
+            aria-label="Close detail"
           >
             ×
           </button>
         </div>
       )}
 
-      {/* Master Data sidebar */}
-      <section>
-        <h2 className="text-[10px] text-[#6B7A6F] uppercase tracking-widest mb-4">
-          Master Data — Prerequisites for the Entire Chain
-        </h2>
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
+      {/* ── Master Data ────────────────────────────────────────────────────── */}
+      <section style={{ marginTop: "48px" }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "20px",
+        }}>
+          <div style={{ flex: 1, height: "1px", background: "#cecac8" }} />
+          <p style={{
+            fontSize: "10px",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "#797776",
+            whiteSpace: "nowrap",
+          }}>
+            Master Data — Prerequisites for the Entire Chain
+          </p>
+          <div style={{ flex: 1, height: "1px", background: "#cecac8" }} />
+        </div>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: "12px",
+        }}>
           {masterData.map((md) => (
-            <div key={md.label} className="bg-[#FAFAF8] border border-[#D9D4C8] rounded-2xl p-4">
-              <p className="text-xs font-medium text-[#2A2E2B] mb-1">{md.label}</p>
-              <p className="text-[11px] text-[#6B7A6F] leading-relaxed mb-2">{md.note}</p>
-              <div className="flex flex-wrap gap-1.5">
+            <div
+              key={md.label}
+              style={{
+                background: "#f6f3f1",
+                border: "1px solid #cecac8",
+                borderRadius: "12px",
+                padding: "16px 18px",
+              }}
+            >
+              <p style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "#242424",
+                margin: "0 0 4px",
+              }}>
+                {md.label}
+              </p>
+              <p style={{
+                fontSize: "11px",
+                color: "#797776",
+                lineHeight: 1.55,
+                margin: "0 0 10px",
+              }}>
+                {md.note}
+              </p>
+              {/* Pipeline node tags */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                 {md.tCodes.map((tc) => (
                   <button
                     key={tc}
-                    onClick={() => handleTcode(tc)}
-                    className="text-[11px] font-light text-[#1C3A2B] bg-[#E8F0E4] border border-[#C8DFC5] px-2.5 py-0.5 rounded-lg hover:bg-[#C8DFC5] transition-colors"
-                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                    onClick={() => onTcodeSelect(tc)}
+                    style={{
+                      background: "#f6f3f1",
+                      border: "1px solid #cecac8",
+                      borderRadius: "9999px",
+                      padding: "4px 14px",
+                      fontSize: "11px",
+                      fontFamily: "var(--font-mono)",
+                      letterSpacing: "0.04em",
+                      color: "#4e4d4d",
+                      cursor: "pointer",
+                      transition: "border-color 0.1s, color 0.1s",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "#2b59d1";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#2b59d1";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = "#cecac8";
+                      (e.currentTarget as HTMLButtonElement).style.color = "#4e4d4d";
+                    }}
                   >
                     {tc} ↗
                   </button>
