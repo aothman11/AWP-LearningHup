@@ -38,7 +38,7 @@ Each item must follow this exact shape:
 
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       // Google Search grounding — searches the live web, same idea as Anthropic web_search
       tools: [{ googleSearchRetrieval: {} }],
     });
