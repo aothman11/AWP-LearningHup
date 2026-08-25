@@ -312,7 +312,7 @@ export function ResearchDrawer() {
                     : "border-transparent text-zinc-500 hover:text-zinc-300"
                 }`}
               >
-                {t === "curated" ? `📚 Curated (${ALL_UPDATES.length})` : "🌐 Live from SAP Community"}
+                {t === "curated" ? `📚 Curated (${ALL_UPDATES.length})` : "🌐 Live News"}
               </button>
             ))}
           </div>
@@ -416,7 +416,7 @@ export function ResearchDrawer() {
                       </div>
                       <h3 className="mb-1.5 text-sm font-medium text-white leading-snug">{item.title}</h3>
                       <p className="text-xs text-zinc-400 leading-relaxed">{item.summary}</p>
-                      <p className="mt-2 text-[10px] text-emerald-600">Read on SAP Community ↗</p>
+                      <p className="mt-2 text-[10px] text-emerald-600">Read full article ↗</p>
                     </a>
                   ))}
                 </div>
@@ -426,7 +426,7 @@ export function ResearchDrawer() {
                 <div className="flex flex-col items-center py-12 text-center">
                   <div className="mb-3 text-4xl opacity-30">🌐</div>
                   <p className="text-sm text-zinc-500">
-                    Pulls the latest PP/QM posts directly from SAP Community — no API key needed. Results are cached for 1 hour.
+                    Pulls the latest SAP PP/QM news from Google News — no API key needed. Results are cached for 1 hour.
                   </p>
                 </div>
               )}
@@ -439,7 +439,7 @@ export function ResearchDrawer() {
           <p className="text-[10px] text-zinc-600 leading-relaxed">
             {tab === "curated"
               ? "Curated from SAP release notes. Verify against your S/4HANA version's release note."
-              : "Live posts from SAP Community · cached 1 h · no API key required."}
+              : "Live news via Google News RSS · cached 1 h · no API key required."}
           </p>
         </div>
       </div>

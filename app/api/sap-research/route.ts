@@ -9,10 +9,10 @@ interface RSSItem {
   relevance: "high" | "medium";
 }
 
-// SAP Community public RSS feeds — no API key required
+// Google News RSS — always free, no API key, returns current SAP news
 const RSS_FEEDS = [
-  "https://community.sap.com/t5/enterprise-resource-planning-blogs-by-sap/bg-p/erp-blog-by-sap/rss",
-  "https://community.sap.com/t5/enterprise-resource-planning-blogs-by-members/bg-p/erp-blog-by-members/rss",
+  "https://news.google.com/rss/search?q=SAP+S%2F4HANA+Production+Planning+Quality+Management&hl=en-US&gl=US&ceid=US:en",
+  "https://news.google.com/rss/search?q=SAP+PP+QM+S4HANA+Fiori+2024+2025&hl=en-US&gl=US&ceid=US:en",
 ];
 
 function detectArea(text: string): "PP" | "QM" | "Integration" {
