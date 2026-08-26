@@ -1,6 +1,7 @@
 import { logbookEntries } from "@/data/qm-logbook";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { BackButton } from "./back-button";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -49,12 +50,11 @@ export default async function EntryPage({ params }: Props) {
       {/* Nav */}
       <header className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-0 z-30">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3.5 flex items-center gap-3">
-          <Link
-            href="/logbook"
-            className="text-[#6B7A6F] hover:text-[#1C3A2B] transition-colors text-sm flex items-center gap-1.5"
-          >
-            ← Back to Logbook
-          </Link>
+          <BackButton
+            fallbackHref="/logbook"
+            label="← Back"
+            className="text-[#6B7A6F] hover:text-[#1C3A2B] transition-colors text-sm flex items-center gap-1.5 cursor-pointer"
+          />
           <span className="text-[#D9D4C8]">/</span>
           <span
             className="text-[#1C3A2B] font-light"
@@ -235,9 +235,11 @@ export default async function EntryPage({ params }: Props) {
           <div className="text-xs text-[#D9D4C8]">
             ID: <code className="text-[#6B7A6F]">{entry.id}</code>
           </div>
-          <Link href="/logbook" className="text-sm text-[#4E7862] hover:text-[#1C3A2B] transition-colors">
-            ← Back to all entries
-          </Link>
+          <BackButton
+            fallbackHref="/logbook"
+            label="← Back to all entries"
+            className="text-sm text-[#4E7862] hover:text-[#1C3A2B] transition-colors cursor-pointer"
+          />
         </div>
       </main>
     </div>
