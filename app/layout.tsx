@@ -4,9 +4,9 @@ import { LangProvider } from "@/context/LangContext";
 import { ResearchDrawer } from "@/components/ResearchDrawer";
 
 export const metadata: Metadata = {
-  title: "SAP PP/QM Knowledge",
+  title: "AWP Central Learning Hub",
   description:
-    "Structured reference guide for SAP Production Planning and Quality Management T-codes — definitions, integration flows, and process context.",
+    "AWP-aligned learning hub for SAP PP/QM — role-based learning paths, T-code reference, progress tracking, and process flows for Advanced Work Packaging.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

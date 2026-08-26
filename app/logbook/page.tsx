@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { logbookEntries } from "@/data/qm-logbook";
 import type { LogbookEntry, Module, AwpRelevance } from "@/types/logbook";
 import { LogbookFilters } from "@/components/logbook/LogbookFilters";
@@ -238,6 +239,13 @@ export default function LogbookPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Hub link */}
+            <Link
+              href="/hub"
+              className="hidden sm:flex items-center gap-1.5 text-xs text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#F7F5F0] hover:bg-[#E8F0E4] px-3 py-1.5 rounded-full transition-colors"
+            >
+              ← Learning Hub
+            </Link>
             {/* AR / EN toggle */}
             <button
               onClick={toggleLang}
