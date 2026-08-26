@@ -139,7 +139,7 @@ export default function HubPage() {
             className="text-4xl sm:text-5xl font-light leading-tight mb-4 max-w-2xl"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            Your structured path to AWP mastery in SAP PP/QM
+            Stop guessing T-codes. Start knowing them.
           </h2>
           <p className="text-[#A8C4A8] text-sm sm:text-base max-w-xl leading-relaxed mb-8">
             Role-based learning paths, curated T-code reference, and progress tracking —
