@@ -156,6 +156,67 @@ export const translations = {
   // Process flow
   "flow.clickToOpen": { EN: "Click to view details", AR: "انقر لعرض التفاصيل" },
 
+  // Hub tabs
+  "hub.tabs.tcodes":    { EN: "T-Codes",       AR: "رموز المعاملات" },
+  "hub.tabs.critical":  { EN: "AWP Critical",  AR: "الأولويات الحرجة" },
+  "hub.tabs.processes": { EN: "Processes",     AR: "العمليات" },
+  "hub.tabs.paths":     { EN: "Learning Paths",AR: "مسارات التعلم" },
+  "hub.tabs.completed": { EN: "Completed",     AR: "المكتملة" },
+
+  // Process onboarding — tab header
+  "proc.heading":        { EN: "Choose a Process",                     AR: "اختر عملية" },
+  "proc.subheading":     { EN: "Role-based end-to-end SAP workflows — step by step.", AR: "سير عمل SAP الشاملة حسب الدور — خطوة بخطوة." },
+  "proc.step1":          { EN: "STEP 1",                               AR: "الخطوة 1" },
+
+  // Process cards
+  "proc.filter.all":    { EN: "All",            AR: "الكل" },
+  "proc.steps":         { EN: "steps",          AR: "خطوات" },
+  "proc.start":         { EN: "Start",          AR: "ابدأ" },
+  "proc.review":        { EN: "Review",         AR: "مراجعة" },
+  "proc.completed":     { EN: "Completed",      AR: "مكتملة" },
+  "proc.search.placeholder": {
+    EN: "Search processes or T-codes…",
+    AR: "ابحث عن العمليات أو رموز T-Code…",
+  },
+  "proc.noResults.title": { EN: "No processes found.", AR: "لم يتم العثور على عمليات." },
+  "proc.noResults.body":  { EN: "Try a different search.", AR: "جرب بحثاً مختلفاً." },
+  "proc.foundInStep":     { EN: "Found in Step", AR: "وُجد في الخطوة" },
+
+  // Process detail view
+  "proc.detail.back":        { EN: "← Back",          AR: "← العودة" },
+  "proc.detail.stepOf":      { EN: "of",              AR: "من" },
+  "proc.detail.step":        { EN: "Step",            AR: "الخطوة" },
+  "proc.detail.role":        { EN: "Role",            AR: "الدور" },
+  "proc.detail.whatToDo":    { EN: "What to do",      AR: "ماذا تفعل" },
+  "proc.detail.whatSAPDoes": { EN: "What SAP does",   AR: "ما يفعله SAP" },
+  "proc.detail.output":      { EN: "Expected output", AR: "المخرج المتوقع" },
+  "proc.detail.markDone":    { EN: "✓ Mark as Done",  AR: "✓ تحديد كمكتمل" },
+  "proc.detail.markUndone":  { EN: "Undo",            AR: "تراجع" },
+  "proc.detail.yes":         { EN: "Yes →",           AR: "نعم →" },
+  "proc.detail.no":          { EN: "No →",            AR: "لا →" },
+  "proc.detail.guided":      { EN: "Guided Mode",     AR: "الوضع الإرشادي" },
+  "proc.detail.next":        { EN: "Next Step →",     AR: "الخطوة التالية →" },
+  "proc.detail.decision":    { EN: "Decision Point",  AR: "نقطة قرار" },
+
+  // Chat
+  "proc.chat.button":   { EN: "Ask about this process", AR: "اسأل عن هذه العملية" },
+  "proc.chat.send":     { EN: "Send",    AR: "إرسال" },
+  "proc.chat.clear":    { EN: "Clear",   AR: "مسح" },
+  "proc.chat.close":    { EN: "Close",   AR: "إغلاق" },
+  "proc.chat.placeholder": {
+    EN: "Ask about any step or T-code…",
+    AR: "اسأل عن أي خطوة أو رمز T-Code…",
+  },
+  "proc.chat.error":    {
+    EN: "Could not reach the assistant. Please try again.",
+    AR: "تعذر الوصول إلى المساعد. يرجى المحاولة مرة أخرى.",
+  },
+  "proc.chat.title":    { EN: "Process Assistant", AR: "مساعد العمليات" },
+
+  // Completed tab
+  "completed.empty.title": { EN: "Nothing completed yet",  AR: "لم يكتمل شيء بعد" },
+  "completed.empty.body":  { EN: "Mark steps as done in a process to see it here.", AR: "قم بتحديد الخطوات كمكتملة في عملية لتظهر هنا." },
+
   // General
   "general.sapDocs": { EN: "SAP Docs", AR: "وثائق SAP" },
   "general.back": { EN: "Back to Logbook", AR: "العودة إلى السجل" },
