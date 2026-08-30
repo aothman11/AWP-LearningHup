@@ -223,11 +223,7 @@ async function drawCertificate(
   });
 
   // ── 1. Background ────────────────────────────────────────────────────────
-  // Subtle radial vignette (cream centre → very slightly warm edge)
-  const bg = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, 820);
-  bg.addColorStop(0,   "#FAFAF8");
-  bg.addColorStop(1,   "#F0EDE6");
-  ctx.fillStyle = bg;
+  ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, W, H);
 
   // ── 2. Outer border (dark green) ─────────────────────────────────────────
@@ -544,10 +540,30 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
 <title>Al-Watania Poultry Certificate – ${title}</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 100%; height: 100%; background: #fff; }
-  img { display: block; width: 100%; height: auto; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #fff;
+  }
+  img {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+  }
   @page { size: A4 landscape; margin: 0; }
-  @media print { img { width: 100%; page-break-inside: avoid; } }
+  @media print {
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    img {
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      object-fit: contain;
+      page-break-after: avoid;
+      page-break-before: avoid;
+      page-break-inside: avoid;
+    }
+  }
 </style>
 </head><body>
 <img src="${dataURL}" alt="Al-Watania Poultry Certificate" />
