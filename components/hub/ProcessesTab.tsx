@@ -268,7 +268,7 @@ export function ProcessesTab() {
         {/* Chat FAB */}
         <button
           onClick={() => setChatOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#1C3A2B] text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg hover:bg-[#2D5A42] transition-colors"
+          className="fixed bottom-20 right-6 z-40 flex items-center gap-2 bg-[#1C3A2B] text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg hover:bg-[#2D5A42] transition-colors"
         >
           💬 {t("proc.chat.button")}
         </button>
