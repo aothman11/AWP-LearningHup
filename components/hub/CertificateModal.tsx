@@ -328,7 +328,7 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-w-[min(96vw,720px)] w-full"
+        className="bg-white rounded-2xl shadow-2xl flex flex-col max-w-[min(96vw,720px)] w-full max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -367,7 +367,7 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
         </div>
 
         {/* Certificate preview */}
-        <div className="px-5 pb-3 overflow-auto shrink-0">
+        <div className="px-5 pb-3 overflow-y-auto flex-1 min-h-0">
           <div className="rounded-xl overflow-hidden border border-[#EDE9E1] shadow-sm">
             <canvas
               ref={canvasRef}
