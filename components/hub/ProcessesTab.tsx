@@ -343,7 +343,7 @@ export function ProcessesTab() {
         ))}
       </div>
 
-      {/* Cards */}
+      {/* Cards — pb-36 clears the two stacked FABs (chat + S/4HANA drawer) */}
       {visibleProcesses.length === 0 ? (
         <div className="text-center py-16">
           {/* Simple AWP-green empty state illustration */}
@@ -355,7 +355,7 @@ export function ProcessesTab() {
           <p className="text-sm text-[#6B7A6F] mt-1">{t("proc.noResults.body")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-36">
           {visibleProcesses.map((p) => (
             <ProcessCard
               key={p.id}
@@ -373,10 +373,10 @@ export function ProcessesTab() {
         </div>
       )}
 
-      {/* Chat FAB (on grid view too) */}
+      {/* Chat FAB (on grid view too) — sits above the S/4HANA updates drawer button */}
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#1C3A2B] text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg hover:bg-[#2D5A42] transition-colors"
+        className="fixed bottom-20 right-6 z-40 flex items-center gap-2 bg-[#1C3A2B] text-white text-sm font-medium px-4 py-3 rounded-full shadow-lg hover:bg-[#2D5A42] transition-colors"
       >
         💬 {t("proc.chat.button")}
       </button>
