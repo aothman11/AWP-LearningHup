@@ -95,8 +95,7 @@ function drawCertificate(
   const s = DPR; // scale factor
   canvas.width = W * s;
   canvas.height = H * s;
-  canvas.style.width = `${W}px`;
-  canvas.style.height = `${H}px`;
+  // Let CSS handle display scaling (width:100% height:auto) — do not set inline style here
 
   const ctx = canvas.getContext("2d")!;
   ctx.scale(s, s);
