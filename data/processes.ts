@@ -544,9 +544,6 @@ export const processes: Process[] = [
       },
     ],
   },
-];
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
   // ── 6. Hatchery Business Process ─────────────────────────────────────────
   {
@@ -872,6 +869,9 @@ export const processes: Process[] = [
       },
     ],
   },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Total step count for a process */
 export function processStepCount(p: Process): number {
