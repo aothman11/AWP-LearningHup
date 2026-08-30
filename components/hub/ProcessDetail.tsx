@@ -243,6 +243,8 @@ export function ProcessDetail({ process: p, progress, lang, onToggleStep, onBack
 
   const [guidedMode, setGuidedMode] = useState(false);
   const [guidedCurrent, setGuidedCurrent] = useState(initialStep ?? currentStepNumber ?? 1);
+  const [chartOpen, setChartOpen] = useState(false);
+  const [chartPage, setChartPage] = useState(0);
 
   const stepRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const currentRef = useRef<HTMLDivElement | null>(null);
@@ -273,8 +275,84 @@ export function ProcessDetail({ process: p, progress, lang, onToggleStep, onBack
     if (nextStep) setGuidedCurrent(nextStep.stepNumber);
   }
 
+  const charts = p.chartImages ?? [];
+
   return (
     <div className="max-w-2xl mx-auto pb-24">
+      {/* Chart Lightbox */}
+      {chartOpen && charts.length > 0 && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={() => setChartOpen(false)}
+        >
+          <div
+            className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-[95vw] max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Lightbox header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#D9D4C8] shrink-0">
+              <span className="text-sm font-semibold text-[#1C3A2B]">
+                📊 {lang === "AR" ? p.titleAR : p.titleEN}
+                {charts.length > 1 && (
+                  <span className="ml-2 text-xs text-[#6B7A6F] font-normal">
+                    {chartPage + 1} / {charts.length}
+                  </span>
+                )}
+              </span>
+              <button
+                onClick={() => setChartOpen(false)}
+                className="text-[#6B7A6F] hover:text-[#1C3A2B] text-xl leading-none transition-colors"
+                aria-label="Close chart"
+              >
+                ×
+              </button>
+            </div>
+            {/* Image */}
+            <div className="overflow-auto flex-1">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={charts[chartPage]}
+                alt={`Process chart page ${chartPage + 1}`}
+                className="block max-w-full"
+                style={{ minWidth: "320px" }}
+              />
+            </div>
+            {/* Pagination */}
+            {charts.length > 1 && (
+              <div className="flex items-center justify-center gap-3 px-4 py-3 border-t border-[#D9D4C8] shrink-0">
+                <button
+                  onClick={() => setChartPage((p) => Math.max(0, p - 1))}
+                  disabled={chartPage === 0}
+                  className="text-sm px-4 py-1.5 rounded-full border transition-colors disabled:opacity-30"
+                  style={{ borderColor: "#D9D4C8", color: "#1C3A2B" }}
+                >
+                  ← {lang === "AR" ? "السابق" : "Prev"}
+                </button>
+                <div className="flex gap-1.5">
+                  {charts.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setChartPage(i)}
+                      className="w-2 h-2 rounded-full transition-colors"
+                      style={{ background: i === chartPage ? "#1C3A2B" : "#D9D4C8" }}
+                      aria-label={`Page ${i + 1}`}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={() => setChartPage((p) => Math.min(charts.length - 1, p + 1))}
+                  disabled={chartPage === charts.length - 1}
+                  className="text-sm px-4 py-1.5 rounded-full border transition-colors disabled:opacity-30"
+                  style={{ borderColor: "#D9D4C8", color: "#1C3A2B" }}
+                >
+                  {lang === "AR" ? "التالي" : "Next"} →
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button
@@ -283,19 +361,31 @@ export function ProcessDetail({ process: p, progress, lang, onToggleStep, onBack
         >
           {t("proc.detail.back")}
         </button>
-        {/* Guided mode toggle */}
-        <button
-          onClick={() => setGuidedMode((v) => !v)}
-          className="flex items-center gap-2 text-xs border px-3 py-1.5 rounded-full transition-colors"
-          style={
-            guidedMode
-              ? { background: "#1C3A2B", color: "white", borderColor: "#1C3A2B" }
-              : { background: "#FAFAF8", color: "#6B7A6F", borderColor: "#D9D4C8" }
-          }
-        >
-          <span>{guidedMode ? "◉" : "○"}</span>
-          {t("proc.detail.guided")}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* View Chart button */}
+          {charts.length > 0 && (
+            <button
+              onClick={() => { setChartOpen(true); setChartPage(0); }}
+              className="flex items-center gap-1.5 text-xs border px-3 py-1.5 rounded-full transition-colors"
+              style={{ background: "#FAFAF8", color: "#1C3A2B", borderColor: "#D9D4C8" }}
+            >
+              📊 {lang === "AR" ? "عرض المخطط" : "View Chart"}
+            </button>
+          )}
+          {/* Guided mode toggle */}
+          <button
+            onClick={() => setGuidedMode((v) => !v)}
+            className="flex items-center gap-2 text-xs border px-3 py-1.5 rounded-full transition-colors"
+            style={
+              guidedMode
+                ? { background: "#1C3A2B", color: "white", borderColor: "#1C3A2B" }
+                : { background: "#FAFAF8", color: "#6B7A6F", borderColor: "#D9D4C8" }
+            }
+          >
+            <span>{guidedMode ? "◉" : "○"}</span>
+            {t("proc.detail.guided")}
+          </button>
+        </div>
       </div>
 
       {/* Process title */}

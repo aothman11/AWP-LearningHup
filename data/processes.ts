@@ -37,6 +37,8 @@ export interface Process {
   module: "PP" | "QM";
   roles: string[];
   steps: ProcessStep[];
+  /** Paths relative to /public — shown in the chart lightbox */
+  chartImages?: string[];
 }
 
 // ─── Process Data ─────────────────────────────────────────────────────────────
@@ -55,6 +57,11 @@ export const processes: Process[] = [
       "إنشاء أمر الإنتاج وإصداره وتأكيده وإغلاقه. يغطي من CO01 إلى TECO.",
     module: "PP",
     roles: ["PP Planner", "Production Supervisor"],
+    chartImages: [
+      "/process-charts/production-process-sap.png",
+      "/process-charts/sap-production-p1.png",
+      "/process-charts/sap-production-p2.png",
+    ],
     steps: [
       {
         id: "pol-1",
@@ -235,6 +242,7 @@ export const processes: Process[] = [
       "ترحيل حركات البضائع مقابل أوامر الإنتاج وأوامر الشراء باستخدام MIGO.",
     module: "PP",
     roles: ["Warehouse", "PP Planner"],
+    chartImages: ["/process-charts/processing-workflow.png"],
     steps: [
       // TODO: populate with full AWP step data from process PDFs
       {
@@ -313,6 +321,7 @@ export const processes: Process[] = [
       "تنفيذ MRP وقراءة قائمة المخزون والمتطلبات ومعالجة رسائل الاستثناء.",
     module: "PP",
     roles: ["PP Planner"],
+    chartImages: ["/process-charts/supply-chain.png"],
     steps: [
       // TODO: populate with full AWP step data from process PDFs
       {
@@ -391,6 +400,7 @@ export const processes: Process[] = [
       "من إنشاء دفعة الفحص إلى تسجيل النتائج وقرار الاستخدام في QA32.",
     module: "QM",
     roles: ["QM Inspector"],
+    chartImages: ["/process-charts/rem-confirmation.png"],
     steps: [
       // TODO: populate with full AWP step data from process PDFs
       {
@@ -469,6 +479,7 @@ export const processes: Process[] = [
       "صيانة ترتيبات الحصص لإيداعات مزارع الدجاج اللاحم لتغذية تخطيط SAP.",
     module: "PP",
     roles: ["PP Planner", "Farm Coordinator"],
+    chartImages: ["/process-charts/gp-to-processing.png"],
     steps: [
       // TODO: populate with full AWP step data from process PDFs
       {
@@ -536,6 +547,331 @@ export const processes: Process[] = [
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+  // ── 6. Hatchery Business Process ─────────────────────────────────────────
+  {
+    id: "hatchery-process",
+    icon: "🐣",
+    duration: "30 min",
+    titleEN: "Hatchery Business Process",
+    titleAR: "عملية المفرخة",
+    descriptionEN:
+      "Egg collection from parent farms, grading, setting, candling, hatching, and DOC delivery.",
+    descriptionAR:
+      "جمع البيض من مزارع الأمهات والتدريج والتحضين والشمعنة والتفريخ وتسليم كتاكيت يوم التفريخ.",
+    module: "PP",
+    roles: ["Hatchery Responsible", "QM Inspector"],
+    chartImages: ["/process-charts/hatchery-process.png"],
+    steps: [
+      {
+        id: "hatch-1",
+        stepNumber: 1,
+        titleEN: "Receive Hatching Eggs from Parent Farm",
+        titleAR: "استلام بيض التفريخ من مزرعة الأمهات",
+        tCode: "MIGO",
+        role: "Hatchery Responsible",
+        whatToDoEN:
+          "Receive the hatching eggs delivery from the parent farm grading station. Post a Goods Receipt (A01) in MIGO against the production order for hatching eggs. Record the batch number, quantity, and date of lay. Assign the hatchery trolley number for tracking.",
+        whatToDoAR:
+          "استلم تسليم بيض التفريخ من محطة تدريج مزرعة الأمهات. ارحّل استلام بضاعة (A01) في MIGO مقابل أمر الإنتاج لبيض التفريخ. سجّل رقم الدفعة والكمية وتاريخ البيض. خصّص رقم عربة المفرخة للتتبع.",
+        whatSAPDoesEN:
+          "Creates a material document for the eggs GR. Updates stock of hatching eggs in the hatchery plant. Links the batch to the parent flock production order for full traceability.",
+        whatSAPDoesAR:
+          "ينشئ مستند مادة لاستلام البيض. يحدّث مخزون بيض التفريخ في مصنع المفرخة. يربط الدفعة بأمر إنتاج قطيع الأمهات لضمان التتبع الكامل.",
+        expectedOutputEN:
+          "Material document created. Hatching egg stock updated. Batch visible in MB52 with parent flock batch classification.",
+        expectedOutputAR:
+          "تم إنشاء مستند المادة. مخزون بيض التفريخ محدَّث. الدفعة مرئية في MB52 مع تصنيف دفعة قطيع الأمهات.",
+      },
+      {
+        id: "hatch-2",
+        stepNumber: 2,
+        titleEN: "Candling on Day 10",
+        titleAR: "الشمعنة في اليوم العاشر",
+        tCode: "QA32",
+        role: "QM Inspector",
+        whatToDoEN:
+          "On day 10 after setting, perform candling to check embryo development. Record QM inspection results in QA32: count fertile, infertile, dead-in-shell, and cracked eggs. Record the sample candling results. Remove infertile and dead eggs from setter.",
+        whatToDoAR:
+          "في اليوم العاشر بعد التحضين، نفّذ الشمعنة للتحقق من نمو الجنين. سجّل نتائج فحص QM في QA32: عدّ البيض الخصيب وغير الخصيب والميت في القشرة والمكسور. سجّل نتائج الشمعنة العينية. أزل البيض غير الخصيب والميت من المحضنة.",
+        whatSAPDoesEN:
+          "Records candling results against the inspection lot for the hatching egg batch. Updates quality statistics. Rejected eggs quantity is posted as scrap via MIGO.",
+        whatSAPDoesAR:
+          "يسجّل نتائج الشمعنة مقابل دفعة الفحص لدفعة بيض التفريخ. يحدّث إحصائيات الجودة. كمية البيض المرفوض تُرحَّل كخردة عبر MIGO.",
+        expectedOutputEN:
+          "Candling results recorded. Fertility rate calculated. Infertile eggs removed. Setter loaded with verified fertile eggs for transfer to hatcher after 18–18.5 days.",
+        expectedOutputAR:
+          "تم تسجيل نتائج الشمعنة. تم احتساب معدل الخصوبة. تم إزالة البيض غير الخصيب. المحضنة محمّلة بالبيض الخصيب الموثّق للنقل إلى الفقّاسة بعد 18-18.5 يوماً.",
+      },
+      {
+        id: "hatch-3",
+        stepNumber: 3,
+        titleEN: "Transfer to Hatcher & Hatch-Out GR",
+        titleAR: "النقل إلى الفقّاسة واستلام التفريخ",
+        tCode: "MIGO",
+        role: "Hatchery Responsible",
+        whatToDoEN:
+          "After 18–18.5 days in the setter, transfer eggs to the hatcher. After 2.5–3 days, perform hatch-out. Grade DOC (day-old chicks): vaccinate, sort, and count. Post Goods Receipt for DOC production order. Post Goods Issue for by-products (rejected eggs, cracked eggs).",
+        whatToDoAR:
+          "بعد 18-18.5 يوماً في المحضنة، انقل البيض إلى الفقّاسة. بعد 2.5-3 أيام، نفّذ التفريخ. درّج الكتاكيت (كتاكيت يوم التفريخ): التطعيم والفرز والعد. ارحّل استلام البضاعة لأمر إنتاج الكتاكيت. ارحّل إصدار البضاعة للمنتجات الثانوية (البيض المرفوض والمكسور).",
+        whatSAPDoesEN:
+          "Creates GR material document for DOC. Updates DOC stock for transfer to broiler or parent farms. Posts by-product movements. Closes the hatching egg production order. Generates hatchability statistics.",
+        whatSAPDoesAR:
+          "ينشئ مستند مادة استلام البضاعة للكتاكيت. يحدّث مخزون الكتاكيت للنقل إلى مزارع الدجاج اللاحم أو الأمهات. يرحّل حركات المنتجات الثانوية. يُغلق أمر إنتاج بيض التفريخ. يُولّد إحصائيات قابلية التفريخ.",
+        expectedOutputEN:
+          "DOC stock created in system. Hatchability % recorded. By-products posted. Production order for hatching eggs closed (DLV/TECO). DOC ready for placement at farms.",
+        expectedOutputAR:
+          "مخزون الكتاكيت تم إنشاؤه في النظام. تم تسجيل نسبة قابلية التفريخ. تم ترحيل المنتجات الثانوية. أمر إنتاج بيض التفريخ مغلق (DLV/TECO). الكتاكيت جاهزة للتوزيع على المزارع.",
+      },
+    ],
+  },
+
+  // ── 7. Slaughterhouse & Processing ───────────────────────────────────────
+  {
+    id: "slaughterhouse-process",
+    icon: "🏪",
+    duration: "50 min",
+    titleEN: "Slaughterhouse & Processing",
+    titleAR: "عملية المسلخ والتصنيع",
+    descriptionEN:
+      "Receive live birds, process through slaughter line, grade and pack finished product using REM.",
+    descriptionAR:
+      "استلام الطيور الحية والمعالجة عبر خط الذبح وتدريج وتعبئة المنتج النهائي باستخدام REM.",
+    module: "PP",
+    roles: ["Processing Responsible", "Production Supervisor"],
+    chartImages: [
+      "/process-charts/slaughterhouse-process-p1.png",
+      "/process-charts/slaughterhouse-process-p2.png",
+      "/process-charts/processing-workflow.png",
+    ],
+    steps: [
+      {
+        id: "sltr-1",
+        stepNumber: 1,
+        titleEN: "Receive Live Birds (Truck Unloading)",
+        titleAR: "استلام الطيور الحية (تفريغ الشاحنة)",
+        tCode: "MIGO",
+        role: "Processing Responsible",
+        whatToDoEN:
+          "Receive the live bird truck at the plant. Unload crates and leave boxes for 30 minutes after unloading. Transfer box counts to the GP system for tracking. Post Goods Receipt for live birds against the production order in MIGO (movement type 101).",
+        whatToDoAR:
+          "استقبل شاحنة الطيور الحية في المصنع. فرّغ الأقفاص واترك الصناديق لمدة 30 دقيقة بعد التفريغ. انقل عدد الصناديق إلى نظام GP للتتبع. ارحّل استلام البضاعة للطيور الحية مقابل أمر الإنتاج في MIGO (نوع الحركة 101).",
+        whatSAPDoesEN:
+          "Creates a material document for live bird receipt. Updates live bird stock. Links the batch to the broiler farm placement for full supply chain traceability.",
+        whatSAPDoesAR:
+          "ينشئ مستند مادة لاستلام الطيور الحية. يحدّث مخزون الطيور الحية. يربط الدفعة بإيداع مزرعة الدجاج اللاحم لضمان التتبع الكامل لسلسلة التوريد.",
+        expectedOutputEN:
+          "Live bird GR posted. Material document created. Bird count and weight recorded. Production order goods receipt confirmed.",
+        expectedOutputAR:
+          "تم ترحيل استلام الطيور الحية. مستند المادة تم إنشاؤه. تم تسجيل عدد الطيور والوزن. تم تأكيد استلام البضاعة لأمر الإنتاج.",
+      },
+      {
+        id: "sltr-2",
+        stepNumber: 2,
+        titleEN: "Slaughter Line Processing",
+        titleAR: "معالجة خط الذبح",
+        tCode: "CO11N",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Birds proceed through the slaughter line: hanging → stunning (55 sec) → slaughtering (22 sec) → bleeding (3:30 min) → scalding (1:55 min) → de-feathering → evisceration → chilling → weighing → grading (Grade A / Grade C). Record production confirmation in CO11N for each production version.",
+        whatToDoAR:
+          "تمر الطيور عبر خط الذبح: التعليق → التخدير (55 ثانية) → الذبح (22 ثانية) → النزيف (3:30 دقيقة) → السلق (1:55 دقيقة) → نزع الريش → تنظيف الأحشاء → التبريد → الوزن → التدريج (الدرجة A / الدرجة C). سجّل تأكيد الإنتاج في CO11N لكل إصدار إنتاجي.",
+        whatSAPDoesEN:
+          "Records the activity confirmation for the slaughter order. Updates WIP quantities. Triggers goods receipt for finished product. Links yield data to the production order for costing.",
+        whatSAPDoesAR:
+          "يسجّل تأكيد النشاط لأمر الذبح. يحدّث كميات العمل قيد التنفيذ. يُشغّل استلام البضاعة للمنتج النهائي. يربط بيانات المحصول بأمر الإنتاج للتكلفة.",
+        expectedOutputEN:
+          "Activity confirmation posted. WIP updated. Graded output quantities recorded (Grade A whole bird, Grade C). Ready for assembly backflush in REM.",
+        expectedOutputAR:
+          "تم ترحيل تأكيد النشاط. تم تحديث العمل قيد التنفيذ. تم تسجيل كميات المخرجات المدرّجة (الدرجة A دجاجة كاملة، الدرجة C). جاهز لتنفيذ الترحيل العكسي في REM.",
+      },
+      {
+        id: "sltr-3",
+        stepNumber: 3,
+        titleEN: "REM Assembly Backflush (MFBF)",
+        titleAR: "الترحيل العكسي لتجميع REM (MFBF)",
+        tCode: "MFBF",
+        role: "Processing Responsible",
+        whatToDoEN:
+          "Navigate to MFBF. Select posting date and Confirmation Type (Assembly Backflush). Enter Material (e.g. 920 — whole grade fresh), Plant (1100), Production Version (120). The batch appears automatically. Post assembly backflush for finished product (GR: increases stock 930) and consume the live bird input (GI: movement 261). Also post co-products and by-products (gizzard 507, feather 504, heart 508, liver 511, feet 514, blood 517).",
+        whatToDoAR:
+          "انتقل إلى MFBF. حدد تاريخ الترحيل ونوع التأكيد (الترحيل العكسي للتجميع). أدخل المادة (مثل 920 — دجاجة كاملة طازجة) والمصنع (1100) وإصدار الإنتاج (120). تظهر الدفعة تلقائياً. ارحّل الترحيل العكسي للتجميع للمنتج النهائي (استلام البضاعة: يزيد المخزون 930) واستهلاك مدخلات الطيور الحية (إصدار البضاعة: الحركة 261). كذلك ارحّل المنتجات المشتركة والثانوية (الحوصلة 507، الريش 504، القلب 508، الكبد 511، القدم 514، الدم 517).",
+        whatSAPDoesEN:
+          "Posts the repetitive manufacturing backflush. Simultaneously creates GR for finished goods and GI for all consumed components. Updates all co-product and by-product stock balances. Closes the production order quantity for the period.",
+        whatSAPDoesAR:
+          "يرحّل الترحيل العكسي للتصنيع التكراري. يُنشئ في آنٍ واحد استلام البضاعة للمنتجات النهائية وإصدار البضاعة لجميع المكوّنات المستهلكة. يحدّث أرصدة مخزون جميع المنتجات المشتركة والثانوية. يُغلق كمية أمر الإنتاج للفترة.",
+        expectedOutputEN:
+          "Finished product stock increased (material 930). All by-products posted (507, 504, 508, 511, 514, 517). Live bird consumption confirmed (mvt 261). Production order quantity fulfilled.",
+        expectedOutputAR:
+          "مخزون المنتج النهائي ازداد (المادة 930). تم ترحيل جميع المنتجات الثانوية (507، 504، 508، 511، 514، 517). تأكيد استهلاك الطيور الحية (الحركة 261). كمية أمر الإنتاج مستوفاة.",
+      },
+    ],
+  },
+
+  // ── 8. C.Layer (Commercial Layer) Business Process ────────────────────────
+  {
+    id: "clayer-process",
+    icon: "🥚",
+    duration: "60 min",
+    titleEN: "Commercial Layer Business Process",
+    titleAR: "عملية الدجاج البياض التجاري",
+    descriptionEN:
+      "Full lifecycle: rearing, laying, egg collection, grading, packing, and SAP production orders.",
+    descriptionAR:
+      "الدورة الكاملة: التربية والإنتاج وجمع البيض والتدريج والتعبئة وأوامر إنتاج SAP.",
+    module: "PP",
+    roles: ["C.Layer Responsible", "Production Supervisor", "QM Inspector"],
+    chartImages: [
+      "/process-charts/clayer-business-process-p1.png",
+      "/process-charts/clayer-business-process-p2.png",
+      "/process-charts/clayer-business-process-p3.png",
+      "/process-charts/clayer-business-process-p4.png",
+    ],
+    steps: [
+      {
+        id: "clayer-1",
+        stepNumber: 1,
+        titleEN: "Receive Day-Old Chicks (DOC) for Rearing",
+        titleAR: "استلام كتاكيت يوم التفريخ للتربية",
+        tCode: "MIGO",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Clean and disinfect rearing farm/houses (scraping and dry cleaning). Receive day-old chicks via Goods Receipt in MIGO against the rearing production order. Record DOC quantity, batch, and placement date. Begin rearing phase: feeding, watering, medication, and vaccination programme up to 16–17 weeks.",
+        whatToDoAR:
+          "نظّف وعقّم مزارع/منازل التربية (الكشط والتنظيف الجاف). استلم كتاكيت يوم التفريخ عبر استلام البضاعة في MIGO مقابل أمر إنتاج التربية. سجّل كمية الكتاكيت والدفعة وتاريخ التوزيع. ابدأ مرحلة التربية: برامج التغذية والسقاية والدواء والتطعيم حتى 16-17 أسبوعاً.",
+        whatSAPDoesEN:
+          "Posts the DOC receipt on the rearing production order. Starts the production order clock. Enables daily activity confirmations for feed, water, medication, and vaccination costs.",
+        whatSAPDoesAR:
+          "يرحّل استلام الكتاكيت على أمر إنتاج التربية. يبدأ مؤقت أمر الإنتاج. يتيح تأكيدات النشاط اليومية لتكاليف العلف والسقاية والدواء والتطعيم.",
+        expectedOutputEN:
+          "DOC GR posted on rearing order. Batch created. Daily confirmation structure active for the rearing period.",
+        expectedOutputAR:
+          "تم ترحيل استلام الكتاكيت على أمر التربية. تم إنشاء الدفعة. هيكل التأكيد اليومي نشط لفترة التربية.",
+      },
+      {
+        id: "clayer-2",
+        stepNumber: 2,
+        titleEN: "Transfer Pullets to Laying Farm",
+        titleAR: "نقل الدجاجات البكر إلى مزرعة الإنتاج",
+        tCode: "MIGO",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "At 16–17 weeks, prepare for transfer. Clean and disinfect laying farm/houses. Post Goods Issue (by-product) for pullets (64WK equivalent) from the rearing order. Post Goods Receipt for pullets at the laying farm order. Begin laying phase management (feeding, watering, medication, vaccination up to depletion age 79–100 weeks).",
+        whatToDoAR:
+          "عند 16-17 أسبوعاً، استعد للنقل. نظّف وعقّم مزارع/منازل الإنتاج. ارحّل إصدار البضاعة (منتج ثانوي) للدجاجات البكر من أمر التربية. ارحّل استلام البضاعة للدجاجات البكر على أمر مزرعة الإنتاج. ابدأ إدارة مرحلة الإنتاج (تغذية، سقاية، دواء، تطعيم حتى سن الاستنزاف 79-100 أسبوع).",
+        whatSAPDoesEN:
+          "Posts the GI/GR transfer movement between rearing and laying orders. Closes the rearing production order (DLV/TECO). Activates the laying production order for daily confirmations.",
+        whatSAPDoesAR:
+          "يرحّل حركة نقل إصدار/استلام البضاعة بين أوامر التربية والإنتاج. يُغلق أمر إنتاج التربية (DLV/TECO). يُفعّل أمر إنتاج الإنتاج للتأكيدات اليومية.",
+        expectedOutputEN:
+          "Transfer movement posted. Rearing order closed. Laying order active. Pullet batch traceable to the laying farm.",
+        expectedOutputAR:
+          "تم ترحيل حركة النقل. أمر التربية مغلق. أمر الإنتاج نشط. دفعة الدجاجات البكر قابلة للتتبع إلى مزرعة الإنتاج.",
+      },
+      {
+        id: "clayer-3",
+        stepNumber: 3,
+        titleEN: "Egg Collection, Grading & Packing",
+        titleAR: "جمع البيض والتدريج والتعبئة",
+        tCode: "CO11N",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Collect eggs daily. Separate thin-shell, broken, and dirty eggs. Send to automatic grading, candling, and washing machine. Grade eggs into sizes. Print trays, pack in cartons, stamp date, seal cartons. Confirm egg production in CO11N (activity confirmation). Post finished product GR for graded eggs.",
+        whatToDoAR:
+          "اجمع البيض يومياً. افصل البيض رقيق القشرة والمكسور والملوّث. أرسله إلى آلة التدريج التلقائي والشمعنة والغسيل. درّج البيض حسب الأحجام. اطبع الأطباق وعبّئ في كراتين واختم التاريخ وأحكم إغلاق الكراتين. أكّد إنتاج البيض في CO11N (تأكيد النشاط). ارحّل استلام البضاعة للمنتج النهائي للبيض المدرّج.",
+        whatSAPDoesEN:
+          "Records the daily egg production quantity against the laying production order. Updates finished egg stock in the grading station. Triggers QM inspection if configured. Calculates yield and production efficiency.",
+        whatSAPDoesAR:
+          "يسجّل كمية إنتاج البيض اليومية مقابل أمر إنتاج الإنتاج. يحدّث مخزون البيض النهائي في محطة التدريج. يُشغّل فحص QM إذا تم تهيئته. يحسب المحصول وكفاءة الإنتاج.",
+        expectedOutputEN:
+          "Daily egg production confirmed. Graded egg stock updated per size category. Thin-shell and broken eggs posted as scrap. Finished product ready for dispatch.",
+        expectedOutputAR:
+          "تم تأكيد إنتاج البيض اليومي. مخزون البيض المدرّج محدَّث حسب فئة الحجم. تم ترحيل البيض رقيق القشرة والمكسور كخردة. المنتج النهائي جاهز للشحن.",
+      },
+    ],
+  },
+
+  // ── 9. Parent-to-Processing Chain ────────────────────────────────────────
+  {
+    id: "parent-to-processing",
+    icon: "🔗",
+    duration: "60 min",
+    titleEN: "Parent-to-Processing Chain",
+    titleAR: "سلسلة الأمهات إلى التصنيع",
+    descriptionEN:
+      "End-to-end flow: Parent rearing → hatching egg production → hatchery → broiler → processing. Covers the full AWP supply chain in SAP.",
+    descriptionAR:
+      "التدفق من البداية إلى النهاية: تربية الأمهات → إنتاج بيض التفريخ → المفرخة → الدجاج اللاحم → التصنيع. يغطي سلسلة توريد AWP الكاملة في SAP.",
+    module: "PP",
+    roles: ["PP Planner", "PCT Responsible", "Farm Supervisor"],
+    chartImages: [
+      "/process-charts/parent-to-processing-p1.png",
+      "/process-charts/parent-to-processing-p2.png",
+      "/process-charts/parent-to-processing-p3.png",
+      "/process-charts/supply-chain.png",
+    ],
+    steps: [
+      {
+        id: "p2p-1",
+        stepNumber: 1,
+        titleEN: "Create Parent Rearing Production Order",
+        titleAR: "إنشاء أمر إنتاج تربية الأمهات",
+        tCode: "CO01",
+        role: "PCT Responsible",
+        whatToDoEN:
+          "Check the placement plan for parent rearing. Create a production order in CO01 for house preparation (cleaning/disinfection). After approval, issue disinfectants and medication against the preparation order. Once house is ready, create production order for Pullets 19WK. Receive DOC PO. Issue DOC to parent rearing order.",
+        whatToDoAR:
+          "تحقق من خطة التوزيع لتربية الأمهات. أنشئ أمر إنتاج في CO01 لتجهيز المنزل (التنظيف/التعقيم). بعد الموافقة، أصدر المطهرات والدواء مقابل أمر التجهيز. بمجرد جاهزية المنزل، أنشئ أمر إنتاج للدجاجات البكر 19 أسبوعاً. استلم أمر الشراء للكتاكيت. أصدر الكتاكيت لأمر تربية الأمهات.",
+        whatSAPDoesEN:
+          "Creates the production order for parent rearing. Enables activity confirmations for daily farming operations (feeding, watering, health records). Links the DOC PO receipt to the rearing order.",
+        whatSAPDoesAR:
+          "ينشئ أمر الإنتاج لتربية الأمهات. يتيح تأكيدات النشاط للعمليات الزراعية اليومية (التغذية والسقاية والسجلات الصحية). يربط استلام أمر شراء الكتاكيت بأمر التربية.",
+        expectedOutputEN:
+          "Parent rearing production order created and released. DOC received and issued to order. Daily confirmation active.",
+        expectedOutputAR:
+          "تم إنشاء وإصدار أمر إنتاج تربية الأمهات. تم استلام الكتاكيت وإصدارها للأمر. التأكيد اليومي نشط.",
+      },
+      {
+        id: "p2p-2",
+        stepNumber: 2,
+        titleEN: "Hatching Egg Production & Grading",
+        titleAR: "إنتاج بيض التفريخ والتدريج",
+        role: "PCT Responsible",
+        whatToDoEN:
+          "At 24 weeks, transfer Pullets 24WK to parent laying. Create production order for hatching eggs. Confirm daily hatching egg production (GR hatching eggs). Grade eggs at the grading station. Issue graded hatching eggs to hatchery production order. Post by-product GR for pullets 64WK. Check placement plan — if for sale, create Sales Order and Delivery; otherwise issue to rearing.",
+        whatToDoAR:
+          "عند 24 أسبوعاً، انقل الدجاجات البكر 24 أسبوعاً إلى الإنتاج الأموي. أنشئ أمر إنتاج لبيض التفريخ. أكّد إنتاج بيض التفريخ اليومي (استلام بيض التفريخ). درّج البيض في محطة التدريج. أصدر بيض التفريخ المدرّج لأمر إنتاج المفرخة. ارحّل استلام البضاعة للمنتج الثانوي للدجاجات البكر 64 أسبوعاً. تحقق من خطة التوزيع — إذا كان للبيع، أنشئ أمر مبيعات وتسليم؛ وإلا أصدر للتربية.",
+        whatSAPDoesEN:
+          "Records hatching egg production on the parent laying order. Triggers grading station production order for egg sorting. Posts by-products. Creates sales order or transfer posting depending on placement plan decision.",
+        whatSAPDoesAR:
+          "يسجّل إنتاج بيض التفريخ على أمر الإنتاج الأموي. يُشغّل أمر إنتاج محطة التدريج لفرز البيض. يرحّل المنتجات الثانوية. ينشئ أمر مبيعات أو ترحيل تحويل بناءً على قرار خطة التوزيع.",
+        expectedOutputEN:
+          "Hatching egg GR posted daily. Graded eggs issued to hatchery order. By-products (pullets 64WK) posted. Placement decision actioned (sale or transfer).",
+        expectedOutputAR:
+          "تم ترحيل استلام بيض التفريخ يومياً. البيض المدرّج أُصدر لأمر المفرخة. المنتجات الثانوية (الدجاجات البكر 64 أسبوعاً) مرحَّلة. قرار التوزيع مُنفَّذ (بيع أو نقل).",
+      },
+      {
+        id: "p2p-3",
+        stepNumber: 3,
+        titleEN: "Broiler DOC → Farm → Processing",
+        titleAR: "كتاكيت الدجاج اللاحم → المزرعة → التصنيع",
+        tCode: "CO11N",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "Hatchery creates Broiler DOC production order. Post GR for DOC from hatchery. Transfer DOC to broiler farm — post GR at broiler farm production order. Record daily farm confirmations (feed, water, medication). At target weight, close broiler farm order (DLV/TECO) and transfer live birds to processing plant. Processing posts live bird GR and runs slaughter + REM backflush (see Slaughterhouse process).",
+        whatToDoAR:
+          "المفرخة تنشئ أمر إنتاج كتاكيت الدجاج اللاحم. ارحّل استلام البضاعة للكتاكيت من المفرخة. انقل الكتاكيت إلى مزرعة الدجاج اللاحم — ارحّل استلام البضاعة على أمر إنتاج مزرعة الدجاج اللاحم. سجّل تأكيدات المزرعة اليومية (علف، سقاية، دواء). عند الوزن المستهدف، أغلق أمر مزرعة الدجاج اللاحم (DLV/TECO) وانقل الطيور الحية إلى مصنع التصنيع. التصنيع يرحّل استلام الطيور الحية ويشغّل الذبح + الترحيل العكسي REM (انظر عملية المسلخ).",
+        whatSAPDoesEN:
+          "Links the complete supply chain: parent farm → hatchery → broiler farm → processing plant. All production orders are connected by GI/GR movements, providing end-to-end traceability from GP cross-company to final product.",
+        whatSAPDoesAR:
+          "يربط سلسلة التوريد الكاملة: مزرعة الأمهات → المفرخة → مزرعة الدجاج اللاحم → مصنع التصنيع. جميع أوامر الإنتاج مرتبطة بحركات إصدار/استلام البضاعة، مما يوفر تتبعاً شاملاً من الصف الأول للشركة حتى المنتج النهائي.",
+        expectedOutputEN:
+          "Full supply chain documented in SAP. Broiler DOC → live bird → finished product traceable by batch. All production orders closed at each stage.",
+        expectedOutputAR:
+          "سلسلة التوريد الكاملة موثّقة في SAP. كتاكيت الدجاج اللاحم → طيور حية → منتج نهائي قابل للتتبع بالدفعة. جميع أوامر الإنتاج مغلقة في كل مرحلة.",
+      },
+    ],
+  },
 
 /** Total step count for a process */
 export function processStepCount(p: Process): number {
