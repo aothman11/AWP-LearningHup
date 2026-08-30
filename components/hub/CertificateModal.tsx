@@ -307,30 +307,34 @@ async function drawCertificate(
   ctx.restore();
 
   // ── 8. "CERTIFICATE OF COMPLETION" ───────────────────────────────────────
+  // Shift all content 72px down to vertically centre the block
+  // between the header (y≈192) and the attribution line (y≈954).
   const CX = W / 2;
+  const SY = 72; // vertical shift
+
   ctx.save();
   ctx.textAlign = "center";
   ctx.fillStyle = GREEN_DARK;
   ctx.font = "bold 36px 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif";
   ctx.letterSpacing = "5px";
-  ctx.fillText("CERTIFICATE OF COMPLETION", CX, 245);
+  ctx.fillText("CERTIFICATE OF COMPLETION", CX, 245 + SY);
   ctx.letterSpacing = "0px";
   ctx.restore();
 
   // Gold accent rules flanking title
-  goldRule(ctx, CX, 260, 340);
+  goldRule(ctx, CX, 260 + SY, 340);
 
   // Small gold diamonds on rule
-  diamond(ctx, CX, 260, 7, GOLD);
-  diamond(ctx, CX - 340, 260, 4, GOLD_LIGHT);
-  diamond(ctx, CX + 340, 260, 4, GOLD_LIGHT);
+  diamond(ctx, CX,        260 + SY, 7, GOLD);
+  diamond(ctx, CX - 340,  260 + SY, 4, GOLD_LIGHT);
+  diamond(ctx, CX + 340,  260 + SY, 4, GOLD_LIGHT);
 
   // ── 9. "This is to certify that" ─────────────────────────────────────────
   ctx.save();
   ctx.textAlign = "center";
   ctx.fillStyle = MUTED;
   ctx.font = "italic 20px 'Palatino Linotype', Palatino, Georgia, serif";
-  ctx.fillText("This is to certify that", CX, 316);
+  ctx.fillText("This is to certify that", CX, 316 + SY);
   ctx.restore();
 
   // ── 10. Recipient name ───────────────────────────────────────────────────
@@ -344,7 +348,7 @@ async function drawCertificate(
 
   ctx.fillStyle = GREEN_DARK;
   ctx.font = "italic 62px 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif";
-  ctx.fillText(displayName, CX, 408);
+  ctx.fillText(displayName, CX, 408 + SY);
   ctx.shadowBlur = 0;
   ctx.restore();
 
@@ -362,8 +366,8 @@ async function drawCertificate(
   ctx.strokeStyle = ng;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(CX - nw / 2, 425);
-  ctx.lineTo(CX + nw / 2, 425);
+  ctx.moveTo(CX - nw / 2, 425 + SY);
+  ctx.lineTo(CX + nw / 2, 425 + SY);
   ctx.stroke();
   ctx.restore();
 
@@ -372,7 +376,7 @@ async function drawCertificate(
   ctx.textAlign = "center";
   ctx.fillStyle = BODY;
   ctx.font = "20px 'Palatino Linotype', Palatino, Georgia, serif";
-  ctx.fillText("has successfully completed", CX, 480);
+  ctx.fillText("has successfully completed", CX, 480 + SY);
   ctx.restore();
 
   // Process title
@@ -382,8 +386,8 @@ async function drawCertificate(
   ctx.font = "bold 30px 'Palatino Linotype', Palatino, Georgia, serif";
   const titleW = ctx.measureText(processTitle).width;
   const lastTitleY = titleW > 820
-    ? wrapText(ctx, processTitle, CX, 528, 840, 40)
-    : (ctx.fillText(processTitle, CX, 528), 528);
+    ? wrapText(ctx, processTitle, CX, 528 + SY, 840, 40)
+    : (ctx.fillText(processTitle, CX, 528 + SY), 528 + SY);
   ctx.restore();
 
   // Program label
