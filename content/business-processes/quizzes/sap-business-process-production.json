@@ -1,0 +1,118 @@
+{
+  "slug": "sap-business-process-production",
+  "title": "SAP Business Process — Production",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "process-flow",
+      "text": "What does PCT stand for in the PCT Parent Process?",
+      "options": [
+        "Poultry Control Team",
+        "Production Control Team",
+        "Plant Confirmation Terminal",
+        "Process Completion Tracker"
+      ],
+      "answer": 1,
+      "explanation": "PCT stands for Production Control Team. The PCT Parent Process manages house/farm preparation before birds arrive."
+    },
+    {
+      "id": "q2",
+      "mode": "process-flow",
+      "text": "What is the primary purpose of the PCT Parent Process?",
+      "options": [
+        "Approve purchase orders for DOC",
+        "Manage house and farm preparation before a new flock arrives",
+        "Record daily QM data for laying farms",
+        "Create sales orders for spent hens"
+      ],
+      "answer": 1,
+      "explanation": "The PCT Parent Process (House Preparation) manages all activities needed to prepare a farm house or facility before birds are placed — from checking the preparation plan to confirming house preparation via GR."
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "Who is responsible for recording daily QM data using SAP Fiori in Parent Rearing?",
+      "options": [
+        "PCT Responsible",
+        "PHD Responsible",
+        "Parent Rearing Responsible",
+        "Sales Responsible"
+      ],
+      "answer": 2,
+      "explanation": "The Parent Rearing Responsible records daily QM data using SAP Fiori. The PHD Responsible separately confirms vaccine activities."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "In the Parent Rearing process, which actions are labeled 'One Time Action'?",
+      "options": [
+        "Daily QM data recording",
+        "Activity Confirmation",
+        "Create Production Orders, Update Order Data, Order Approval",
+        "GR Pullets 19WK"
+      ],
+      "answer": 2,
+      "explanation": "Creating the Production Order, Updating Order Data, and Order Approval are all 'One Time Actions' — performed once per flock when the batch starts. Daily QM and Activity Confirmations repeat every day."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "In the Parent Laying process, what happens when the Sales Plan check says YES?",
+      "options": [
+        "Spent hens are sent to Processing Plant",
+        "Spent hens are issued against a Sales Order for external sale",
+        "Spent hens are returned to rearing farms",
+        "A new production order is created for the next flock"
+      ],
+      "answer": 1,
+      "explanation": "When the 'Check Sales Plan' decision is YES, the spent hens (Pullets 64WK) are issued to a Sales Order for external sale. When NO, they are issued to Processing."
+    },
+    {
+      "id": "q6",
+      "mode": "sap-focus",
+      "text": "What is the sequence of steps to prepare a house under the PCT Parent Process?",
+      "options": [
+        "Check Preparation Plan → Create PO → Approve PO → GR House",
+        "Check Preparation Plan → Create Production Order → Order Approval → Activity Confirmation → House Prepared GR → Issue to Order → DLV & TECO",
+        "Create Production Order → Release → CO11N → TECO",
+        "Check Placement Plan → GR DOC → CO11N → TECO"
+      ],
+      "answer": 1,
+      "explanation": "The full PCT house preparation sequence is: Check Preparation Plan → Create Production Order (House Prep) → Order Approval → Activity Confirmation → House Prepared GR → Issue to Parent Rearing/Laying Order → Production Order DLV & TECO."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "How many swim-lane diagrams are covered in this document?",
+      "options": ["1", "2", "3", "4"],
+      "answer": 2,
+      "explanation": "Three swim-lane diagrams are covered: (1) PCT Parent Process, (2) Parent Rearing Process, and (3) Parent Process Pre-Laying & Laying."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "Who is responsible for issuing Day-Old Chicks to the Parent Rearing farm?",
+      "options": [
+        "PCT Responsible",
+        "GP-Hatchery Responsible",
+        "PHD Responsible",
+        "Parent Laying Responsible"
+      ],
+      "answer": 1,
+      "explanation": "The GP-Hatchery Responsible issues Day-Old Chicks to the parent rearing farm, while Parent Rearing creates the DOC Purchase Order and confirms receipt."
+    },
+    {
+      "id": "q9",
+      "mode": "process-flow",
+      "text": "In Parent Pre-Laying, what two inputs does the Pre-Laying order consume?",
+      "options": [
+        "DOC and Feed",
+        "Hatching Eggs and Feed",
+        "House Preparation and Pullets 19WK",
+        "Pullets 24WK and Hatching Eggs"
+      ],
+      "answer": 2,
+      "explanation": "The Pre-Laying production order issues two items: House Preparation (from the PCT process) and Pullets 19WK (from the Rearing farm). Both are consumed to start the 24WK pre-laying phase."
+    }
+  ]
+}

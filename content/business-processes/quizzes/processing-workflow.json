@@ -1,0 +1,96 @@
+{
+  "slug": "processing-workflow",
+  "title": "Processing Workflow",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "Which SAP transaction is used for the Processing Workflow (Assembly Backflush)?",
+      "options": ["MIGO", "CO11N", "MF42N / MFBF", "CO01"],
+      "answer": 2,
+      "explanation": "The Processing Workflow at Plant 1100 uses MF42N (Assembly Backflush — REM) / MFBF for Repetitive Manufacturing confirmation and component issue.",
+      "tcodeRef": "MF42N"
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "What is Material 911 in the Processing Workflow?",
+      "options": [
+        "A.G Fresh whole chicken",
+        "Live chicken (broiler input)",
+        "Chicken Feather by-product",
+        "Whole legs portion"
+      ],
+      "answer": 1,
+      "explanation": "Material 911 is the live chicken (live broiler) consumed as raw material at Movement Type 261. It is the primary input that feeds all downstream processing production orders."
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "Which Movement Type posts by-products (feathers, offal, blood) in the Processing Workflow?",
+      "options": ["101", "201", "261", "531"],
+      "answer": 3,
+      "explanation": "Movement Type 531 is used for by-product Goods Receipts — feathers (504), gizzard (507), heart (508), liver (511), neck (512), feet (514), blood (517), and non-edible viscera (518)."
+    },
+    {
+      "id": "q4",
+      "mode": "sap-focus",
+      "text": "What is Material 930?",
+      "options": [
+        "Unpacked whole legs",
+        "A.G Fresh (whole chicken, fresh)",
+        "Chicken Feather by-product",
+        "Frozen whole chicken"
+      ],
+      "answer": 1,
+      "explanation": "Material 930 is A.G Fresh — whole chicken, fresh. Material 931 is A.G Frozen, 932 is W.Chkn B.G, and 933 is B.G Cutups Meat."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "What is the difference between a co-product and a by-product in the Processing Workflow?",
+      "options": [
+        "Co-products are waste; by-products are valuable",
+        "There is no difference — both use Movement Type 531",
+        "Co-products (e.g. thighs, drumsticks) are valuable and planned; by-products (offal, feathers, blood) are secondary",
+        "Co-products go to further processing; by-products are always sold externally"
+      ],
+      "answer": 2,
+      "explanation": "The diagram explicitly distinguishes: Co-Products (materials 505, 506 — thighs, drumsticks) are valuable, planned outputs; By-Products (offal, feathers, blood) are secondary outputs posted with Movement Type 531."
+    },
+    {
+      "id": "q6",
+      "mode": "sap-focus",
+      "text": "Which Movement Type consumes components (live broilers, packaging) in REM?",
+      "options": ["101", "201", "261", "531"],
+      "answer": 2,
+      "explanation": "Movement Type 261 is the component goods issue (consumption) movement in REM. Live broilers (material 911) are consumed at Movement Type 261 as the raw input."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "What are materials 505 and 506?",
+      "options": [
+        "Chicken Gizzard and Chicken Heart",
+        "Unpacked thighs and Unpacked drumsticks",
+        "A.G Fresh and A.G Frozen",
+        "Chicken Feet and Blood"
+      ],
+      "answer": 1,
+      "explanation": "Material 505 is Unpacked thighs and 506 is Unpacked drumsticks. They are co-products produced when whole legs (501) are further portioned."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "What is the input consumed to produce whole legs (Material 501)?",
+      "options": [
+        "Material 911 (live chicken) directly",
+        "Materials 930–933 (whole chicken products)",
+        "Materials 801, 802, 803, 804 (portion-specific materials)",
+        "Material 920 (REM parent material)"
+      ],
+      "answer": 2,
+      "explanation": "To produce whole legs (Material 501), materials 801, 802, 803, and 804 are consumed. The production order header 501 is created and a GR of whole legs is posted."
+    }
+  ]
+}

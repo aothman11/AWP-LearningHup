@@ -1,0 +1,99 @@
+{
+  "slug": "c-layer-business-process",
+  "title": "C. Layer Business Process",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "Which T-Code is used to check placement plans in the Layer Rearing process?",
+      "options": ["CO01", "CO02", "COOIS", "QA11"],
+      "answer": 2,
+      "explanation": "COOIS (Production Order Information System) is used to verify the placement schedule and check order status — it is the first step in the Layer Rearing swim lane.",
+      "tcodeRef": "COOIS"
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "Which T-Code records daily QM data in the Layer business processes?",
+      "options": ["QA32", "CO11N", "ZPPH3", "MIGO_GR"],
+      "answer": 2,
+      "explanation": "ZPPH3 is AWP's custom T-Code for daily QM data recording in layer operations. QA32 is used for changing inspection lot data.",
+      "tcodeRef": "ZPPH3"
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "Which plant is designated as Commercial Layer Laying?",
+      "options": ["1200", "1250", "1260", "1220"],
+      "answer": 1,
+      "explanation": "Plant 1250 is Commercial Layer Laying. Plant 1260 is Commercial Layer Rearing."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "At which week do commercial layers formally begin egg production?",
+      "options": ["16 weeks", "18 weeks", "20 weeks", "24 weeks"],
+      "answer": 2,
+      "explanation": "Egg production formally begins at Week 20 ('Start Production — 20 Weeks') after pullets are received at the laying farm."
+    },
+    {
+      "id": "q5",
+      "mode": "sap-focus",
+      "text": "What SAP Movement Type is used to post depleted hens (birds > 80 weeks)?",
+      "options": ["261", "531", "101", "201"],
+      "answer": 1,
+      "explanation": "Movement Type 531 is used for GR to house storage — birds over 80 weeks are posted as by-products using this movement type."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "During what week range is 'Layer-02' feed given?",
+      "options": ["19–36", "37–68", "69–100", "12–16"],
+      "answer": 1,
+      "explanation": "According to the feed schedule: Layer-01 is weeks 19–36, Layer-02 is weeks 37–68, and Layer-03 is weeks 69–100."
+    },
+    {
+      "id": "q7",
+      "mode": "sap-focus",
+      "text": "How often does the Layer Rearing cycle transfer houses to Laying?",
+      "options": [
+        "Every week",
+        "Every month",
+        "Every 3 months — six houses transferred at a time",
+        "Once per year"
+      ],
+      "answer": 2,
+      "explanation": "Plant 1260 (Commercial Layer Rearing) operates on a cycle where every 3 months, six houses are transferred from Rearing to Laying."
+    },
+    {
+      "id": "q8",
+      "mode": "sap-focus",
+      "text": "What T-Code is used for daily confirmations in both the Rearing and Laying swim lanes?",
+      "options": ["CO01", "CO03", "CO11N", "MF42N"],
+      "answer": 2,
+      "explanation": "CO11N (Production Order Confirmation) is used for daily confirmations in both Layer Rearing and Layer Laying to record daily activities including feed, water, and mortality.",
+      "tcodeRef": "CO11N"
+    },
+    {
+      "id": "q9",
+      "mode": "process-flow",
+      "text": "What is the depletion age range for commercial layer hens?",
+      "options": ["52–64 weeks", "60–70 weeks", "79–100 weeks", "40–50 weeks"],
+      "answer": 2,
+      "explanation": "Commercial layer hens are managed up to depletion age of 79–100 weeks, at which point spent hens are either culled or sold."
+    },
+    {
+      "id": "q10",
+      "mode": "sap-focus",
+      "text": "In the Eggs Packaging Process (Diagram 6), how is the batch number generated?",
+      "options": [
+        "Manually entered by the operator",
+        "Pulled from the purchase order number",
+        "Generated automatically by SAP",
+        "Assigned from the farm's internal tracking system"
+      ],
+      "answer": 2,
+      "explanation": "In the Eggs Packaging Process, SAP generates the batch number automatically (Generate Automatic Batch step) during the repetitive manufacturing confirmation."
+    }
+  ]
+}

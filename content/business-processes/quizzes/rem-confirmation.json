@@ -1,0 +1,107 @@
+{
+  "slug": "rem-confirmation",
+  "title": "REM Confirmation",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "What Confirmation Type is used in the Daily REM Process?",
+      "options": [
+        "Component Backflush",
+        "Assembly Backflush",
+        "Production Order Confirmation",
+        "Full Backflush"
+      ],
+      "answer": 1,
+      "explanation": "The Daily Process uses Assembly Backflush as the Confirmation Type. Component Backflush is reserved for End of Month processing.",
+      "tcodeRef": "MF42N"
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "What Confirmation Type is used in the End of Month REM Process?",
+      "options": [
+        "Assembly Backflush",
+        "Component Backflush",
+        "Full Backflush",
+        "Activity Confirmation"
+      ],
+      "answer": 1,
+      "explanation": "The End of Month process uses Component Backflush. This is when the full component list (materials consumed during the month) is reviewed and posted.",
+      "tcodeRef": "MF42N"
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "Why are components NOT posted during the daily REM confirmation?",
+      "options": [
+        "Because daily component posting is not supported in SAP",
+        "Because components are too small to track individually",
+        "Because REM settles variance at Month-End, so components are only posted then after inventory is confirmed",
+        "Because the REM system automatically posts components at midnight"
+      ],
+      "answer": 2,
+      "explanation": "In REM environments, variance is settled at Month-End — not per order. Components are only posted at month-end after inventory availability is confirmed, to match actual consumption."
+    },
+    {
+      "id": "q4",
+      "mode": "sap-focus",
+      "text": "What material and production version are used for the REM confirmation at Plant 1100?",
+      "options": [
+        "Material 911, Production Version 100",
+        "Material 920, Production Version 120",
+        "Material 930, Production Version 200",
+        "Material 501, Production Version 110"
+      ],
+      "answer": 1,
+      "explanation": "The REM confirmation at Plant 1100 uses Material 920 and Production Version 120 — the batch appears automatically during the confirmation."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "In the End of Month process, what happens if inventory is NOT available?",
+      "options": [
+        "The month-end is skipped",
+        "A manual adjustment is created automatically",
+        "The process returns to the Component List to resolve the shortage",
+        "Components are marked as 'variance' and excluded"
+      ],
+      "answer": 2,
+      "explanation": "The End of Month process has a decision point: 'Is Inventory Available?' If NO, the process loops back to 'Process Component List' to resolve the shortage before saving."
+    },
+    {
+      "id": "q6",
+      "mode": "sap-focus",
+      "text": "What is the starting point event before the daily REM process begins?",
+      "options": [
+        "Creating a production order in CO01",
+        "GR Pullet 64WK — Goods Receipt posted for live birds arriving at the processing plant",
+        "Running COOIS to check placement plan",
+        "Posting a purchase order for live broilers"
+      ],
+      "answer": 1,
+      "explanation": "The starting point is GR Pullet 64WK — a Goods Receipt posted for the assembly backflush starting point, representing live birds arriving at the processing plant before daily confirmations begin."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "What does the 'Add the Classification' step add to the daily confirmation?",
+      "options": [
+        "The vendor batch number",
+        "Classification data such as grade and weight class",
+        "The production order number",
+        "The T-Code used for posting"
+      ],
+      "answer": 1,
+      "explanation": "The 'Add the Classification' step adds classification data — for example, grade and weight class — to the REM confirmation before it is saved."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "Which plant uses the REM Confirmation process?",
+      "options": ["Plant 1200 — Broiler", "Plant 1210 — Hatchery", "Plant 1100 — Processing", "Plant 1220 — Parent Laying"],
+      "answer": 2,
+      "explanation": "Plant 1100 (Processing) is the REM plant where the REM Confirmation (MF42N) process is used for daily and month-end confirmations."
+    }
+  ]
+}
