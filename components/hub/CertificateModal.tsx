@@ -442,38 +442,6 @@ async function drawCertificate(
   footerCol(col1x, "SAP PP/QM Program", "Authorized Signature", false);
   footerCol(col3x, formatDate(completedDate), "Date of Completion", true);
 
-  // Centre column — small seal / programme badge
-  ctx.save();
-  ctx.translate(CX, footerY - 10);
-
-  // Outer ring
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.arc(0, 0, 44, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Inner fill
-  const sf = ctx.createRadialGradient(0, 0, 10, 0, 0, 44);
-  sf.addColorStop(0, GREEN_MID);
-  sf.addColorStop(1, GREEN_DARK);
-  ctx.fillStyle = sf;
-  ctx.beginPath();
-  ctx.arc(0, 0, 42, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Tick
-  ctx.strokeStyle = GOLD_LIGHT;
-  ctx.lineWidth = 3;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.beginPath();
-  ctx.moveTo(-16, 2);
-  ctx.lineTo(-5,  14);
-  ctx.lineTo(18, -14);
-  ctx.stroke();
-
-  ctx.restore();
 
   // ── 14. Watermark ─────────────────────────────────────────────────────────
   ctx.save();
@@ -484,10 +452,7 @@ async function drawCertificate(
   ctx.textAlign = "center";
 
   ctx.font = `bold 110px 'Palatino Linotype', Palatino, Georgia, serif`;
-  ctx.fillText("Al-Watania Poultry", 0, -20);
-
-  ctx.font = `bold 72px Arial, sans-serif`;
-  ctx.fillText("الوطنية للدواجن", 0, 76);
+  ctx.fillText("Al-Watania Poultry", 0, 30);
   ctx.restore();
 
   // ── 15. Bottom attribution ────────────────────────────────────────────────
