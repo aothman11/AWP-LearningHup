@@ -27,31 +27,75 @@ function formatDate(iso: string): string {
   }
 }
 
-// ─── Logo: real PNG on dark green pill (white artwork → visible on white bg) ──
+// ─── Inline SVG: colored AWP leaf logo ────────────────────────────────────────
 
-function AWPLogo() {
+function AWPLogoSVG() {
   return (
-    <div
-      style={{
-        background: "#1C3A2B",
-        borderRadius: "10px",
-        padding: "6px 18px",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+    <svg
+      width="180"
+      height="100"
+      viewBox="0 0 180 100"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ display: "block" }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/alwatania-logo-white.png"
-        alt="Al-Watania Poultry"
-        style={{
-          height: "clamp(36px, 5vw, 52px)",
-          width: "auto",
-          display: "block",
-        }}
+      {/* Main leaf body */}
+      <path
+        d="M12 72 C8 38, 68 6, 132 22 C158 30, 164 62, 128 76 C90 90, 28 88, 12 72Z"
+        fill="#1C7A32"
       />
-    </div>
+      {/* Inner highlight */}
+      <path
+        d="M28 64 C24 40, 72 18, 118 34 C138 42, 140 62, 116 70 C84 80, 40 78, 28 64Z"
+        fill="#2E9945"
+      />
+      {/* Gold lower accent */}
+      <path
+        d="M12 72 C22 86, 68 94, 112 88 C68 90, 24 82, 12 72Z"
+        fill="#C49A1A"
+      />
+      {/* Right dark tip */}
+      <path
+        d="M128 76 C150 68, 166 46, 160 28 C168 46, 160 76, 128 76Z"
+        fill="#155E25"
+      />
+      {/* Arabic text — دواجن (small, top) */}
+      <text
+        x="84"
+        y="44"
+        textAnchor="middle"
+        fill="rgba(255,255,255,0.88)"
+        fontSize="13"
+        fontWeight="bold"
+        fontFamily="Arial, sans-serif"
+      >
+        دواجن
+      </text>
+      {/* Arabic text — الوطنية (large) */}
+      <text
+        x="84"
+        y="68"
+        textAnchor="middle"
+        fill="#FFFFFF"
+        fontSize="20"
+        fontWeight="bold"
+        fontFamily="Arial, sans-serif"
+      >
+        الوطنية
+      </text>
+      {/* English label below leaf */}
+      <text
+        x="84"
+        y="94"
+        textAnchor="middle"
+        fill="#1C3A2B"
+        fontSize="9.5"
+        fontWeight="bold"
+        fontFamily="Arial, sans-serif"
+        letterSpacing="1.8"
+      >
+        AL WATANIA POULTRY
+      </text>
+    </svg>
   );
 }
 
@@ -222,8 +266,8 @@ export const CertificateCard = forwardRef<HTMLDivElement, Props>(
           }}
         >
           {/* Logo */}
-          <div style={{ marginBottom: "0.8%" }}>
-            <AWPLogo />
+          <div style={{ marginBottom: "1.2%" }}>
+            <AWPLogoSVG />
           </div>
 
           {/* Organisation tag line */}
