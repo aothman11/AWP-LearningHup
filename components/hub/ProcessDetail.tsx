@@ -15,6 +15,7 @@ import { type Process, type ProcessStep } from "@/data/processes";
 import { type ProcessProgress } from "./ProcessesTab";
 import { useT } from "@/lib/i18n";
 import { logbookEntries } from "@/data/qm-logbook";
+import { CertificateModal } from "./CertificateModal";
 
 interface Props {
   process: Process;
@@ -245,6 +246,7 @@ export function ProcessDetail({ process: p, progress, lang, onToggleStep, onBack
   const [guidedCurrent, setGuidedCurrent] = useState(initialStep ?? currentStepNumber ?? 1);
   const [chartOpen, setChartOpen] = useState(false);
   const [chartPage, setChartPage] = useState(0);
+  const [certOpen, setCertOpen] = useState(false);
 
   const stepRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const currentRef = useRef<HTMLDivElement | null>(null);
@@ -472,6 +474,37 @@ export function ProcessDetail({ process: p, progress, lang, onToggleStep, onBack
             </div>
           )}
         </div>
+      )}
+
+      {/* 🏆 Completion banner + certificate button */}
+      {pct === 100 && (
+        <div className="mt-8 rounded-2xl border border-[#4E7862] bg-[#F0FAF4] px-6 py-5 text-center">
+          <div className="text-3xl mb-2">🏆</div>
+          <p className="text-base font-semibold text-[#1C3A2B] mb-1">
+            {lang === "AR" ? "أتممت هذه العملية!" : "Process Complete!"}
+          </p>
+          <p className="text-sm text-[#6B7A6F] mb-4">
+            {lang === "AR"
+              ? "يمكنك الآن تنزيل شهادة الإتمام."
+              : "You can now download your certificate of completion."}
+          </p>
+          <button
+            onClick={() => setCertOpen(true)}
+            className="inline-flex items-center gap-2 bg-[#1C3A2B] text-white text-sm font-medium px-6 py-3 rounded-full hover:bg-[#2D5A42] transition-colors shadow-md"
+          >
+            🏆 {lang === "AR" ? "احصل على الشهادة" : "Get Certificate"}
+          </button>
+        </div>
+      )}
+
+      {/* Certificate Modal */}
+      {certOpen && (
+        <CertificateModal
+          process={p}
+          completedDate={progress?.lastVisited ?? new Date().toISOString()}
+          lang={lang}
+          onClose={() => setCertOpen(false)}
+        />
       )}
     </div>
   );
