@@ -146,12 +146,6 @@ export default function HubPage() {
               <span className={`px-3 py-1.5 transition-colors ${lang === "EN" ? "bg-[#1C3A2B] text-[#F7F5F0]" : "text-[#6B7A6F]"}`}>EN</span>
               <span className={`px-3 py-1.5 transition-colors ${lang === "AR" ? "bg-[#1C3A2B] text-[#F7F5F0]" : "text-[#6B7A6F]"}`}>AR</span>
             </button>
-            <Link
-              href="/logbook"
-              className="hidden sm:inline-flex text-xs text-[#6B7A6F] hover:text-[#1C3A2B] border border-[#D9D4C8] hover:border-[#4E7862] bg-[#F7F5F0] hover:bg-[#E8F0E4] px-3 py-1.5 rounded-full transition-colors"
-            >
-              T-Code Library →
-            </Link>
           </div>
         </div>
       </header>
