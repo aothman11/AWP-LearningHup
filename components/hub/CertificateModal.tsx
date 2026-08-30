@@ -86,7 +86,7 @@ function wrapText(
   return currentY;
 }
 
-function drawCertificate(
+async function drawCertificate(
   canvas: HTMLCanvasElement,
   name: string,
   processTitle: string,
@@ -100,6 +100,14 @@ function drawCertificate(
 
   const ctx = canvas.getContext("2d")!;
   ctx.scale(s, s);
+
+  // ── Load logo ───────────────────────────────────────────────────────────────
+  const logo = await new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = "/awp-logo.png";
+  });
 
   // ── Background ──────────────────────────────────────────────────────────────
   ctx.fillStyle = "#FAFAF8";
@@ -124,44 +132,22 @@ function drawCertificate(
   // flatten bottom corners of header
   ctx.fillRect(14, 100, W - 28, 54);
 
-  // ── AWP wordmark ────────────────────────────────────────────────────────────
-  ctx.fillStyle = "#FFFFFF";
-  ctx.textAlign = "center";
-  ctx.font = "bold 52px Georgia, 'Times New Roman', serif";
-  ctx.fillText("AWP", W / 2, 85);
-  ctx.font = "16px Georgia, 'Times New Roman', serif";
-  ctx.fillStyle = "#A8C4B0";
-  ctx.fillText("AL-WATANIA POULTRY", W / 2, 112);
-
-  // ── Gold star / seal emblem (top-right corner) ──────────────────────────────
-  const ex = W - 90;
-  const ey = 80;
-  const er = 44;
-  ctx.save();
-  ctx.translate(ex, ey);
-  // Starburst
-  const points = 8;
-  ctx.fillStyle = "#C49A1A";
-  ctx.beginPath();
-  for (let i = 0; i < points * 2; i++) {
-    const angle = (i * Math.PI) / points - Math.PI / 2;
-    const r = i % 2 === 0 ? er : er * 0.6;
-    const x = Math.cos(angle) * r;
-    const y = Math.sin(angle) * r;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  // ── AWP logo (centred in header) ────────────────────────────────────────────
+  if (logo) {
+    // Draw logo at fixed height of 100px, centred horizontally
+    const logoH = 100;
+    const logoW = logo.naturalWidth * (logoH / logo.naturalHeight);
+    ctx.drawImage(logo, W / 2 - logoW / 2, 18, logoW, logoH);
+  } else {
+    // Fallback text wordmark
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = "bold 52px Georgia, 'Times New Roman', serif";
+    ctx.fillText("AWP", W / 2, 85);
+    ctx.font = "16px Georgia, 'Times New Roman', serif";
+    ctx.fillStyle = "#A8C4B0";
+    ctx.fillText("AL-WATANIA POULTRY", W / 2, 112);
   }
-  ctx.closePath();
-  ctx.fill();
-  // Inner circle
-  ctx.fillStyle = "#1C3A2B";
-  ctx.beginPath();
-  ctx.arc(0, 0, er * 0.42, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#C49A1A";
-  ctx.font = "bold 13px Georgia, serif";
-  ctx.textAlign = "center";
-  ctx.fillText("AWP", 0, 4);
-  ctx.restore();
 
   // ── "CERTIFICATE OF COMPLETION" ─────────────────────────────────────────────
   ctx.textAlign = "center";
@@ -304,7 +290,7 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
   useEffect(() => {
     if (!canvasRef.current) return;
     const title = isAR ? p.titleAR : p.titleEN;
-    drawCertificate(canvasRef.current, name, title, completedDate);
+    void drawCertificate(canvasRef.current, name, title, completedDate);
   }, [name, p, completedDate, isAR]);
 
   function saveName(n: string) {
@@ -312,10 +298,10 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
     try { localStorage.setItem(STORAGE_KEY, n); } catch {}
   }
 
-  function download() {
+  async function download() {
     if (!canvasRef.current) return;
     const title = isAR ? p.titleAR : p.titleEN;
-    drawCertificate(canvasRef.current, name, title, completedDate);
+    await drawCertificate(canvasRef.current, name, title, completedDate);
     const link = document.createElement("a");
     link.download = `AWP-Certificate-${title.replace(/[\s/]+/g, "-")}.png`;
     link.href = canvasRef.current.toDataURL("image/png");
