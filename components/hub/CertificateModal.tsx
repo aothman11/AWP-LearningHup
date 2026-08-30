@@ -461,7 +461,7 @@ async function drawCertificate(
   ctx.fillStyle = "#B0A896";
   ctx.font = "12px 'Helvetica Neue', Arial, sans-serif";
   ctx.fillText(
-    "Al-Watania Poultry  ·  SAP PP/QM Learning Hub  ·  awp-learninghub.vercel.app",
+    "Al-Watania Poultry  ·  SAP PP/QM Learning Hub",
     CX, H - 36
   );
   ctx.restore();
