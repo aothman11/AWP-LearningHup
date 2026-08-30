@@ -120,9 +120,12 @@ export default function HubPage() {
       <header className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-0 z-30">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1C3A2B] flex items-center justify-center text-white text-xs font-bold shrink-0">
-              AWP
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/alwatania-logo-white.png"
+              alt="Al-Watania Poultry"
+              className="h-10 w-auto shrink-0"
+            />
             <div>
               <h1
                 className="text-xl font-light text-[#1C3A2B] leading-none tracking-wide"
