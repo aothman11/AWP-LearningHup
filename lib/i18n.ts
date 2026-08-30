@@ -165,7 +165,7 @@ export const translations = {
 
   // Process onboarding — tab header
   "proc.heading":        { EN: "Choose a Process",                     AR: "اختر عملية" },
-  "proc.subheading":     { EN: "Role-based end-to-end SAP workflows — step by step.", AR: "سير عمل SAP الشاملة حسب الدور — خطوة بخطوة." },
+  "proc.subheading":     { EN: "Follow each process from start to finish, track your progress, and earn a certificate — your guided onboarding to SAP PP/QM at Al-Watania Poultry.", AR: "اتبع كل عملية من البداية إلى النهاية، تتبع تقدمك، واحصل على شهادة — دليلك التدريبي لنظام SAP PP/QM في الوطنية للدواجن." },
   "proc.step1":          { EN: "STEP 1",                               AR: "الخطوة 1" },
 
   // Process cards
