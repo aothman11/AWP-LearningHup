@@ -192,7 +192,7 @@ async function drawCertificate(
   ctx.fillStyle = "#1C3A2B";
   ctx.font = "bold 34px Georgia, 'Times New Roman', serif";
   ctx.letterSpacing = "3px";
-  ctx.fillText("CERTIFICATE OF COMPLETION", W / 2, 230);
+  ctx.fillText("CERTIFICATE OF COMPLETION", W / 2, 300);
   ctx.letterSpacing = "0px";
 
   // Gold rule
@@ -205,64 +205,64 @@ async function drawCertificate(
   ctx.strokeStyle = grad;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(W / 2 - ruleW / 2, 246);
-  ctx.lineTo(W / 2 + ruleW / 2, 246);
+  ctx.moveTo(W / 2 - ruleW / 2, 316);
+  ctx.lineTo(W / 2 + ruleW / 2, 316);
   ctx.stroke();
 
   // ── "This Certifies that" ────────────────────────────────────────────────────
   ctx.fillStyle = "#6B7A6F";
   ctx.font = "italic 20px Georgia, 'Times New Roman', serif";
-  ctx.fillText("This Certifies that", W / 2, 302);
+  ctx.fillText("This Certifies that", W / 2, 372);
 
   // ── Recipient name ───────────────────────────────────────────────────────────
   const displayName = name.trim() || "Employee Name";
   ctx.fillStyle = "#1C3A2B";
   ctx.font = "italic bold 58px Georgia, 'Times New Roman', serif";
-  ctx.fillText(displayName, W / 2, 395);
+  ctx.fillText(displayName, W / 2, 465);
 
   const nm = ctx.measureText(displayName);
   const nw = Math.min(nm.width + 40, 700);
   ctx.strokeStyle = "#C49A1A";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(W / 2 - nw / 2, 410);
-  ctx.lineTo(W / 2 + nw / 2, 410);
+  ctx.moveTo(W / 2 - nw / 2, 480);
+  ctx.lineTo(W / 2 + nw / 2, 480);
   ctx.stroke();
 
   // ── Body text ────────────────────────────────────────────────────────────────
   ctx.fillStyle = "#2A2E2B";
   ctx.font = "22px Georgia, 'Times New Roman', serif";
-  ctx.fillText("Has Successfully Completed the", W / 2, 468);
+  ctx.fillText("Has Successfully Completed the", W / 2, 538);
 
   ctx.fillStyle = "#1C3A2B";
   ctx.font = "bold 30px Georgia, 'Times New Roman', serif";
   const titleMetrics = ctx.measureText(processTitle);
   if (titleMetrics.width > 800) {
-    wrapText(ctx, processTitle, W / 2, 516, 820, 38);
+    wrapText(ctx, processTitle, W / 2, 586, 820, 38);
   } else {
-    ctx.fillText(processTitle, W / 2, 516);
+    ctx.fillText(processTitle, W / 2, 586);
   }
 
   ctx.fillStyle = "#2A2E2B";
   ctx.font = "22px Georgia, 'Times New Roman', serif";
-  ctx.fillText("SAP PP/QM Guided Onboarding Program", W / 2, 568);
+  ctx.fillText("SAP PP/QM Guided Onboarding Program", W / 2, 638);
 
   // ── Decorative divider ───────────────────────────────────────────────────────
   ctx.strokeStyle = "#EDE9E1";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(100, 628);
-  ctx.lineTo(W - 100, 628);
+  ctx.moveTo(100, 698);
+  ctx.lineTo(W - 100, 698);
   ctx.stroke();
   ctx.save();
-  ctx.translate(W / 2, 628);
+  ctx.translate(W / 2, 698);
   ctx.rotate(Math.PI / 4);
   ctx.fillStyle = "#C49A1A";
   ctx.fillRect(-5, -5, 10, 10);
   ctx.restore();
 
   // ── Footer columns ───────────────────────────────────────────────────────────
-  const footerY = 730;
+  const footerY = 800;
   const col1x = 220;
   const col2x = W - 220;
 
