@@ -1,0 +1,103 @@
+{
+  "slug": "slaughterhouses-business-process",
+  "title": "Slaughterhouses Business Process",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "process-flow",
+      "text": "How long does the bleeding step take after slaughter?",
+      "options": ["1:00 min", "1:50 min", "3:30 min", "5:07 min"],
+      "answer": 2,
+      "explanation": "The bleeding step — blood drainage time after slaughter — takes 3:30 minutes. This timing is specified in the slaughterhouse process flow."
+    },
+    {
+      "id": "q2",
+      "mode": "process-flow",
+      "text": "What is the total Evisceration (EV) process time?",
+      "options": ["1:25 min", "2:50 min", "3:30 min", "5:07 min"],
+      "answer": 3,
+      "explanation": "The total EV (Evisceration) Process time is 5:07 minutes — the longest single stage in the slaughterhouse workflow."
+    },
+    {
+      "id": "q3",
+      "mode": "process-flow",
+      "text": "What is the cycle time for hanging birds on the processing line?",
+      "options": ["22 seconds", "55 seconds", "1:25 min", "1:50 min"],
+      "answer": 1,
+      "explanation": "The Hanging step has a cycle time of 55 seconds — birds are hung on the processing line at this rate."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "What happens to Grade C carcasses after grading?",
+      "options": [
+        "They are packaged as whole birds",
+        "They are transferred to cold storage",
+        "They are sent to Portioning / Further Processing",
+        "They are rejected as waste"
+      ],
+      "answer": 2,
+      "explanation": "Grade C carcasses are sent to Portioning (Grade C → Portion) and further processed. Grade A carcasses are packaged as whole birds."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "The slaughterhouse workflow is divided into which two zones?",
+      "options": [
+        "Raw Zone and Cooked Zone",
+        "Dirty Area and Clean Area",
+        "Receiving Area and Storage Area",
+        "Wet Area and Dry Area"
+      ],
+      "answer": 1,
+      "explanation": "The slaughterhouse workflow is divided into the Dirty Area (from live bird receipt through evisceration) and the Clean Area (from packing through storage)."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "How long after unloading are crates left before processing begins?",
+      "options": [
+        "No waiting — immediate processing",
+        "10 minutes after unloading",
+        "30 minutes after unloading",
+        "60 minutes after unloading"
+      ],
+      "answer": 2,
+      "explanation": "The process specifies 'Leave boxes 30 min after unloading' — crates/boxes are unloaded and birds are rested for 30 minutes before processing begins."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "What is the purpose of the MDM Machine in Grade C further processing?",
+      "options": [
+        "It packages whole birds automatically",
+        "It produces Mechanically Deboned Meat",
+        "It separates wings from the carcass",
+        "It grades carcasses by weight"
+      ],
+      "answer": 1,
+      "explanation": "MDM stands for Mechanically Deboned Meat machine — it produces MDM product from bone-in portions during Grade C further processing."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "What is the scalding time in the Plucker Area?",
+      "options": ["55 seconds", "1:25 min", "1:55 min", "3:30 min"],
+      "answer": 2,
+      "explanation": "Scalding — where carcasses are dipped in hot water to loosen feathers — takes 1:55 minutes. The overall Scalding-to-Stunning sub-section takes 1:25 minutes total."
+    },
+    {
+      "id": "q9",
+      "mode": "process-flow",
+      "text": "What is the correct order of steps in the Evisceration Area?",
+      "options": [
+        "Scalding → De-feathering → Stunning → Eviscerating",
+        "Leg Cutting → Vent Cutting → Vent Opening → Eviscerating → Crop Machine → Neck Cracker → Final Inspection → Sanitizing",
+        "Hanging → Slaughtering → Bleeding → Head Pulling → Eviscerating",
+        "Chilling → Weighing → Grading → Packaging"
+      ],
+      "answer": 1,
+      "explanation": "The Evisceration Area steps in order: Leg Cutting → Vent Cutting → Vent Opening → Eviscerating → Crop Machine → Neck Cracker → Final Inspection Machine → Sanitizing."
+    }
+  ]
+}

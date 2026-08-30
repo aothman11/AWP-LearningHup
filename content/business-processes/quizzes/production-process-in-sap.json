@@ -1,0 +1,102 @@
+{
+  "slug": "production-process-in-sap",
+  "title": "Production Process in SAP",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "Which production process does Plant 1100 (Processing) use?",
+      "options": [
+        "Production Order (Migo)",
+        "Repetitive Manufacturing (MF42N)",
+        "Production Order (Co11N)",
+        "Mixed-mode (Migo and MF42N)"
+      ],
+      "answer": 1,
+      "explanation": "Plant 1100 (Processing) uses Repetitive Manufacturing with MF42N for product delivery and Standard (STD) BOM consumption — different from the Production Order approach used in farm operations.",
+      "tcodeRef": "MF42N"
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "Which variance settlement approach does Repetitive Manufacturing (REM) use?",
+      "options": [
+        "Order Level — per individual production order",
+        "Month-End — accumulated and settled collectively at period close",
+        "Daily — automatically on each confirmation",
+        "No variance settlement in REM"
+      ],
+      "answer": 1,
+      "explanation": "REM plants use Month-End variance settlement, where variances accumulate throughout the period and are settled collectively — unlike Production Order plants that settle at Order Level."
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "Which plants have Batch Management active? (Select the best answer)",
+      "options": [
+        "Only GP Hatchery (3100)",
+        "GP Laying (3200), GP Hatchery (3100), Parent Laying (1220), Hatchery (1210), Further Processing (1050), C.Layer Finished Product (1250)",
+        "All plants have Batch Management",
+        "Only Processing (1100) and Further Processing (1050)"
+      ],
+      "answer": 1,
+      "explanation": "Batch Management is active at: GP Laying (3200), GP Hatchery (3100), Parent Laying (1220), Hatchery (1210), Further Processing (1050), and C.Layer Finished Product (1250) — the plants requiring food safety traceability."
+    },
+    {
+      "id": "q4",
+      "mode": "sap-focus",
+      "text": "What does 'Consume BOM – Actual' mean?",
+      "options": [
+        "Components are issued based on standard BOM quantities",
+        "Components are issued based on actual quantities consumed (backflushing or manual GI)",
+        "Components are consumed at the end of the month only",
+        "BOM consumption is estimated from historical averages"
+      ],
+      "answer": 1,
+      "explanation": "Consume BOM – Actual means components are issued based on actual quantities consumed, using backflushing or manual goods issue. This is used in farm-type production orders (opposite of Standard, used in REM)."
+    },
+    {
+      "id": "q5",
+      "mode": "sap-focus",
+      "text": "Which order type is used by Further Processing (Plant 1050)?",
+      "options": ["YPP1", "YPP2", "YPP3", "YPP4"],
+      "answer": 1,
+      "explanation": "Further Processing (Plant 1050) uses order type YPP2. YPP1 is for pullets and DOC; YPP3 for graded eggs; YPP4 for hatching egg orders; YPP5 for floor/cage houses."
+    },
+    {
+      "id": "q6",
+      "mode": "sap-focus",
+      "text": "What does MF42N stand for and what does it do?",
+      "options": [
+        "Material Flow 42 — tracks inter-plant transfers",
+        "REM Backflush — confirms production and issues components simultaneously",
+        "Master File 42N — manages production master data",
+        "Monthly Freeze 42N — locks period for settlement"
+      ],
+      "answer": 1,
+      "explanation": "MF42N is the Repetitive Manufacturing Backflush transaction. It simultaneously confirms finished product output and issues (backflushes) all consumed components.",
+      "tcodeRef": "MF42N"
+    },
+    {
+      "id": "q7",
+      "mode": "sap-focus",
+      "text": "How many plants in AWP use Repetitive Manufacturing (REM)?",
+      "options": ["2", "4", "5", "6"],
+      "answer": 2,
+      "explanation": "Five plants use REM: 1100 Processing, 1010 Finished-Water, 1020 Protein Factory, 1130 Manure Factory, and 1140 Yanbu Grain. C.Layer Finished Product (1250) also uses REM — making it 5–6 depending on counting."
+    },
+    {
+      "id": "q8",
+      "mode": "sap-focus",
+      "text": "Which plant uses Co11N (not Migo or MF42N) as its primary Product Delivery method?",
+      "options": [
+        "Plant 1100 Processing",
+        "Plant 1200 Broiler",
+        "Plant 1120 Feed-Mill",
+        "Plant 1210 Hatchery"
+      ],
+      "answer": 2,
+      "explanation": "Plant 1120 Feed-Mill uses Co11N as its Product Delivery method (with Production Order type and YPP2 order type). GP Hatchery uses Migo & Co11n combined."
+    }
+  ]
+}

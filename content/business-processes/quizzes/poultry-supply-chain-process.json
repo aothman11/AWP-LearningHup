@@ -1,0 +1,105 @@
+{
+  "slug": "poultry-supply-chain-process",
+  "title": "Poultry Supply Chain Process",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "process-flow",
+      "text": "Where do Grain Suppliers deliver raw grain in AWP's supply chain?",
+      "options": [
+        "Yanbou Hub",
+        "Qassim Central",
+        "Parent Laying Farms",
+        "Grading Stations"
+      ],
+      "answer": 0,
+      "explanation": "Grain Suppliers deliver raw grain to the Yanbou Hub, where it is processed into feed by the Feed Mills."
+    },
+    {
+      "id": "q2",
+      "mode": "process-flow",
+      "text": "What do DOC Suppliers provide to AWP?",
+      "options": [
+        "Finished feed for farms",
+        "Day-Old Chicks to broiler and parent rearing farms",
+        "Hatching eggs for hatcheries",
+        "Packaging materials"
+      ],
+      "answer": 1,
+      "explanation": "DOC Suppliers provide Day-Old Chicks (DOC) to broiler and parent rearing farms."
+    },
+    {
+      "id": "q3",
+      "mode": "process-flow",
+      "text": "How many Feed Mills does AWP operate?",
+      "options": ["3", "4", "5", "6"],
+      "answer": 2,
+      "explanation": "AWP operates 5 feed mills: Feed Mill – Watania 1, Feed Mill 3 – Watania 2, Feed Mill 6 – Watania 2, Feed Mill 4 – Wadi, and Feed Mill 5 – Wadi."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "What is the role of Grading Stations in the supply chain?",
+      "options": [
+        "Raise parent-stock pullets from day-old chicks",
+        "Produce Day-Old Chicks from incubated eggs",
+        "Sort and grade hatching eggs; forward accepted eggs to hatcheries",
+        "Package finished egg products for sale"
+      ],
+      "answer": 2,
+      "explanation": "Grading Stations receive hatching eggs from parent laying farms, sort and grade them, and forward accepted eggs to hatcheries. Rejected eggs are handled as by-products."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "What is the primary function of Parent Rearing Farms?",
+      "options": [
+        "Produce hatching eggs for hatcheries",
+        "Raise parent-stock pullets from DOC to laying age",
+        "Raise broiler chickens for processing",
+        "Incubate eggs to produce DOC"
+      ],
+      "answer": 1,
+      "explanation": "Parent Rearing Farms raise parent-stock pullets (young hens) from day-old chicks to laying age."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "What does GP Cross Company supply to AWP?",
+      "options": [
+        "Grain for feed production",
+        "Commercial eggs for retail",
+        "Grand Parent (GP) stock",
+        "Vaccines and medications"
+      ],
+      "answer": 2,
+      "explanation": "GP Cross Company is a separate legal entity that supplies Grand Parent (GP) stock to AWP's parent rearing farms."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "After broiler farms, where are broiler chickens sent?",
+      "options": [
+        "Grading Stations",
+        "Parent Laying Farms",
+        "Processing Plants",
+        "Yanbou Hub"
+      ],
+      "answer": 2,
+      "explanation": "Broiler farms raise chickens for approximately 27 days, then transfer them to Processing Plants for slaughter and primary processing."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "Which operation is separate from the broiler stream and focuses on egg production?",
+      "options": [
+        "GP Hatchery operations",
+        "Commercial Layer operations",
+        "Further Processing operations",
+        "Feed Mill operations"
+      ],
+      "answer": 1,
+      "explanation": "Commercial Layer operations are a separate stream focused on egg production, consisting of Layer Rearing followed by Layer Laying."
+    }
+  ]
+}

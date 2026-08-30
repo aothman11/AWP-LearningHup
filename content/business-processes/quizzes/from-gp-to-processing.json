@@ -1,0 +1,106 @@
+{
+  "slug": "from-gp-to-processing",
+  "title": "FromGP to Processing",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "Which plant number is assigned to the GP Hatchery?",
+      "options": ["3100", "3200", "3300", "1210"],
+      "answer": 0,
+      "explanation": "Plant 3100 is the GP Hatchery. GP Laying is Plant 3200 and GP Rearing is Plant 3300."
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "Which plant number is assigned to the Broiler operation?",
+      "options": ["1100", "1200", "1210", "1220"],
+      "answer": 1,
+      "explanation": "Plant 1200 is the Broiler plant. Plant 1100 is Processing, Plant 1210 is Hatchery (Parent level), and Plant 1220 is Parent Laying."
+    },
+    {
+      "id": "q3",
+      "mode": "sap-focus",
+      "text": "How long do eggs remain in the setter during GP Hatchery incubation?",
+      "options": ["10 days", "14 days", "18 days", "21 days"],
+      "answer": 2,
+      "explanation": "In the GP Hatchery (Plant 3100), the setter runs for 18 days. After that, eggs are transferred to the hatcher for an additional 3 days before chicks hatch."
+    },
+    {
+      "id": "q4",
+      "mode": "sap-focus",
+      "text": "Materials 80001 and 80002 at Plant 3200 represent what?",
+      "options": [
+        "Broiler Day-Old Chicks male and female",
+        "Cobb-500 GP Hatching Eggs (M) and (F)",
+        "Graded hatching eggs by breed",
+        "Parent pullets at 19 weeks"
+      ],
+      "answer": 1,
+      "explanation": "Materials 80001 and 80002 are Cobb-500 GP Hatching Eggs (M) and (F) at Plant 3200 (GP Laying), representing the daily egg production from the GP flock."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "At what age are GP hens depleted (GR Pullets 60WK)?",
+      "options": ["52 weeks", "60 weeks", "64 weeks", "79 weeks"],
+      "answer": 1,
+      "explanation": "GP hens are depleted at 60 weeks. Materials 100800160077 (GP Female >60WK) and 100800160078 (GP Male >60WK) are posted at this milestone."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "In Section C (Grading Station), what happens to rejected eggs?",
+      "options": [
+        "They are sent directly to the hatchery",
+        "They are returned to parent laying farms",
+        "They are posted as by-product (material 90006) and sent to warehouse",
+        "They are destroyed immediately"
+      ],
+      "answer": 2,
+      "explanation": "Rejected eggs at the Grading Station are posted as by-product using material code 90006 (unpacked rejected Hatching egg) and sent to the warehouse."
+    },
+    {
+      "id": "q7",
+      "mode": "sap-focus",
+      "text": "What is a key feature of batch management in the FromGP process?",
+      "options": [
+        "It enables automatic sales order creation",
+        "It provides lot/batch traceability for food safety and regulatory compliance",
+        "It automatically posts variances at month-end",
+        "It triggers REM confirmations at day-end"
+      ],
+      "answer": 1,
+      "explanation": "Batch Management is used in GP Laying, GP Hatchery, Parent Laying, and Hatchery plants to enable lot/batch traceability — essential for food safety compliance."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "After Parent birds are received as DOP (Day-Old Parent) at Plant 1230, what is the first production milestone?",
+      "options": [
+        "GR Hatching Eggs",
+        "GR Pullets 19WK (after feed consumption in production order)",
+        "GR Pullets 64WK",
+        "GR DOC"
+      ],
+      "answer": 1,
+      "explanation": "At Plant 1230 (Parent Rearing), DOP are consumed in a production order with actual feed posted. The first GR milestone is GR Pullets 19WK, after which birds transfer to Plant 1220."
+    },
+    {
+      "id": "q9",
+      "mode": "sap-focus",
+      "text": "What is the total incubation time in the Hatchery (Plant 1210) from setting to DOC hatch?",
+      "options": ["18 days", "21 days", "24 days", "27 days"],
+      "answer": 1,
+      "explanation": "The Hatchery incubation takes 21 days total: eggs are set in a setting order (18 days in setter + 3 days in hatcher = 21 days), after which GR DOC is posted."
+    },
+    {
+      "id": "q10",
+      "mode": "process-flow",
+      "text": "How many days does the broiler growing cycle last before transfer to processing?",
+      "options": ["14 days", "19 days", "27 days", "35 days"],
+      "answer": 2,
+      "explanation": "The Broiler plant (Plant 1200) runs a 26–27 day growing cycle. After this, GR Broiler is posted and birds are sent to Processing Plant 1100 via ACT:STD."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "slug": "hatchery-business-process",
+  "title": "Hatchery Business Process",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "process-flow",
+      "text": "On which day is candling performed to check egg hatchability?",
+      "options": ["Day 5", "Day 10", "Day 14", "Day 18"],
+      "answer": 1,
+      "explanation": "Candling — using light to inspect eggs for fertility — is performed on Day 10. It is a sample check, not all eggs are candled."
+    },
+    {
+      "id": "q2",
+      "mode": "process-flow",
+      "text": "After how many days in the setter are eggs transferred to the hatcher?",
+      "options": ["10–12 days", "14–16 days", "18–18.5 days", "21 days"],
+      "answer": 2,
+      "explanation": "Eggs are transferred from the setter to the hatcher after 18–18.5 days. The transfer process is automated."
+    },
+    {
+      "id": "q3",
+      "mode": "process-flow",
+      "text": "What rule applies when eggs are moved from Cold Store to the setter?",
+      "options": [
+        "LIFO — newest batch used first",
+        "FIFO — oldest batch used first",
+        "Random selection based on batch size",
+        "Heaviest eggs are always set first"
+      ],
+      "answer": 1,
+      "explanation": "The FIFO (First In, First Out) rule applies — the oldest batch is always used first when moving eggs from Cold Store to the setter, ensuring egg freshness and traceability."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "What types of egg rejects occur during the setter-to-hatcher transfer?",
+      "options": [
+        "Grade C, Grade D, Grade E",
+        "Dirty, Cracked, Broken",
+        "Rots, Short, Setting Break, Transfer Break",
+        "Infertile, Small, Overweight"
+      ],
+      "answer": 2,
+      "explanation": "The diagram identifies four reject types at the setter-to-hatcher transfer: Rots, Short, Setting Break, and Transfer Break."
+    },
+    {
+      "id": "q5",
+      "mode": "process-flow",
+      "text": "After how many days in the hatcher do chicks hatch out?",
+      "options": ["1–1.5 days", "2.5–3 days", "5 days", "7 days"],
+      "answer": 1,
+      "explanation": "After the hatcher receives the setted eggs, chicks hatch out in 2.5–3 days."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "What happens to cracked eggs in the Cold Store (Track A)?",
+      "options": [
+        "They are sent to the hatcher",
+        "They are moved to the setter",
+        "They are rejected at the Cold Store stage",
+        "They are candled first, then rejected"
+      ],
+      "answer": 2,
+      "explanation": "Cracked eggs are noted as rejects at the Cold Store stage: 'Note: Reject — Cracked eggs.' They do not proceed to the setter."
+    },
+    {
+      "id": "q7",
+      "mode": "process-flow",
+      "text": "What is done to chicks immediately after hatch-out?",
+      "options": [
+        "They are immediately shipped to broiler farms",
+        "They are graded, then vaccinated, then graded again",
+        "They are weighed and sexed only",
+        "They are placed in cold store for 24 hours"
+      ],
+      "answer": 1,
+      "explanation": "After hatch-out: Grading → Hatch-out vaccination → Grading after vaccine → Grade A chicks received. Rejects (dead, culls, inject-dead, inject-culls) are removed."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "What are the five reject egg categories listed in quality/by-product handling?",
+      "options": [
+        "Grade B, Grade C, Grade D, Infertile, Overweight",
+        "Small, Cracked, Dirty Nest Box, Miss Shell, Offal",
+        "Rots, Short, Transfer Break, Setting Break, Empty",
+        "Wet, Dry, Cold, Overheat, Crushed"
+      ],
+      "answer": 1,
+      "explanation": "The five egg reject categories listed in the quality/by-product handling section are: Small, Cracked, Dirty Nest Box, Miss Shell, and Offal."
+    }
+  ]
+}

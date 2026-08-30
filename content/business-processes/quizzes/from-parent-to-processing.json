@@ -1,0 +1,124 @@
+{
+  "slug": "from-parent-to-processing",
+  "title": "From Parent to Processing",
+  "questions": [
+    {
+      "id": "q1",
+      "mode": "sap-focus",
+      "text": "Which SAP T-Code is used for daily activity confirmations throughout the parent-to-processing cycle?",
+      "options": ["CO01", "CO11N", "MIGO_GR", "CO03"],
+      "answer": 1,
+      "explanation": "CO11N (Production Order Confirmation) is used at every stage — Rearing, Pre-Laying, Laying, Hatchery, and Broiler — to record daily activities, quantities, and events.",
+      "tcodeRef": "CO11N"
+    },
+    {
+      "id": "q2",
+      "mode": "sap-focus",
+      "text": "What does TECO stand for in the context of closing a production order?",
+      "options": [
+        "Technical Completion — order locked, no further postings",
+        "Transfer and Completion Order",
+        "Total Entry Control Order",
+        "Terminal Execution Close-Out"
+      ],
+      "answer": 0,
+      "explanation": "TECO means Technical Completion. Setting TECO on a production order locks it — no further postings (GR, GI, confirmations) are allowed after this point.",
+      "tcodeRef": "CO02"
+    },
+    {
+      "id": "q3",
+      "mode": "process-flow",
+      "text": "At what age milestone do Parent Rearing birds transfer to the Pre-Laying phase?",
+      "options": ["14 weeks", "19 weeks", "24 weeks", "64 weeks"],
+      "answer": 1,
+      "explanation": "Birds are raised in Parent Rearing to 19 weeks. A Goods Receipt (GR Pullets 19WK) is posted at this milestone, and the birds transfer to Parent Pre-Laying."
+    },
+    {
+      "id": "q4",
+      "mode": "process-flow",
+      "text": "What does DLV mean when closing a production order?",
+      "options": [
+        "Delivery Completed — no more goods receipts expected",
+        "Daily Live Verification",
+        "Delayed Variance Log",
+        "Distribution Line Volume"
+      ],
+      "answer": 0,
+      "explanation": "DLV means the Delivery Completed indicator is set on the order, indicating that no further goods receipts are expected. It is set together with TECO at stage close."
+    },
+    {
+      "id": "q5",
+      "mode": "sap-focus",
+      "text": "In Stage 4 (Parent Laying), which goods movement is posted daily?",
+      "options": [
+        "GR Pullets 24WK",
+        "Daily Hatching Eggs GR",
+        "GR DOC",
+        "GR Carcass"
+      ],
+      "answer": 1,
+      "explanation": "The Parent Laying stage posts a Daily Hatching Eggs GR — a Goods Receipt is recorded in SAP every single day as eggs are produced."
+    },
+    {
+      "id": "q6",
+      "mode": "process-flow",
+      "text": "What happens to depleted Parent Laying hens (Pullets 64WK)?",
+      "options": [
+        "They are returned to rearing farms",
+        "They are always sold externally via Sales Order",
+        "A Goods Issue of by-product is posted; a decision is made to sell or send to processing",
+        "They are posted as waste and discarded"
+      ],
+      "answer": 2,
+      "explanation": "At 64 weeks, a GI By Product (Pullets 64WK) is posted. The process then includes a decision point — if there is a plan to sell, they go to an external Sales Order; otherwise they are sent to Processing."
+    },
+    {
+      "id": "q7",
+      "mode": "sap-focus",
+      "text": "What Goods Receipt is posted when Day-Old Chicks hatch from the Hatchery?",
+      "options": ["GR Pullets 19WK", "GR DOC", "GR Broiler 27 days", "GR Carcass"],
+      "answer": 1,
+      "explanation": "When Day-Old Chicks (DOC) are produced by the Hatchery, a GR DOC (Goods Receipt of hatched Day-Old Chicks) is posted in SAP."
+    },
+    {
+      "id": "q8",
+      "mode": "process-flow",
+      "text": "In Stage 9 (Processing), what is posted after broilers arrive at the plant?",
+      "options": [
+        "GR Pullets 24WK → GR Carcass",
+        "GR From Order → GR Carcass → Finished Product Packaging → Transfer to Store",
+        "GR DOC → GR Broiler 27 days",
+        "Activity Confirmation → DLV & TECO"
+      ],
+      "answer": 1,
+      "explanation": "Processing follows the sequence: GR From Order (receiving live broilers), GR Carcass, Finished Product Packaging, and Transfer to Store — in that order."
+    },
+    {
+      "id": "q9",
+      "mode": "sap-focus",
+      "text": "The detailed Diagram B adds which additional SAP feature to each production stage?",
+      "options": [
+        "Automatic batch creation",
+        "Activity Confirmations (CO11N) and Daily QM Data recording via SAP Fiori",
+        "Repetitive Manufacturing backflush",
+        "Sales Order integration"
+      ],
+      "answer": 1,
+      "explanation": "Diagram B (detailed SAP swim-lane) adds Activity Confirmations (CO11N) and Daily QM Data recording using SAP Fiori at each production stage, plus DLV & TECO order closing steps.",
+      "tcodeRef": "CO11N"
+    },
+    {
+      "id": "q10",
+      "mode": "process-flow",
+      "text": "What is the purpose of a Stock Transfer Order (STO) in Stage 7 — By-Product Store?",
+      "options": [
+        "To post daily hatching eggs from laying farms",
+        "To move rejected egg by-products to the destination warehouse",
+        "To transfer live birds to the processing plant",
+        "To create a sales invoice for spent hens"
+      ],
+      "answer": 1,
+      "explanation": "The By-Product Store stage creates an STO (Stock Transfer Order) to move rejected egg by-products, followed by an STO GR (Goods Receipt) at the destination warehouse."
+    }
+  ]
+}
