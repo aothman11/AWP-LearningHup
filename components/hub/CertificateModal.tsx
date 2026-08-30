@@ -132,7 +132,7 @@ function drawAWPLogo(ctx: CanvasRenderingContext2D, cx: number, cy: number) {
 
 // ─── Main draw function ───────────────────────────────────────────────────────
 
-function drawCertificate(
+async function drawCertificate(
   canvas: HTMLCanvasElement,
   name: string,
   processTitle: string,
@@ -146,6 +146,14 @@ function drawCertificate(
 
   const ctx = canvas.getContext("2d")!;
   ctx.scale(s, s);
+
+  // ── Load logo image ──────────────────────────────────────────────────────────
+  const logo = await new Promise<HTMLImageElement | null>((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = "/alwatania-logo-white.png";
+  });
 
   // ── Background ───────────────────────────────────────────────────────────────
   ctx.fillStyle = "#FAFAF8";
@@ -169,8 +177,15 @@ function drawCertificate(
   ctx.fill();
   ctx.fillRect(14, 110, W - 28, 59);
 
-  // ── AWP Logo (drawn directly) ────────────────────────────────────────────────
-  drawAWPLogo(ctx, W / 2, 82);
+  // ── AWP Logo (real image, centred in header) ─────────────────────────────────
+  if (logo) {
+    const logoH = 110;
+    const logoW = logo.naturalWidth * (logoH / logo.naturalHeight);
+    ctx.drawImage(logo, W / 2 - logoW / 2, 20, logoW, logoH);
+  } else {
+    // Fallback: draw programmatically
+    drawAWPLogo(ctx, W / 2, 82);
+  }
 
   // ── "CERTIFICATE OF COMPLETION" ──────────────────────────────────────────────
   ctx.textAlign = "center";
@@ -306,7 +321,7 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
   useEffect(() => {
     if (!canvasRef.current) return;
     const title = isAR ? p.titleAR : p.titleEN;
-    drawCertificate(canvasRef.current, name, title, completedDate);
+    void drawCertificate(canvasRef.current, name, title, completedDate);
   }, [name, p, completedDate, isAR]);
 
   function saveName(n: string) {
@@ -314,10 +329,10 @@ export function CertificateModal({ process: p, completedDate, lang, onClose }: P
     try { localStorage.setItem(STORAGE_KEY, n); } catch {}
   }
 
-  function downloadPDF() {
+  async function downloadPDF() {
     if (!canvasRef.current) return;
     const title = isAR ? p.titleAR : p.titleEN;
-    drawCertificate(canvasRef.current, name, title, completedDate);
+    await drawCertificate(canvasRef.current, name, title, completedDate);
     const dataURL = canvasRef.current.toDataURL("image/png");
 
     // Open in a new tab and trigger browser print → Save as PDF
