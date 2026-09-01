@@ -413,10 +413,14 @@ export default function HubPage() {
       <footer className="border-t border-[#D9D4C8] mt-12">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 flex items-center justify-between gap-4 text-xs text-[#6B7A6F]">
           <span>AWP Central Learning Hub · SAP PP/QM</span>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <Link href="/learning/business-processes" className="hover:text-[#1C3A2B] transition-colors">Business Processes</Link>
             <Link href="/logbook" className="hover:text-[#1C3A2B] transition-colors">T-Code Library</Link>
             <Link href="/process-flow" className="hover:text-[#1C3A2B] transition-colors">Process Flow</Link>
+            <Link href="/about" className="hover:text-[#1C3A2B] transition-colors">About</Link>
+            <Link href="/faq" className="hover:text-[#1C3A2B] transition-colors">FAQ</Link>
+            <Link href="/privacy" className="hover:text-[#1C3A2B] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[#1C3A2B] transition-colors">Terms</Link>
           </div>
         </div>
       </footer>
