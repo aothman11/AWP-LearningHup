@@ -1,0 +1,44 @@
+# V3-SD-TC-BKE-090-Credit Quarterly Incentive
+
+| V3-TC-SD-BKE-008- Credit Quarterly Incentive |
+| --- |
+
+| **Project Identification** |
+| --- |
+| **Project Name** | **Project Type** |
+| S4P Upgrade 2209 | Upgrade Project |
+| **Customer Name** |
+| Al-Watania Poultry |
+| **Created By** | **Service Partner(s)** |
+| Mutaz As’ad | Wi-Sys |
+
+| **Process Name** | Credit Quarterly Incentive Processing |
+| --- | --- |
+| **Test pre-conditions** | Master data created (customers , materials and conditions) |
+| **Test Type** | Manual |
+| **TC Description** | Testing of Credit Memo Processing Credit Quarterly Incentive Order type YCR8 |
+
+| **Process Steps Description**** ** |
+| --- |
+| **ID** | **Process Step Description** | **Execution** | **Roles** |
+|  |  | **T-Code** | **FIORI Application** | **Internal Sales Representative** | **Billing clerk** | **A/R Accountant** |
+| Trigger | Customer to receive credit |  |  |  |  |  |
+| 01 | Create Credit Memo Request | VA01 | Manage Sales Orders | R |  |  |
+| 02 | Create Credit Memo | VF04 | Create Billing Document Work list |  | R | I |
+| Output | Create Credit Memo generated and trigger to A/R |  |  |  |  |  |
+
+| **Retports** |
+| --- |
+| **ID** | **Transaction** | **Description** | **GUI** | **Fiori** |
+| 01 | YSD001 | Customers List | X |  |
+| 02 | YSD002 | Stock Overview by CAR | X |  |
+| 03 | YSD003 | List of sales orders | X |  |
+| 04 | YSD005 | Sales Order Status | X |  |
+| 05 | YSD007 | Sales Orders items | X |  |
+| 06 | YSD009 | List of billing documents - items | X |  |
+| 07 | YSD018 | Billing List - Net Sales | X |  |
+| 08 | UKM_MALUS_DSP | SAP Credit Management: Credit Exposure List | X |  |
+
+| Test Cases |
+| --- |
+| Confidential | Page 1 of 2 |
