@@ -1164,7 +1164,6 @@ export default function ProcessFlowPage() {
           <span>AWP Process Flow · BPD Package 2025</span>
           <div className="flex gap-4">
             <Link href="/hub" className="hover:text-[#1C3A2B] transition-colors">Hub</Link>
-            <Link href="/logbook" className="hover:text-[#1C3A2B] transition-colors">T-Code Library</Link>
           </div>
         </div>
       </footer>
