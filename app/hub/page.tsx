@@ -56,6 +56,7 @@ export default function HubPage() {
   const [progress, setProgress] = useState<ProgressState>({ visited: {}, completed: {} });
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [activeArea, setActiveArea] = useState<string | null>(null);
+  const [cmdSearch, setCmdSearch] = useState("");
   const [activeTab, setActiveTab] = useState<HubTab>("critical");
 
   // Process progress (for Completed tab)
@@ -109,9 +110,17 @@ export default function HubPage() {
   }
 
   const selectedPathData = selectedPath ? learningPaths.find((p) => p.id === selectedPath) : null;
-  const filteredAwp = activeArea
-    ? awpHighEntries.filter((e) => e.category === activeArea || e.processArea === activeArea)
-    : awpHighEntries;
+  const filteredAwp = useMemo(() => {
+    const q = cmdSearch.trim().toLowerCase();
+    return awpHighEntries.filter((e) => {
+      const matchesArea = !activeArea || e.category === activeArea || e.processArea === activeArea;
+      const matchesSearch = !q ||
+        e.transactionCode.toLowerCase().includes(q) ||
+        e.title.toLowerCase().includes(q) ||
+        (e.description ?? "").toLowerCase().includes(q);
+      return matchesArea && matchesSearch;
+    });
+  }, [awpHighEntries, activeArea, cmdSearch]);
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#2A2E2B]">
@@ -241,12 +250,25 @@ export default function HubPage() {
         {activeTab === "critical" && (
           <div className="space-y-14">
             <section>
-              <div className="mb-6">
-                <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">AWP Critical</p>
-                <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                  Explore by Knowledge Area
-                </h3>
-                <p className="text-sm text-[#6B7A6F] mt-1">Filter AWP-critical T-codes by functional domain.</p>
+              <div className="mb-5 flex flex-col sm:flex-row sm:items-end gap-4">
+                <div className="flex-1">
+                  <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">Command Centre</p>
+                  <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                    Explore by Knowledge Area
+                  </h3>
+                  <p className="text-sm text-[#6B7A6F] mt-1">Filter AWP-critical T-codes by functional domain.</p>
+                </div>
+                {/* Search */}
+                <div className="relative sm:w-64 shrink-0">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7A6F] text-sm pointer-events-none">🔍</span>
+                  <input
+                    type="search"
+                    value={cmdSearch}
+                    onChange={(e) => setCmdSearch(e.target.value)}
+                    placeholder="Search T-codes…"
+                    className="w-full pl-8 pr-3 py-2 text-sm border border-[#D9D4C8] rounded-lg bg-[#FAFAF8] text-[#2A2E2B] placeholder:text-[#9BA89F] focus:outline-none focus:border-[#4E7862] focus:ring-1 focus:ring-[#4E7862] transition-colors"
+                  />
+                </div>
               </div>
               <div className="flex flex-wrap gap-2 mb-6">
                 <button
@@ -294,7 +316,13 @@ export default function HubPage() {
                   );
                 })}
               </div>
-              {filteredAwp.length === 0 && <p className="text-sm text-[#6B7A6F] py-8 text-center">No entries match this filter.</p>}
+              {filteredAwp.length === 0 && (
+                <p className="text-sm text-[#6B7A6F] py-8 text-center">
+                  No T-codes match{cmdSearch ? ` "${cmdSearch}"` : " this filter"}.{cmdSearch && (
+                    <button onClick={() => setCmdSearch("")} className="ml-2 underline hover:text-[#1C3A2B] transition-colors">Clear search</button>
+                  )}
+                </p>
+              )}
             </section>
           </div>
         )}
