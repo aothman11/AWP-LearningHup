@@ -143,7 +143,7 @@ export default function HubPage() {
               >
                 AWP SAP Central Learning Hub
               </h1>
-              <p className="text-xs text-[#6B7A6F] mt-0.5">SAP PP/QM · Advanced Work Packaging</p>
+              <p className="text-xs text-[#6B7A6F] mt-0.5">Al-Watania Poultry · Internal Learning Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function HubPage() {
       <section className="bg-[#1C3A2B] text-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <p className="text-[#C8DFC5] text-xs font-semibold uppercase tracking-widest mb-3">
-            Advanced Work Packaging · SAP S/4HANA
+            Al-Watania Poultry · SAP S/4HANA
           </p>
           <h2
             className="text-4xl sm:text-5xl font-light leading-tight mb-4 max-w-2xl"
