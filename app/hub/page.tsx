@@ -59,7 +59,7 @@ export default function HubPage() {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [activeArea, setActiveArea] = useState<string | null>(null);
   const [cmdSearch, setCmdSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<HubTab>("critical");
+  const [activeTab, setActiveTab] = useState<HubTab>("processes");
   const [cmdIntroSeen, setCmdIntroSeen] = useState(true); // default true; overridden by localStorage
 
   // Process progress (for Completed tab)
@@ -155,6 +155,18 @@ export default function HubPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Command Centre button */}
+            <button
+              onClick={() => setActiveTab("critical")}
+              className={`flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full border transition-colors ${
+                activeTab === "critical"
+                  ? "bg-[#1C3A2B] text-white border-[#1C3A2B]"
+                  : "bg-[#F7F5F0] text-[#1C3A2B] border-[#D9D4C8] hover:border-[#4E7862] hover:bg-[#E8F0E4]"
+              }`}
+            >
+              <span>🖥️</span>
+              <span>{t("hub.tabs.critical")}</span>
+            </button>
             {/* Lang toggle */}
             <button
               onClick={toggleLang}
@@ -172,7 +184,6 @@ export default function HubPage() {
       <nav className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-[73px] z-20" aria-label="Hub navigation">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-1 overflow-x-auto">
           {([
-            { id: "critical",  label: t("hub.tabs.critical") },
             { id: "processes", label: t("hub.tabs.processes") },
             { id: "paths",     label: t("hub.tabs.paths") },
             { id: "completed", label: t("hub.tabs.completed") },
