@@ -157,11 +157,18 @@ export const translations = {
   "flow.clickToOpen": { EN: "Click to view details", AR: "انقر لعرض التفاصيل" },
 
   // Hub tabs
-  "hub.tabs.tcodes":    { EN: "T-Codes",       AR: "رموز المعاملات" },
-  "hub.tabs.critical":  { EN: "Command Centre", AR: "مركز القيادة" },
-  "hub.tabs.processes": { EN: "Processes",     AR: "العمليات" },
-  "hub.tabs.paths":     { EN: "Learning Paths",AR: "مسارات التعلم" },
-  "hub.tabs.completed": { EN: "Completed",     AR: "المكتملة" },
+  "hub.tabs.tcodes":    { EN: "T-Codes",          AR: "رموز المعاملات" },
+  "hub.tabs.critical":  { EN: "Command Centre",   AR: "مركز القيادة" },
+  "hub.tabs.processes": { EN: "AWP Processes",    AR: "عمليات AWP" },
+  "hub.tabs.paths":     { EN: "Learning Paths",   AR: "مسارات التعلم" },
+  "hub.tabs.completed": { EN: "Completed",        AR: "المكتملة" },
+  // Command Centre
+  "cmd.subtitle":       { EN: "Deep dive into SAP T-Codes used across AWP operations", AR: "تعمق في رموز SAP T-Codes المستخدمة في عمليات AWP" },
+  // AWP Processes
+  "awp.processes.heading":    { EN: "AWP Processes",                              AR: "عمليات AWP" },
+  "awp.processes.subheading": { EN: "Select a category to explore its processes", AR: "اختر فئة لاستعراض عملياتها" },
+  "awp.processes.count.one":  { EN: "1 process",                                  AR: "عملية واحدة" },
+  "awp.processes.count.other":{ EN: "{n} processes",                              AR: "{n} عمليات" },
 
   // Process onboarding — tab header
   "proc.heading":        { EN: "Choose a Process",                     AR: "اختر عملية" },

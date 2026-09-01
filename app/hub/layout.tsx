@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Learning Hub — AWP SAP PP/QM",
+  title: "AWP SAP Central Learning Hub",
   description:
-    "Your central training dashboard for SAP PP/QM at Al-Watania Poultry. Access learning paths, T-code logbook, business process docs, and knowledge quizzes — all in one place.",
+    "Your central SAP training dashboard at Al-Watania Poultry. Browse AWP process categories, deep-dive T-code reference, knowledge quizzes, and role-based learning paths — all in one place.",
 };
 
 export default function HubLayout({ children }: { children: React.ReactNode }) {

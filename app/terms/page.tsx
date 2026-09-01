@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Use — AWP Learning Hub",
+  title: "Terms of Use — AWP SAP Central Learning Hub",
   description:
-    "Terms of use for the AWP Central Learning Hub — conditions governing access and use of this internal SAP PP/QM training platform.",
+    "Terms of use for the AWP SAP Central Learning Hub — conditions governing access and use of this internal SAP PP/QM training platform.",
 };
 
 export default function TermsPage() {
@@ -32,7 +32,7 @@ export default function TermsPage() {
               1. Acceptance of Terms
             </h2>
             <p className="text-sm">
-              By accessing or using the AWP Central Learning Hub (&ldquo;Platform&rdquo;), you agree to be bound by these Terms of Use.
+              By accessing or using the AWP SAP Central Learning Hub (&ldquo;Platform&rdquo;), you agree to be bound by these Terms of Use.
               If you do not agree to these terms, please do not use the Platform.
               Access is restricted to authorised Al-Watania Poultry employees and approved contractors.
             </p>

@@ -4,9 +4,9 @@ import { LangProvider } from "@/context/LangContext";
 import { ResearchDrawer } from "@/components/ResearchDrawer";
 
 export const metadata: Metadata = {
-  title: "AWP Central Learning Hub",
+  title: "AWP SAP Central Learning Hub",
   description:
-    "AWP-aligned learning hub for SAP PP/QM — role-based learning paths, T-code reference, progress tracking, and process flows for Advanced Work Packaging.",
+    "AWP SAP Central Learning Hub — structured SAP PP/QM training for Al-Watania Poultry. Category-based process guides, T-code reference, knowledge quizzes, and role-based learning paths.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

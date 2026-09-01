@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — AWP Learning Hub",
+  title: "Privacy Policy — AWP SAP Central Learning Hub",
   description:
-    "Privacy policy for the AWP Central Learning Hub — how we handle data collected through this internal training platform.",
+    "Privacy policy for the AWP SAP Central Learning Hub — how we handle data collected through this internal training platform.",
 };
 
 export default function PrivacyPage() {
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
               1. Overview
             </h2>
             <p>
-              The AWP Central Learning Hub (&ldquo;Platform&rdquo;) is an internal training tool operated by Al-Watania Poultry.
+              The AWP SAP Central Learning Hub (&ldquo;Platform&rdquo;) is an internal training tool operated by Al-Watania Poultry.
               This policy describes what information is collected when you use the Platform and how it is used.
               The Platform is intended for authorised Al-Watania Poultry employees and contractors only.
             </p>
