@@ -140,9 +140,9 @@ export default function HubPage() {
                 className="text-xl font-light text-[#1C3A2B] leading-none tracking-wide"
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
               >
-                AWP Central Learning Hub
+                AWP SAP Central Learning Hub
               </h1>
-              <p className="text-xs text-[#6B7A6F] mt-0.5">SAP PP/QM · Advanced Work Packaging</p>
+              <p className="text-xs text-[#6B7A6F] mt-0.5">Al-Watania Poultry · Internal Learning Platform</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -188,17 +188,19 @@ export default function HubPage() {
       <section className="bg-[#1C3A2B] text-white">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <p className="text-[#C8DFC5] text-xs font-semibold uppercase tracking-widest mb-3">
-            Advanced Work Packaging · SAP S/4HANA
+            Al-Watania Poultry · SAP S/4HANA
           </p>
           <h2
             className="text-4xl sm:text-5xl font-light leading-tight mb-4 max-w-2xl"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            Stop guessing T-codes. Start knowing them.
+            {lang === "AR"
+              ? "لا تحتار، كل اللي تحتاجه هنا."
+              : "Don't Guess. Everything You Need Is Here."}
           </h2>
           <p className="text-[#A8C4A8] text-sm sm:text-base max-w-xl leading-relaxed mb-8">
-            Role-based learning paths, curated T-code reference, and progress tracking —
-            everything a PP planner, QM inspector, or SAP consultant needs to deliver AWP-aligned production.
+            Role-based learning paths, curated SAP reference, and progress tracking —
+            everything you need across all SAP modules to deliver AWP-aligned results.
           </p>
 
           {/* Hero stats */}
