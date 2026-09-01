@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "FAQ — AWP Learning Hub",
+  title: "FAQ — AWP SAP Central Learning Hub",
   description:
-    "Frequently asked questions about the AWP Central Learning Hub — SAP PP/QM training, T-codes, business processes, and platform usage.",
+    "Frequently asked questions about the AWP SAP Central Learning Hub — SAP PP/QM training, T-codes, business processes, and platform usage.",
 };
 
 const FAQ_ITEMS = [
   {
-    q: "What is the AWP Learning Hub?",
-    a: "The AWP Central Learning Hub is an internal training platform for Al-Watania Poultry's SAP PP/QM users. It provides structured learning paths, T-code documentation, business process guides, and knowledge quizzes — all tailored to AWP's specific SAP configuration.",
+    q: "What is the AWP SAP Central Learning Hub?",
+    a: "The AWP SAP Central Learning Hub is an internal training platform for Al-Watania Poultry's SAP PP/QM users. It provides structured learning paths, T-code documentation, business process guides, and knowledge quizzes — all tailored to AWP's specific SAP configuration.",
   },
   {
     q: "Who can use this platform?",
@@ -72,7 +72,7 @@ export default function FaqPage() {
             Frequently Asked Questions
           </h1>
           <p className="text-[#6B7A6F] text-lg leading-relaxed">
-            Common questions about the AWP Learning Hub, SAP PP/QM training, and platform usage.
+            Common questions about the AWP SAP Central Learning Hub, SAP PP/QM training, and platform usage.
           </p>
         </div>
 

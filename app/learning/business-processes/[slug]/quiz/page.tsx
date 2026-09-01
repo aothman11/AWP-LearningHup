@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps) {
   const section = sections.find((s) => s.slug === slug);
   if (!section) return { title: "Not Found" };
   return {
-    title: `Quiz: ${section.label} — AWP Learning Hub`,
+    title: `Quiz: ${section.label} — AWP SAP Central Learning Hub`,
     description: `Test your knowledge of the ${section.label} business process.`,
   };
 }

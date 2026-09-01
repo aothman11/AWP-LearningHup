@@ -3,7 +3,7 @@ import { ProcessCard } from "@/components/business-processes/ProcessCard";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Business Processes — AWP Learning Hub",
+  title: "Business Processes — AWP SAP Central Learning Hub",
   description:
     "Structured reference and quizzes for all 10 AWP business process diagrams — from Supply Chain to Slaughterhouse.",
 };

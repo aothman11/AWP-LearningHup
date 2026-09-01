@@ -5,6 +5,7 @@ import { logbookEntries } from "@/data/qm-logbook";
 import { learningPaths } from "@/data/learning-paths";
 import Link from "next/link";
 import { ProcessesTab, useProcessProgress, getCompletedProcesses } from "@/components/hub/ProcessesTab";
+import { AwpProcessesTab } from "@/components/hub/AwpProcessesTab";
 import { useLang } from "@/context/LangContext";
 import { useT } from "@/lib/i18n";
 
@@ -140,7 +141,7 @@ export default function HubPage() {
                 className="text-xl font-light text-[#1C3A2B] leading-none tracking-wide"
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
               >
-                AWP Central Learning Hub
+                AWP SAP Central Learning Hub
               </h1>
               <p className="text-xs text-[#6B7A6F] mt-0.5">SAP PP/QM · Advanced Work Packaging</p>
             </div>
@@ -243,8 +244,8 @@ export default function HubPage() {
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-10">
 
-        {/* ── Processes tab ─────────────────────────────────────────────────── */}
-        {activeTab === "processes" && <ProcessesTab />}
+        {/* ── AWP Processes tab ─────────────────────────────────────────────── */}
+        {activeTab === "processes" && <AwpProcessesTab />}
 
         {/* ── AWP Critical tab ──────────────────────────────────────────────── */}
         {activeTab === "critical" && (
@@ -256,7 +257,7 @@ export default function HubPage() {
                   <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
                     Explore by Knowledge Area
                   </h3>
-                  <p className="text-sm text-[#6B7A6F] mt-1">Filter AWP-critical T-codes by functional domain.</p>
+                  <p className="text-sm text-[#6B7A6F] mt-1">{t("cmd.subtitle")}</p>
                 </div>
                 {/* Search */}
                 <div className="relative sm:w-64 shrink-0">
@@ -440,7 +441,7 @@ export default function HubPage() {
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="border-t border-[#D9D4C8] mt-12">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 flex items-center justify-between gap-4 text-xs text-[#6B7A6F]">
-          <span>AWP Central Learning Hub · SAP PP/QM</span>
+          <span>AWP SAP Central Learning Hub · SAP PP/QM</span>
           <div className="flex flex-wrap gap-4">
             <Link href="/learning/business-processes" className="hover:text-[#1C3A2B] transition-colors">Business Processes</Link>
             <Link href="/process-flow" className="hover:text-[#1C3A2B] transition-colors">Process Flow</Link>

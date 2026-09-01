@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About — AWP Learning Hub",
+  title: "About — AWP SAP Central Learning Hub",
   description:
-    "Learn about the AWP Central Learning Hub — a dedicated SAP PP/QM training platform built for Al-Watania Poultry's operational teams and SAP users.",
+    "Learn about the AWP SAP Central Learning Hub — a dedicated SAP PP/QM training platform built for Al-Watania Poultry's operational teams and SAP users.",
 };
 
 export default function AboutPage() {
@@ -32,7 +32,7 @@ export default function AboutPage() {
         <div className="mb-10">
           <p className="text-xs font-semibold tracking-widest uppercase text-[#4E7862] mb-3">About the Platform</p>
           <h1 className="font-['Cormorant_Garamond',Georgia,serif] text-4xl sm:text-5xl font-light text-[#1C3A2B] mb-4 leading-tight">
-            AWP Central Learning Hub
+            AWP SAP Central Learning Hub
           </h1>
           <p className="text-[#6B7A6F] text-lg leading-relaxed">
             A structured, role-aware training environment for SAP PP/QM at Al-Watania Poultry —
@@ -44,7 +44,7 @@ export default function AboutPage() {
         <section className="mb-10 p-6 bg-white rounded-xl border border-[#D9D4C8]">
           <h2 className="font-['Cormorant_Garamond',Georgia,serif] text-2xl font-light text-[#1C3A2B] mb-3">Our Mission</h2>
           <p className="text-[#2A2E2B] leading-relaxed mb-3">
-            The AWP Learning Hub was created to accelerate SAP adoption across Al-Watania Poultry's
+            The AWP SAP Central Learning Hub was created to accelerate SAP adoption across Al-Watania Poultry's
             production, quality, and operations teams. Rather than relying solely on external
             consultants or generic SAP documentation, this platform surfaces the exact T-codes,
             process flows, and decision logic relevant to AWP's specific configuration.
