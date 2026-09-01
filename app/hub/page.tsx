@@ -6,6 +6,7 @@ import { learningPaths } from "@/data/learning-paths";
 import Link from "next/link";
 import { ProcessesTab, useProcessProgress, getCompletedProcesses } from "@/components/hub/ProcessesTab";
 import { AwpProcessesTab } from "@/components/hub/AwpProcessesTab";
+import AssistantTab from "@/components/hub/AssistantTab";
 import { useLang } from "@/context/LangContext";
 import { useT } from "@/lib/i18n";
 
@@ -49,7 +50,7 @@ const KNOWLEDGE_AREAS = [
   { id: "Reporting",      label: "Reporting & Analytics",    icon: "📊", module: "PP/QM", desc: "MRP exceptions, capacity overview, quality control center" },
 ];
 
-type HubTab = "critical" | "processes" | "paths" | "completed";
+type HubTab = "critical" | "processes" | "paths" | "completed" | "assistant";
 
 export default function HubPage() {
   const { lang, toggle: toggleLang } = useLang();
@@ -59,6 +60,7 @@ export default function HubPage() {
   const [activeArea, setActiveArea] = useState<string | null>(null);
   const [cmdSearch, setCmdSearch] = useState("");
   const [activeTab, setActiveTab] = useState<HubTab>("critical");
+  const [cmdIntroSeen, setCmdIntroSeen] = useState(true); // default true; overridden by localStorage
 
   // Process progress (for Completed tab)
   const processProgress = useProcessProgress();
@@ -69,6 +71,12 @@ export default function HubPage() {
 
   useEffect(() => {
     setProgress(loadProgress());
+    try {
+      const seen = localStorage.getItem("awp-cmd-intro-seen");
+      setCmdIntroSeen(seen === "1");
+    } catch {
+      setCmdIntroSeen(false);
+    }
   }, []);
 
   // ── AWP High entries ───────────────────────────────────────────────────
@@ -168,6 +176,7 @@ export default function HubPage() {
             { id: "processes", label: t("hub.tabs.processes") },
             { id: "paths",     label: t("hub.tabs.paths") },
             { id: "completed", label: t("hub.tabs.completed") },
+            { id: "assistant", label: t("hub.tabs.assistant") },
           ] as { id: HubTab; label: string }[]).map((tab) => (
             <button
               key={tab.id}
@@ -248,7 +257,45 @@ export default function HubPage() {
         {activeTab === "processes" && <AwpProcessesTab />}
 
         {/* ── AWP Critical tab ──────────────────────────────────────────────── */}
-        {activeTab === "critical" && (
+        {activeTab === "critical" && !cmdIntroSeen && (
+          /* ── Intro gate ─────────────────────────────────────────────────── */
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="max-w-lg w-full text-center px-4">
+              <div className="text-5xl mb-6">🖥️</div>
+              <h2
+                className="text-3xl sm:text-4xl font-light text-[#1C3A2B] mb-3"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+              >
+                Command Centre
+              </h2>
+              <p className="text-[#6B7A6F] text-lg mb-2 leading-relaxed">
+                Do you want to dive deep into SAP T-codes?
+              </p>
+              <p className="text-[#9BA89F] text-sm mb-8">
+                {t("cmd.subtitle")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    try { localStorage.setItem("awp-cmd-intro-seen", "1"); } catch {}
+                    setCmdIntroSeen(true);
+                  }}
+                  className="px-8 py-3 rounded-xl bg-[#1C3A2B] text-white text-sm font-medium hover:bg-[#14291e] transition-colors"
+                >
+                  Yes, let&apos;s go →
+                </button>
+                <button
+                  onClick={() => setActiveTab("processes")}
+                  className="px-8 py-3 rounded-xl border border-[#D9D4C8] text-[#6B7A6F] text-sm font-medium hover:border-[#4E7862] hover:text-[#2A2E2B] transition-colors"
+                >
+                  Browse AWP Processes instead
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "critical" && cmdIntroSeen && (
           <div className="space-y-14">
             <section>
               <div className="mb-5 flex flex-col sm:flex-row sm:items-end gap-4">
@@ -433,6 +480,13 @@ export default function HubPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── SAP Assistant tab ─────────────────────────────────────────────── */}
+        {activeTab === "assistant" && (
+          <div className="-mx-4 sm:-mx-6 -my-10" style={{ height: "calc(100vh - 160px)" }}>
+            <AssistantTab />
           </div>
         )}
 
