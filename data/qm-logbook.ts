@@ -2478,6 +2478,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Displays stock quantities across all storage locations, plants, and batch levels for a single material. Shows unrestricted, quality inspection, blocked, in-transit, and reserved stock — essential for daily production planning and shortage analysis.",
     processArea: "Inventory Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/mmbe.html",
     relatedTransactions: ["MB52", "MB51", "MD04", "MIGO"],
     tags: ["stock", "inventory", "batch", "storage location", "unrestricted", "blocked", "overview"],
     awpRelevance: "High",
@@ -2507,6 +2508,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Lists all goods movement documents for a material, plant, or movement type within a date range. Used to trace every stock-in and stock-out event — goods receipts, production confirmations, transfers, and reversals.",
     processArea: "Inventory Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/mb51.html",
     relatedTransactions: ["MIGO", "MMBE", "MB52", "CO11N"],
     tags: ["material document", "goods movement", "history", "movement type", "audit", "traceability"],
     awpRelevance: "High",
@@ -2536,6 +2538,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Enables mass release, confirmation, TECO (technically complete), or deletion of multiple production orders in a single step. Critical for end-of-shift or end-of-period processing when dozens of orders need status changes simultaneously.",
     processArea: "Production Order Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/cohv.html",
     relatedTransactions: ["CO01", "CO02", "CO11N", "CO41", "COOIS"],
     tags: ["mass processing", "release", "TECO", "batch", "bulk", "production order", "period end"],
     awpRelevance: "High",
@@ -2566,6 +2569,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Read-only display of a material's Bill of Materials (BOM) — shows all components, quantities, and item categories for a given plant and usage. The reference view for validating production inputs and troubleshooting component shortages.",
     processArea: "Master Data Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/cs03.html",
     relatedTransactions: ["CS01", "CS02", "MD04", "CO01"],
     tags: ["BOM", "bill of materials", "components", "structure", "recipe", "master data"],
     awpRelevance: "High",
@@ -2595,6 +2599,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Read-only view of a material's production routing — work centres, operations, setup and machine times, and control keys. Used to verify planned production times and understand the sequence of manufacturing steps defined for a material.",
     processArea: "Master Data Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/ca03.html",
     relatedTransactions: ["CA01", "CA02", "CO01", "CO11N", "CR03"],
     tags: ["routing", "operation", "work centre", "time", "setup", "machine time", "master data"],
     awpRelevance: "High",
@@ -2624,6 +2629,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Collective display of the MRP stock/requirements list across multiple materials or an entire MRP controller's scope. The daily dashboard for planners to monitor exception messages, check coverage, and identify materials at risk without opening MD04 individually.",
     processArea: "Material Requirements Planning",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/md07.html",
     relatedTransactions: ["MD04", "MD01", "MD06", "CO01"],
     tags: ["MRP", "collective display", "exceptions", "planner", "coverage", "stock requirements", "dashboard"],
     awpRelevance: "High",
@@ -2653,6 +2659,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Read-only display of an inspection lot — shows origin (GR, production, periodic), inspection plan assigned, sample size, status, and all results and usage decisions recorded. The audit and reference transaction for QM analysts and supervisors.",
     processArea: "Inspection Lot Processing",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/qa33.html",
     relatedTransactions: ["QA01", "QA02", "QA11", "QA32", "QE51N"],
     tags: ["inspection lot", "display", "audit", "read-only", "usage decision", "results", "origin"],
     awpRelevance: "High",
@@ -2682,6 +2689,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Posts a goods receipt (movement type 101) for the finished or semi-finished output of a production order into the designated receiving storage location. Confirms physical completion and updates order status, stock balances, and financial postings simultaneously.",
     processArea: "Production Execution",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/mb31.html",
     relatedTransactions: ["CO11N", "MIGO", "MMBE", "QA32"],
     tags: ["goods receipt", "production", "movement type 101", "GR", "finished goods", "order confirmation"],
     awpRelevance: "High",
@@ -2711,6 +2719,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Read-only view of a work centre's configuration — capacity category, available capacity formula, scheduling parameters, cost centre linkage, and default values. Used by planners and capacity analysts to understand the constraints and costs assigned to each production resource.",
     processArea: "Capacity Management",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/cr03.html",
     relatedTransactions: ["CR01", "CR02", "CA03", "CM01", "COOIS"],
     tags: ["work centre", "capacity", "cost centre", "scheduling", "formula", "resource", "master data"],
     awpRelevance: "High",
@@ -2740,6 +2749,7 @@ export const logbookEntries: LogbookEntry[] = [
     description:
       "Defines the rules that govern automatic tightening or reduction of inspection severity based on a vendor's or batch's quality history. When dynamic modification is active, SAP automatically adjusts sample sizes and acceptance criteria — QC51 is where those escalation/de-escalation thresholds are configured.",
     processArea: "Quality Planning",
+    sapDocUrl: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/9a9f4e6a5b3e4c5ba1d6a0e1f7b2c3d4/qc51.html",
     relatedTransactions: ["QA01", "QA11", "QP01", "QS21"],
     tags: ["dynamic modification", "sampling", "tightened", "reduced", "normal", "inspection severity", "vendor quality"],
     awpRelevance: "High",
