@@ -158,7 +158,7 @@ export const translations = {
 
   // Hub tabs
   "hub.tabs.tcodes":    { EN: "T-Codes",       AR: "رموز المعاملات" },
-  "hub.tabs.critical":  { EN: "AWP Critical",  AR: "الأولويات الحرجة" },
+  "hub.tabs.critical":  { EN: "Command Centre", AR: "مركز القيادة" },
   "hub.tabs.processes": { EN: "Processes",     AR: "العمليات" },
   "hub.tabs.paths":     { EN: "Learning Paths",AR: "مسارات التعلم" },
   "hub.tabs.completed": { EN: "Completed",     AR: "المكتملة" },
