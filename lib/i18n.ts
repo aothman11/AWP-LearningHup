@@ -162,7 +162,7 @@ export const translations = {
   "hub.tabs.processes": { EN: "AWP Processes",    AR: "عمليات AWP" },
   "hub.tabs.paths":     { EN: "Learning Paths",   AR: "مسارات التعلم" },
   "hub.tabs.completed":  { EN: "Completed",        AR: "المكتملة" },
-  "hub.tabs.assistant":  { EN: "SAP Assistant",    AR: "مساعد SAP" },
+  "hub.tabs.assistant":  { EN: "Process Guide",    AR: "دليل العمليات" },
   // Command Centre
   "cmd.subtitle":       { EN: "Deep dive into SAP T-Codes used across AWP operations", AR: "تعمق في رموز SAP T-Codes المستخدمة في عمليات AWP" },
   // AWP Processes
