@@ -415,7 +415,6 @@ export default function HubPage() {
           <span>AWP Central Learning Hub · SAP PP/QM</span>
           <div className="flex flex-wrap gap-4">
             <Link href="/learning/business-processes" className="hover:text-[#1C3A2B] transition-colors">Business Processes</Link>
-            <Link href="/logbook" className="hover:text-[#1C3A2B] transition-colors">T-Code Library</Link>
             <Link href="/process-flow" className="hover:text-[#1C3A2B] transition-colors">Process Flow</Link>
             <Link href="/about" className="hover:text-[#1C3A2B] transition-colors">About</Link>
             <Link href="/faq" className="hover:text-[#1C3A2B] transition-colors">FAQ</Link>
