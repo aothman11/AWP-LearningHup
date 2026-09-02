@@ -2072,6 +2072,570 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: Returns from Branches ────────────────────────────────────────────
+  {
+    id: "mm-returns-from-branches",
+    icon: "↩️",
+    duration: "30–60 min",
+    titleEN: "Returns from Branches (STO Returns with Delivery)",
+    titleAR: "المرتجعات من الفروع (أوامر نقل المخزون المرتجعة مع التسليم)",
+    descriptionEN:
+      "Covers three return scenarios from distribution branches back to central warehouse: (1) Expired goods blocked at branch transferred to Q099 then scrapped; (2) Damaged goods blocked at branch transferred to Q098 complaints storage; (3) Expired goods returned by customer to branch then forwarded to Q099 and scrapped. ~19 STOs/day. STO document type YRUD, delivery type YNL2, purchasing group PG999.",
+    descriptionAR:
+      "تغطي ثلاثة سيناريوهات للمرتجعات من فروع التوزيع إلى المستودع المركزي: (1) بضائع منتهية الصلاحية موقوفة في الفرع تُحوَّل إلى Q099 ثم تُهلَك؛ (2) بضائع تالفة موقوفة في الفرع تُحوَّل إلى مخزن الشكاوى Q098؛ (3) بضائع منتهية الصلاحية مرتجعة من العميل إلى الفرع ثم تُحوَّل إلى Q099 وتُهلَك. ~19 أمر نقل يومياً. نوع مستند STO: YRUD، نوع التسليم: YNL2، مجموعة الشراء: PG999.",
+    module: "MM",
+    roles: [
+      "Branch Warehouse Clerk",
+      "Central Warehouse Supervisor",
+      "MM Specialist",
+      "Customer Service Representative",
+    ],
+    steps: [
+      {
+        id: "mm-returns-from-branches-step-1",
+        stepNumber: 1,
+        titleEN: "Block Expired / Damaged Stock at Branch (MIGO_TR)",
+        titleAR: "تحويل المخزون المنتهي / التالف في الفرع إلى مخزن مقيد (MIGO_TR)",
+        tCode: "MIGO_TR",
+        role: "Branch Warehouse Clerk",
+        whatToDoEN:
+          "In MIGO_TR, transfer expired goods from unrestricted branch stock to blocked stock (movement type 344) or transfer quality-inspection stock to blocked (movement type 322/344 depending on reason). For expired goods: select MT344 from unrestricted to blocked. For damaged goods returned from quality inspection: use the relevant quality movement. Enter the plant, storage location, material, batch, and quantity. Save.",
+        whatToDoAR:
+          "في MIGO_TR، حوِّل البضائع المنتهية الصلاحية من المخزون غير المقيد في الفرع إلى المخزون الموقوف (نوع الحركة 344)، أو حوِّل مخزون فحص الجودة إلى موقوف (322/344 حسب السبب). للبضائع المنتهية: اختر MT344 من غير مقيد إلى موقوف. للتالف المرتجع من فحص الجودة: استخدم حركة الجودة المناسبة. أدخل المصنع وموقع التخزين والمادة والدفعة والكمية. احفظ.",
+        whatSAPDoesEN:
+          "Posts a stock transfer document. Moves quantity from unrestricted (or quality) to blocked stock in the branch plant. No financial posting at this stage; stock is now isolated pending return to central warehouse.",
+        whatSAPDoesAR:
+          "يرحِّل مستند تحويل المخزون. ينقل الكمية من المخزون غير المقيد (أو الجودة) إلى المخزون الموقوف في مصنع الفرع. لا يوجد قيد مالي في هذه المرحلة؛ المخزون الآن معزول في انتظار إعادته إلى المستودع المركزي.",
+        expectedOutputEN:
+          "Material document posted. Blocked stock quantity increased at branch. Goods are ready for STO return to central warehouse.",
+        expectedOutputAR:
+          "تم ترحيل مستند المادة. زيادة كمية المخزون الموقوف في الفرع. البضائع جاهزة لإعادتها إلى المستودع المركزي عبر STO.",
+      },
+      {
+        id: "mm-returns-from-branches-step-2",
+        stepNumber: 2,
+        titleEN: "Create Return STO at Central Warehouse (ME21N – Type YRUD)",
+        titleAR: "إنشاء أمر نقل مخزون مرتجع في المستودع المركزي (ME21N – نوع YRUD)",
+        tCode: "ME21N",
+        role: "Central Warehouse Supervisor",
+        whatToDoEN:
+          "In ME21N, create a return Stock Transport Order. Set document type to YRUD (AWP return STO type). Supplying plant = branch plant, receiving plant = central warehouse. Item category = U (stock transfer). Enter material, quantity (to match blocked stock at branch), and storage location Q099 (for expired) or Q098 (for damaged/complaints). Purchasing group = 999. Save.",
+        whatToDoAR:
+          "في ME21N، أنشئ أمر نقل مخزون مرتجع. اضبط نوع المستند على YRUD (نوع STO المرتجع لـ AWP). مصنع التوريد = مصنع الفرع، مصنع الاستلام = المستودع المركزي. فئة البند = U (تحويل مخزون). أدخل المادة والكمية (لتطابق المخزون الموقوف في الفرع) وموقع التخزين Q099 (للمنتهي) أو Q098 (للتالف/الشكاوى). مجموعة الشراء = 999. احفظ.",
+        whatSAPDoesEN:
+          "Creates a return purchase order of type YRUD with delivery relevance. STO is now open for outbound delivery creation from the branch.",
+        whatSAPDoesAR:
+          "ينشئ أمر شراء مرتجع من نوع YRUD بصلاحية تسليم. STO مفتوح الآن لإنشاء تسليم صادر من الفرع.",
+        expectedOutputEN:
+          "Return STO (YRUD) created. PO number generated. Branch can now create outbound delivery.",
+        expectedOutputAR:
+          "تم إنشاء STO المرتجع (YRUD). تم توليد رقم PO. يمكن للفرع الآن إنشاء تسليم صادر.",
+      },
+      {
+        id: "mm-returns-from-branches-step-3",
+        stepNumber: 3,
+        titleEN: "Create Outbound Delivery from Branch (VL10D / VL10C → VL02N)",
+        titleAR: "إنشاء التسليم الصادر من الفرع (VL10D / VL10C → VL02N)",
+        tCode: "VL10D",
+        role: "Branch Warehouse Clerk",
+        whatToDoEN:
+          "In VL10D (or VL10C for customer-return path), select the YRUD STO and create the outbound delivery. The delivery type will be YNL2 (AWP return delivery). In VL02N, open the delivery and post goods issue from the branch. This records the goods leaving the branch's blocked stock. Print the delivery note for transport.",
+        whatToDoAR:
+          "في VL10D (أو VL10C لمسار مرتجع العميل)، اختر STO من نوع YRUD وأنشئ التسليم الصادر. سيكون نوع التسليم YNL2 (تسليم مرتجع AWP). في VL02N، افتح التسليم وارحّل إصدار البضائع من الفرع. هذا يسجِّل خروج البضائع من المخزون الموقوف في الفرع. اطبع إيصال التسليم للنقل.",
+        whatSAPDoesEN:
+          "Creates a YNL2 delivery document. On goods issue posting, reduces blocked stock at branch and creates a goods-in-transit posting. Financial accounting entry created (COGS / interim transit account).",
+        whatSAPDoesAR:
+          "ينشئ مستند تسليم من نوع YNL2. عند ترحيل إصدار البضائع، يخفض المخزون الموقوف في الفرع وينشئ قيد بضائع في الطريق. يُنشأ قيد محاسبة مالية (تكلفة البضائع المباعة / حساب العبور المؤقت).",
+        expectedOutputEN:
+          "Goods issue posted from branch. YNL2 delivery document confirmed. Goods are in transit to central warehouse.",
+        expectedOutputAR:
+          "تم ترحيل إصدار البضائع من الفرع. تأكيد مستند تسليم YNL2. البضائع في الطريق إلى المستودع المركزي.",
+      },
+      {
+        id: "mm-returns-from-branches-step-4",
+        stepNumber: 4,
+        titleEN: "Monitor Goods in Transit (MB5T)",
+        titleAR: "متابعة البضائع في الطريق (MB5T)",
+        tCode: "MB5T",
+        role: "Central Warehouse Supervisor",
+        whatToDoEN:
+          "In MB5T, run the stock in transit report to verify the returned goods appear in transit from the branch to the central warehouse. Confirm quantities match the YRUD STO. This step ensures nothing is lost before the goods receipt.",
+        whatToDoAR:
+          "في MB5T، شغِّل تقرير المخزون في الطريق للتحقق من ظهور البضائع المرتجعة في الطريق من الفرع إلى المستودع المركزي. أكِّد تطابق الكميات مع STO من نوع YRUD. تضمن هذه الخطوة عدم ضياع أي شيء قبل استلام البضائع.",
+        whatSAPDoesEN:
+          "Displays all stock quantities in transit between plants. Confirms open STO quantity awaiting goods receipt at central warehouse.",
+        whatSAPDoesAR:
+          "يعرض جميع كميات المخزون في الطريق بين المصانع. يؤكد كمية STO المفتوحة في انتظار استلام البضائع في المستودع المركزي.",
+        expectedOutputEN:
+          "In-transit quantity visible in MB5T. Ready for goods receipt at central warehouse.",
+        expectedOutputAR:
+          "كمية العبور مرئية في MB5T. جاهز لاستلام البضائع في المستودع المركزي.",
+      },
+      {
+        id: "mm-returns-from-branches-step-5",
+        stepNumber: 5,
+        titleEN: "Post Goods Receipt at Central Warehouse (MIGO_GR)",
+        titleAR: "ترحيل استلام البضائع في المستودع المركزي (MIGO_GR)",
+        tCode: "MIGO_GR",
+        role: "Central Warehouse Supervisor",
+        whatToDoEN:
+          "In MIGO_GR, receive against the YRUD STO purchase order. Select movement type 101 (GR for PO). Specify the receiving storage location: Q099 for expired goods, Q098 for damaged/complaints goods. Confirm batch and quantity, then post.",
+        whatToDoAR:
+          "في MIGO_GR، استلم بالاستناد إلى أمر الشراء YRUD. اختر نوع الحركة 101 (استلام البضائع لأمر الشراء). حدد موقع التخزين المستلم: Q099 للبضائع المنتهية الصلاحية، Q098 للتالف/الشكاوى. أكِّد الدفعة والكمية ثم ارحِّل.",
+        whatSAPDoesEN:
+          "Posts GR movement type 101. Increases blocked/returns stock at central warehouse in the specified storage location (Q099 or Q098). Clears the in-transit quantity. Creates material document and accounting entry.",
+        whatSAPDoesAR:
+          "يرحِّل نوع حركة استلام البضائع 101. يزيد مخزون الموقوف/المرتجعات في المستودع المركزي في موقع التخزين المحدد (Q099 أو Q098). يصفِّي كمية العبور. ينشئ مستند مادة وقيد محاسبة.",
+        expectedOutputEN:
+          "GR posted. Returned goods now in Q099 (expired) or Q098 (damaged) storage at central warehouse. STO is complete.",
+        expectedOutputAR:
+          "تم ترحيل استلام البضائع. البضائع المرتجعة الآن في مخزن Q099 (منتهية) أو Q098 (تالفة) في المستودع المركزي. STO مكتمل.",
+      },
+      {
+        id: "mm-returns-from-branches-step-6",
+        stepNumber: 6,
+        titleEN: "Scrap Expired Goods at Central Warehouse (MIGO – MT551/553)",
+        titleAR: "إهلاك البضائع المنتهية في المستودع المركزي (MIGO – MT551/553)",
+        tCode: "MIGO",
+        role: "MM Specialist",
+        whatToDoEN:
+          "For expired goods in Q099: in MIGO, post goods issue with movement type 551 (scrapping from unrestricted) or 553 (scrapping from blocked stock) as applicable. Reference the destruction committee decision. Enter material, batch, quantity, plant, and storage location Q099. Save. For damaged goods in Q098: process separately per the complaints resolution procedure.",
+        whatToDoAR:
+          "للبضائع المنتهية في Q099: في MIGO، ارحِّل إصدار البضائع بنوع الحركة 551 (إهلاك من غير مقيد) أو 553 (إهلاك من موقوف) حسب الانطباق. استند إلى قرار لجنة الإتلاف. أدخل المادة والدفعة والكمية والمصنع وموقع التخزين Q099. احفظ. للتالف في Q098: يُعالَج بشكل منفصل وفق إجراء تسوية الشكاوى.",
+        whatSAPDoesEN:
+          "Posts scrapping movement. Reduces expired stock in Q099 to zero. Creates material document and financial entry (debit scrapping loss account, credit stock account). Batch is consumed.",
+        whatSAPDoesAR:
+          "يرحِّل حركة الإهلاك. يخفض مخزون المنتهية في Q099 إلى الصفر. ينشئ مستند مادة وقيد مالي (مدين حساب خسارة الإهلاك، دائن حساب المخزون). تُستهلَك الدفعة.",
+        expectedOutputEN:
+          "Expired goods scrapped. Q099 stock cleared. Financial loss posted. Process complete.",
+        expectedOutputAR:
+          "تم إهلاك البضائع المنتهية. تم تصفية مخزون Q099. تم ترحيل الخسارة المالية. العملية مكتملة.",
+      },
+    ],
+  },
+
+  // ─── MM: Month-End Closing ─────────────────────────────────────────────────
+  {
+    id: "mm-month-end-closing",
+    icon: "📅",
+    duration: "1–2 days",
+    titleEN: "MM Month-End Closing",
+    titleAR: "إغلاق نهاية الشهر – إدارة المواد",
+    descriptionEN:
+      "Monthly process performed by the MM team at period-end to ensure all goods movements, deliveries, and invoices are properly posted before the accounting period closes. Covers inventory adjustments, open deliveries, goods-in-transit, GR/IR clearing, and period opening. Performed once per month.",
+    descriptionAR:
+      "عملية شهرية يُنفِّذها فريق إدارة المواد في نهاية الفترة لضمان ترحيل جميع حركات البضائع والتسليمات والفواتير بشكل صحيح قبل إغلاق فترة المحاسبة. تشمل تسويات المخزون والتسليمات المفتوحة والبضائع في الطريق وتصفية GR/IR وفتح الفترة الجديدة. تُنفَّذ مرة واحدة شهرياً.",
+    module: "MM",
+    roles: [
+      "MM Specialist",
+      "Warehouse Supervisor",
+      "Finance Controller",
+    ],
+    steps: [
+      {
+        id: "mm-month-end-closing-step-1",
+        stepNumber: 1,
+        titleEN: "Post Any Remaining Inventory Adjustments (MIGO)",
+        titleAR: "ترحيل أي تسويات مخزون متبقية (MIGO)",
+        tCode: "MIGO",
+        role: "Warehouse Supervisor",
+        whatToDoEN:
+          "Before closing the period, use MIGO to post any pending inventory adjustments (e.g., inventory differences from physical counts, goods issue reversals, or transfers that were not completed during the month). Ensure all goods movements are posted and no documents are parked or incomplete.",
+        whatToDoAR:
+          "قبل إغلاق الفترة، استخدم MIGO لترحيل أي تسويات مخزون معلقة (مثل فوارق المخزون من الجرد الفعلي، أو عكوسات إصدار البضائع، أو التحويلات غير المكتملة خلال الشهر). تأكد من ترحيل جميع حركات البضائع وعدم وجود مستندات موقوفة أو غير مكتملة.",
+        whatSAPDoesEN:
+          "Posts remaining inventory movement documents. Updates stock balances and creates corresponding accounting entries. All movements must be posted before period-close.",
+        whatSAPDoesAR:
+          "يرحِّل مستندات حركة المخزون المتبقية. يُحدِّث أرصدة المخزون وينشئ القيود المحاسبية المقابلة. يجب ترحيل جميع الحركات قبل إغلاق الفترة.",
+        expectedOutputEN:
+          "All inventory adjustments posted. No pending MIGO documents.",
+        expectedOutputAR:
+          "تم ترحيل جميع تسويات المخزون. لا توجد مستندات MIGO معلقة.",
+      },
+      {
+        id: "mm-month-end-closing-step-2",
+        stepNumber: 2,
+        titleEN: "Clear Goods Held in Quality / Blocked Stock (MIGO)",
+        titleAR: "تصفية البضائع في فحص الجودة / المخزون الموقوف (MIGO)",
+        tCode: "MIGO",
+        role: "MM Specialist",
+        whatToDoEN:
+          "Review any materials still in quality inspection or blocked stock that should have been resolved during the month. Coordinate with QM to release or reject these lots. Post the appropriate movement in MIGO (e.g., MT321 to release from QI to unrestricted, or MT344 to move to blocked). Do not leave unresolved QI stock open at period end.",
+        whatToDoAR:
+          "راجع أي مواد لا تزال في فحص الجودة أو المخزون الموقوف كان يجب حلها خلال الشهر. نسِّق مع إدارة الجودة لتحرير أو رفض هذه الدفعات. ارحِّل الحركة المناسبة في MIGO (مثل MT321 للإفراج من فحص الجودة إلى غير مقيد، أو MT344 للنقل إلى موقوف). لا تترك مخزون فحص الجودة غير محلول في نهاية الفترة.",
+        whatSAPDoesEN:
+          "Posts stock status changes for QI and blocked stock. Updates stock categories. Ensures period-end balances are accurate by category.",
+        whatSAPDoesAR:
+          "يرحِّل تغييرات حالة المخزون لفحص الجودة والمخزون الموقوف. يُحدِّث فئات المخزون. يضمن دقة أرصدة نهاية الفترة حسب الفئة.",
+        expectedOutputEN:
+          "No open QI or blocked stock items that should be resolved. Period-end stock balances are clean.",
+        expectedOutputAR:
+          "لا توجد بنود مفتوحة في فحص الجودة أو المخزون الموقوف يجب حلها. أرصدة نهاية الفترة نظيفة.",
+      },
+      {
+        id: "mm-month-end-closing-step-3",
+        stepNumber: 3,
+        titleEN: "Ensure All GRs for Month Are Posted (MIGO_GR)",
+        titleAR: "التأكد من ترحيل جميع استلامات البضائع للشهر (MIGO_GR)",
+        tCode: "MIGO_GR",
+        role: "Warehouse Supervisor",
+        whatToDoEN:
+          "Review open purchase orders and confirm that all goods received physically before month-end have a corresponding goods receipt posted in MIGO_GR. If any GRs are missing, post them now using the actual delivery date as the posting date. Do not post GRs for goods not yet physically received.",
+        whatToDoAR:
+          "راجع أوامر الشراء المفتوحة وتأكد من أن جميع البضائع المستلمة فعلياً قبل نهاية الشهر لها استلام بضائع مرحَّل في MIGO_GR. إذا كانت هناك استلامات مفقودة، ارحِّلها الآن مستخدماً تاريخ التسليم الفعلي كتاريخ ترحيل. لا ترحِّل استلامات بضائع لبضائع لم تُستلَم فعلياً بعد.",
+        whatSAPDoesEN:
+          "Posts GR documents. Updates stock and creates GR/IR liability accounting entries. Ensures period-end stock and liability figures are complete.",
+        whatSAPDoesAR:
+          "يرحِّل مستندات استلام البضائع. يُحدِّث المخزون وينشئ قيود محاسبة مسؤولية GR/IR. يضمن اكتمال أرقام المخزون والمسؤولية في نهاية الفترة.",
+        expectedOutputEN:
+          "All physically received goods have a posted GR. No goods received without a material document.",
+        expectedOutputAR:
+          "جميع البضائع المستلمة فعلياً لها استلام بضائع مرحَّل. لا توجد بضائع مستلمة بدون مستند مادة.",
+      },
+      {
+        id: "mm-month-end-closing-step-4",
+        stepNumber: 4,
+        titleEN: "Review and Close Open Outbound Deliveries (VL06G)",
+        titleAR: "مراجعة وإغلاق التسليمات الصادرة المفتوحة (VL06G)",
+        tCode: "VL06G",
+        role: "MM Specialist",
+        whatToDoEN:
+          "In VL06G (Outbound Delivery Monitor), list all open outbound deliveries. Identify any deliveries where goods issue has not been posted but goods have physically left the warehouse. Post goods issue for these deliveries in VL02N. For deliveries where goods have not yet left, confirm with logistics and update the planned GI date accordingly.",
+        whatToDoAR:
+          "في VL06G (مراقب التسليمات الصادرة)، أدرج جميع التسليمات الصادرة المفتوحة. حدِّد أي تسليمات لم يُرحَّل فيها إصدار البضائع لكن البضائع غادرت المستودع فعلياً. ارحِّل إصدار البضائع لهذه التسليمات في VL02N. للتسليمات التي لم تغادر بعد، أكِّد مع اللوجستيات وحدِّث تاريخ GI المخطط وفقاً لذلك.",
+        whatSAPDoesEN:
+          "VL06G provides a list of open outbound deliveries. Posting goods issue in VL02N reduces stock and creates accounting entries. Period-end stock figures reflect actual physical inventory.",
+        whatSAPDoesAR:
+          "يوفر VL06G قائمة بالتسليمات الصادرة المفتوحة. يؤدي ترحيل إصدار البضائع في VL02N إلى تخفيض المخزون وإنشاء القيود المحاسبية. أرقام المخزون في نهاية الفترة تعكس المخزون الفعلي.",
+        expectedOutputEN:
+          "All outbound deliveries with goods physically shipped have GI posted. Open deliveries list is clean.",
+        expectedOutputAR:
+          "جميع التسليمات الصادرة التي شُحنت بضائعها فعلياً لها إصدار بضائع مرحَّل. قائمة التسليمات المفتوحة نظيفة.",
+      },
+      {
+        id: "mm-month-end-closing-step-5",
+        stepNumber: 5,
+        titleEN: "Check Goods in Transit (MB5T / ME2W)",
+        titleAR: "التحقق من البضائع في الطريق (MB5T / ME2W)",
+        tCode: "MB5T",
+        role: "MM Specialist",
+        whatToDoEN:
+          "Run MB5T to view all stock in transit between plants (from STOs). Confirm that all in-transit quantities are expected (i.e., the goods are actually on the road). Cross-check with ME2W to verify open STO purchase orders. If any in-transit stock should have been received already, expedite GR posting. Document any legitimate open transit for the finance team.",
+        whatToDoAR:
+          "شغِّل MB5T لعرض كل المخزون في الطريق بين المصانع (من أوامر نقل المخزون). أكِّد أن جميع كميات العبور متوقعة (أي البضائع في الطريق فعلاً). تحقق مع ME2W للتحقق من أوامر الشراء STO المفتوحة. إذا كان أي مخزون في الطريق يجب أن يكون قد استُلم بالفعل، عجِّل بترحيل الاستلام. وثِّق أي عبور مفتوح شرعي لفريق المالية.",
+        whatSAPDoesEN:
+          "MB5T displays stock-in-transit balances by plant/material/STO. ME2W shows open STO POs. Combined, they give a complete picture of goods movement between plants at period end.",
+        whatSAPDoesAR:
+          "يعرض MB5T أرصدة المخزون في الطريق حسب المصنع/المادة/STO. يُظهر ME2W أوامر الشراء STO المفتوحة. مجتمعَيْن، يُعطيان صورة كاملة لحركة البضائع بين المصانع في نهاية الفترة.",
+        expectedOutputEN:
+          "In-transit report reviewed. All in-transit quantities are legitimate open STOs. Finance team informed of any period-end transit balances.",
+        expectedOutputAR:
+          "تمت مراجعة تقرير العبور. جميع كميات العبور عبارة عن أوامر STO مفتوحة شرعية. تم إبلاغ فريق المالية بأي أرصدة عبور في نهاية الفترة.",
+      },
+      {
+        id: "mm-month-end-closing-step-6",
+        stepNumber: 6,
+        titleEN: "Set Delivery Complete Flag for Open POs (ME22N / MASS)",
+        titleAR: "تعيين علامة التسليم المكتمل للـ POs المفتوحة (ME22N / MASS)",
+        tCode: "ME22N",
+        role: "MM Specialist",
+        whatToDoEN:
+          "Review purchase orders that have partial deliveries and where no further goods are expected. In ME22N, set the 'Delivery Completed' flag on the relevant items so the PO is closed for further goods receipts. For bulk updates, use MASS (Mass Maintenance) to flag multiple PO items at once. This prevents phantom open purchase commitments from appearing in the next period.",
+        whatToDoAR:
+          "راجع أوامر الشراء التي لها تسليمات جزئية ولا يُتوقع تسليم بضائع أخرى. في ME22N، عيِّن علامة 'التسليم مكتمل' على البنود ذات الصلة حتى يُغلَق أمر الشراء لاستلامات البضائع الإضافية. للتحديثات المجمعة، استخدم MASS (الصيانة الجماعية) لتعليم عدة بنود PO مرة واحدة. هذا يمنع ظهور التزامات شراء مفتوحة وهمية في الفترة التالية.",
+        whatSAPDoesEN:
+          "ME22N/MASS updates the delivery completion indicator on PO items. SAP treats these items as closed for GR purposes. Reduces open purchase order commitments in financial reporting.",
+        whatSAPDoesAR:
+          "يُحدِّث ME22N/MASS مؤشر اكتمال التسليم على بنود أمر الشراء. يتعامل SAP مع هذه البنود باعتبارها مغلقة لأغراض استلام البضائع. يخفض التزامات أوامر الشراء المفتوحة في التقارير المالية.",
+        expectedOutputEN:
+          "Delivery complete flag set on all PO items with no further expected deliveries. Open commitments report is accurate.",
+        expectedOutputAR:
+          "تم تعيين علامة اكتمال التسليم على جميع بنود أمر الشراء التي لا تُتوقع لها تسليمات أخرى. تقرير الالتزامات المفتوحة دقيق.",
+      },
+      {
+        id: "mm-month-end-closing-step-7",
+        stepNumber: 7,
+        titleEN: "Post Physical Inventory Differences (MI20 / MI07)",
+        titleAR: "ترحيل فوارق الجرد الفعلي (MI20 / MI07)",
+        tCode: "MI20",
+        role: "Warehouse Supervisor",
+        whatToDoEN:
+          "If a physical inventory count was conducted during the month, use MI20 to list inventory differences (variances between count and book stock). Review the differences report. Then use MI07 to post the inventory differences. This will adjust the book stock to match the physical count results and create the corresponding accounting entry.",
+        whatToDoAR:
+          "إذا أُجري جرد فعلي خلال الشهر، استخدم MI20 لسرد فوارق الجرد (الانحرافات بين العد والمخزون الدفتري). راجع تقرير الفوارق. ثم استخدم MI07 لترحيل فوارق الجرد. سيؤدي ذلك إلى تعديل المخزون الدفتري ليتطابق مع نتائج العد الفعلي وإنشاء القيد المحاسبي المقابل.",
+        whatSAPDoesEN:
+          "MI20 generates the difference list comparing counted vs book quantities. MI07 posts the inventory adjustment — increases or decreases stock and creates P&L entries (inventory gain/loss accounts).",
+        whatSAPDoesAR:
+          "يُنشئ MI20 قائمة الفوارق مقارنةً بين الكميات المعدودة والكميات الدفترية. يرحِّل MI07 تسوية المخزون — يزيد أو يخفض المخزون وينشئ قيود الأرباح والخسائر (حسابات مكاسب/خسائر المخزون).",
+        expectedOutputEN:
+          "Inventory differences posted. Book stock matches physical count. Accounting entries created for variances.",
+        expectedOutputAR:
+          "تم ترحيل فوارق الجرد. المخزون الدفتري يطابق العد الفعلي. تم إنشاء القيود المحاسبية للانحرافات.",
+      },
+      {
+        id: "mm-month-end-closing-step-8",
+        stepNumber: 8,
+        titleEN: "Process Parked Invoices (MIRO)",
+        titleAR: "معالجة الفواتير الموقوفة (MIRO)",
+        tCode: "MIRO",
+        role: "Finance Controller",
+        whatToDoEN:
+          "In MIRO, review all parked (held) invoices and complete or post them before the period closes. For invoices with GR/IR discrepancies, resolve with the purchasing team. Post all invoices that are legitimate and have matching GRs. Reject or cancel any invalid parked invoices. Ensure no valid supplier invoices are left in parked status at month-end.",
+        whatToDoAR:
+          "في MIRO، راجع جميع الفواتير الموقوفة (المحتجزة) وأكمِلها أو ارحِّلها قبل إغلاق الفترة. للفواتير التي لها تباينات GR/IR، حلِّها مع فريق المشتريات. ارحِّل جميع الفواتير الشرعية التي لها استلامات بضائع مطابقة. ارفض أو ألغِ أي فواتير موقوفة غير صالحة. تأكد من عدم وجود فواتير موردين صالحة في حالة موقوفة في نهاية الشهر.",
+        whatSAPDoesEN:
+          "MIRO posts supplier invoices. Creates accounts payable (liability) entries and updates GR/IR clearing account. Parked invoices do not create accounting entries until posted.",
+        whatSAPDoesAR:
+          "يرحِّل MIRO فواتير الموردين. ينشئ قيود الحسابات الدائنة (المطلوبات) ويُحدِّث حساب تصفية GR/IR. الفواتير الموقوفة لا تُنشئ قيوداً محاسبية حتى تُرحَّل.",
+        expectedOutputEN:
+          "All valid invoices posted. No parked invoices left at period end. AP balances updated.",
+        expectedOutputAR:
+          "تم ترحيل جميع الفواتير الصالحة. لا توجد فواتير موقوفة في نهاية الفترة. تم تحديث أرصدة الحسابات الدائنة.",
+      },
+      {
+        id: "mm-month-end-closing-step-9",
+        stepNumber: 9,
+        titleEN: "Clear GR/IR Account (MR11)",
+        titleAR: "تصفية حساب GR/IR (MR11)",
+        tCode: "MR11",
+        role: "Finance Controller",
+        whatToDoEN:
+          "In MR11, run the GR/IR clearing program. This tool identifies purchase order line items where a goods receipt has been posted but no invoice has been received (or vice versa) and the amounts are small enough to clear. Review the proposed postings and execute the clearing for legitimate differences. Large uncleared amounts should be investigated with the purchasing and AP teams.",
+        whatToDoAR:
+          "في MR11، شغِّل برنامج تصفية GR/IR. يحدِّد هذا الأداء بنود أوامر الشراء التي رُحِّل فيها استلام بضائع ولكن لم تُستلَم فاتورة (أو العكس) والمبالغ صغيرة بما يكفي للتصفية. راجع الترحيلات المقترحة ونفِّذ التصفية للفوارق الشرعية. يجب التحقيق في المبالغ غير المصفاة الكبيرة مع فرق المشتريات والحسابات الدائنة.",
+        whatSAPDoesEN:
+          "MR11 analyses GR/IR balances by PO line item and posts clearing entries to eliminate small differences. Reduces GR/IR clearing account balance to zero or minimal amounts.",
+        whatSAPDoesAR:
+          "يحلِّل MR11 أرصدة GR/IR حسب بند أمر الشراء ويرحِّل قيود التصفية للتخلص من الفوارق الصغيرة. يخفض رصيد حساب تصفية GR/IR إلى الصفر أو مبالغ ضئيلة.",
+        expectedOutputEN:
+          "GR/IR account cleared. Small discrepancies resolved. Large items escalated to purchasing/AP.",
+        expectedOutputAR:
+          "تم تصفية حساب GR/IR. تم حل الفوارق الصغيرة. تصعيد البنود الكبيرة إلى المشتريات/الحسابات الدائنة.",
+      },
+      {
+        id: "mm-month-end-closing-step-10",
+        stepNumber: 10,
+        titleEN: "Open Next Period (MMPV)",
+        titleAR: "فتح الفترة التالية (MMPV)",
+        tCode: "MMPV",
+        role: "MM Specialist",
+        whatToDoEN:
+          "In MMPV, open the next accounting period for materials management. Enter the company code, year, and period number to open. This allows goods movements to be posted in the new period starting from the first day of the month. Coordinate with the Finance team to confirm the current period is fully closed before opening the next one. Note: MMPV should be run by an authorized MM administrator only.",
+        whatToDoAR:
+          "في MMPV، افتح فترة المحاسبة التالية لإدارة المواد. أدخل كود الشركة والسنة ورقم الفترة للفتح. يسمح هذا بترحيل حركات البضائع في الفترة الجديدة اعتباراً من اليوم الأول من الشهر. نسِّق مع فريق المالية للتأكد من إغلاق الفترة الحالية بالكامل قبل فتح الفترة التالية. ملاحظة: يجب تشغيل MMPV بواسطة مسؤول MM مُفوَّض فقط.",
+        whatSAPDoesEN:
+          "MMPV opens the next materials management posting period. New period is now active for goods movements. Previous period remains open for any late adjustments until formally closed.",
+        whatSAPDoesAR:
+          "يفتح MMPV فترة الترحيل التالية لإدارة المواد. الفترة الجديدة نشطة الآن لحركات البضائع. تبقى الفترة السابقة مفتوحة لأي تسويات متأخرة حتى إغلاقها رسمياً.",
+        expectedOutputEN:
+          "Next period opened in MMPV. Goods movements can be posted in the new period. Month-end closing complete.",
+        expectedOutputAR:
+          "تم فتح الفترة التالية في MMPV. يمكن الآن ترحيل حركات البضائع في الفترة الجديدة. اكتمل إغلاق نهاية الشهر.",
+      },
+    ],
+  },
+
+  // ─── MM: Goods Issue for Sales ─────────────────────────────────────────────
+  {
+    id: "mm-goods-issue-sales",
+    icon: "🚚",
+    duration: "20–30 min",
+    titleEN: "Goods Issue for Sales (Outbound Delivery)",
+    titleAR: "إصدار البضائع للمبيعات (التسليم الصادر)",
+    descriptionEN:
+      "Daily process for issuing goods to fulfil customer sales orders. A sales order is created, an outbound delivery is generated with a pick list, warehouse staff manually select batches using FIFO (nearest expiry date first), and goods issue is posted. ~1,000 deliveries/day. Batch selection must follow FIFO; batches cannot be changed after delivery is created.",
+    descriptionAR:
+      "عملية يومية لإصدار البضائع لتنفيذ أوامر المبيعات للعملاء. يُنشأ أمر مبيعات، يُنشأ تسليم صادر مع قائمة انتقاء، يختار موظفو المستودع الدفعات يدوياً باستخدام FIFO (أقرب تاريخ انتهاء صلاحية أولاً)، ويُرحَّل إصدار البضائع. ~1000 تسليم/يوم. يجب أن يتبع اختيار الدفعات FIFO؛ لا يمكن تغيير الدفعات بعد إنشاء التسليم.",
+    module: "MM",
+    roles: [
+      "Sales Representative",
+      "Warehouse Picker",
+      "Warehouse Supervisor",
+    ],
+    steps: [
+      {
+        id: "mm-goods-issue-sales-step-1",
+        stepNumber: 1,
+        titleEN: "Create Sales Order (VA01)",
+        titleAR: "إنشاء أمر المبيعات (VA01)",
+        tCode: "VA01",
+        role: "Sales Representative",
+        whatToDoEN:
+          "In VA01, create a new sales order. Select the appropriate order type and sales organization. Enter customer number, requested delivery date, and line items with material codes and quantities. Confirm pricing and any applicable discounts. Save the sales order. The system will check availability and create a schedule line.",
+        whatToDoAR:
+          "في VA01، أنشئ أمر مبيعات جديداً. اختر نوع الأمر المناسب ومنظمة المبيعات. أدخل رقم العميل وتاريخ التسليم المطلوب وبنود البند مع أكواد المواد والكميات. أكِّد التسعير وأي خصومات قابلة للتطبيق. احفظ أمر المبيعات. سيتحقق النظام من التوافر وينشئ سطر جدولة.",
+        whatSAPDoesEN:
+          "Creates a sales order document. Checks credit limit and material availability (ATP). Confirms committed quantities and delivery date. Triggers requirements planning for procurement/production if needed.",
+        whatSAPDoesAR:
+          "ينشئ مستند أمر مبيعات. يتحقق من حد الائتمان وتوافر المواد (ATP). يؤكد الكميات الملتزمة وتاريخ التسليم. يُشغِّل تخطيط المتطلبات للمشتريات/الإنتاج إذا لزم الأمر.",
+        expectedOutputEN:
+          "Sales order created. Order number generated. Availability confirmed and delivery date committed.",
+        expectedOutputAR:
+          "تم إنشاء أمر المبيعات. تم توليد رقم الأمر. تم تأكيد التوافر والالتزام بتاريخ التسليم.",
+      },
+      {
+        id: "mm-goods-issue-sales-step-2",
+        stepNumber: 2,
+        titleEN: "Create Outbound Delivery and Print Pick List (VL10C)",
+        titleAR: "إنشاء التسليم الصادر وطباعة قائمة الانتقاء (VL10C)",
+        tCode: "VL10C",
+        role: "Warehouse Supervisor",
+        whatToDoEN:
+          "In VL10C (Delivery Due List for Customer Orders), select sales orders due for delivery. Create outbound delivery documents in batch. The system generates delivery documents with pick quantities. Print the pick list for the warehouse team. The pick list shows material, quantity, and storage location. Note: batch assignment is done manually by the picker — do NOT let SAP auto-assign batches.",
+        whatToDoAR:
+          "في VL10C (قائمة التسليم المستحق لأوامر العملاء)، اختر أوامر المبيعات المستحقة للتسليم. أنشئ مستندات التسليم الصادر على دفعات. يُنشئ النظام مستندات التسليم مع كميات الانتقاء. اطبع قائمة الانتقاء لفريق المستودع. تُظهر قائمة الانتقاء المادة والكمية وموقع التخزين. ملاحظة: يتم تعيين الدفعات يدوياً من قِبل المنتقي — لا تدع SAP يُعيِّن الدفعات تلقائياً.",
+        whatSAPDoesEN:
+          "Creates outbound delivery documents from due sales order schedule lines. Assigns picking quantities. Prints pick lists. Delivery document is now open for picking and goods issue.",
+        whatSAPDoesAR:
+          "ينشئ مستندات التسليم الصادر من سطور جدولة أوامر المبيعات المستحقة. يُعيِّن كميات الانتقاء. يطبع قوائم الانتقاء. مستند التسليم مفتوح الآن للانتقاء وإصدار البضائع.",
+        expectedOutputEN:
+          "Outbound delivery documents created. Pick list printed and issued to warehouse team.",
+        expectedOutputAR:
+          "تم إنشاء مستندات التسليم الصادر. تمت طباعة قائمة الانتقاء وإصدارها لفريق المستودع.",
+      },
+      {
+        id: "mm-goods-issue-sales-step-3",
+        stepNumber: 3,
+        titleEN: "Manual Batch Picking (FIFO – Nearest Expiry First)",
+        titleAR: "الانتقاء اليدوي للدفعات (FIFO – أقرب انتهاء صلاحية أولاً)",
+        tCode: "",
+        role: "Warehouse Picker",
+        whatToDoEN:
+          "Using the printed pick list, physically select the required materials from the warehouse. Always pick the batch with the nearest expiry date first (FIFO rule). Record the actual batch numbers and quantities on the pick list. Do not mix batches in the same delivery line. Bring the picked goods to the staging area and confirm with the supervisor. IMPORTANT: Once the delivery document is created, batch numbers cannot be changed in the system — get it right before confirming.",
+        whatToDoAR:
+          "باستخدام قائمة الانتقاء المطبوعة، انتقِ المواد المطلوبة فعلياً من المستودع. دائماً انتقِ الدفعة ذات أقرب تاريخ انتهاء صلاحية أولاً (قاعدة FIFO). سجِّل أرقام الدفعات والكميات الفعلية على قائمة الانتقاء. لا تخلط دفعات في نفس بند التسليم. أحضر البضائع المنتقاة إلى منطقة التجميع وأكِّد مع المشرف. مهم: بمجرد إنشاء مستند التسليم، لا يمكن تغيير أرقام الدفعات في النظام — تأكد من الصحة قبل التأكيد.",
+        whatSAPDoesEN:
+          "This step is a manual physical process — no SAP transaction. SAP is updated in the next step when batch numbers from the pick list are entered into the delivery document.",
+        whatSAPDoesAR:
+          "هذه الخطوة عملية يدوية فعلية — لا يوجد تنفيذ SAP. يُحدَّث SAP في الخطوة التالية عند إدخال أرقام الدفعات من قائمة الانتقاء في مستند التسليم.",
+        expectedOutputEN:
+          "Goods physically picked. Batch numbers recorded on pick list. Goods staged and ready for goods issue.",
+        expectedOutputAR:
+          "تم انتقاء البضائع فعلياً. تم تسجيل أرقام الدفعات على قائمة الانتقاء. البضائع مرحَّلة وجاهزة لإصدار البضائع.",
+      },
+      {
+        id: "mm-goods-issue-sales-step-4",
+        stepNumber: 4,
+        titleEN: "Post Goods Issue (VL06G / VL02N)",
+        titleAR: "ترحيل إصدار البضائع (VL06G / VL02N)",
+        tCode: "VL02N",
+        role: "Warehouse Supervisor",
+        whatToDoEN:
+          "In VL02N (or via VL06G monitor), open the outbound delivery. Enter the batch numbers and quantities confirmed by the picker. Verify that the FIFO batches match the pick list. Once confirmed, post the goods issue. This reduces stock and triggers billing. Alternatively, use VL06G to manage and post goods issue for multiple deliveries at once.",
+        whatToDoAR:
+          "في VL02N (أو عبر مراقب VL06G)، افتح التسليم الصادر. أدخل أرقام الدفعات والكميات التي أكدها المنتقي. تحقق من تطابق دفعات FIFO مع قائمة الانتقاء. بعد التأكيد، ارحِّل إصدار البضائع. يخفض هذا المخزون ويُشغِّل الفوترة. بديلاً، استخدم VL06G لإدارة وترحيل إصدار البضائع لعدة تسليمات في آنٍ واحد.",
+        whatSAPDoesEN:
+          "Posts goods issue movement type 601. Reduces unrestricted stock. Creates material document, accounting entry (COGS debit, inventory credit), and billing due list entry. Sales order schedule line is confirmed as delivered.",
+        whatSAPDoesAR:
+          "يرحِّل إصدار البضائع بنوع الحركة 601. يخفض المخزون غير المقيد. ينشئ مستند مادة وقيد محاسبة (مدين تكلفة البضائع المباعة، دائن المخزون) وقيد في قائمة الفوترة المستحقة. يُأكَّد سطر جدولة أمر المبيعات على أنه مسلَّم.",
+        expectedOutputEN:
+          "Goods issue posted. Stock reduced. Billing document due list updated. Delivery complete.",
+        expectedOutputAR:
+          "تم ترحيل إصدار البضائع. تم تخفيض المخزون. تم تحديث قائمة مستندات الفوترة المستحقة. التسليم مكتمل.",
+      },
+    ],
+  },
+
+  // ─── MM: Reservation Process ───────────────────────────────────────────────
+  {
+    id: "mm-reservation",
+    icon: "📋",
+    duration: "15–20 min",
+    titleEN: "Reservation Process (Internal Goods Issue)",
+    titleAR: "عملية الحجز (إصدار بضائع داخلي)",
+    descriptionEN:
+      "Process for internally reserving materials against a cost center or order, then issuing them from the warehouse. A reservation is created (MB21), a custom AWP reservation form is printed (YRES201, form F-MM-BH1-RES-01), the reservation is monitored (MB25), and goods are issued referencing the reservation (MIGO). ~25 reservations/day.",
+    descriptionAR:
+      "عملية لحجز المواد داخلياً مقابل مركز تكلفة أو أمر، ثم إصدارها من المستودع. يُنشأ الحجز (MB21)، يُطبع نموذج حجز AWP المخصص (YRES201، النموذج F-MM-BH1-RES-01)، يُتابَع الحجز (MB25)، وتُصدَر البضائع بالاستناد إلى الحجز (MIGO). ~25 حجزاً يومياً.",
+    module: "MM",
+    roles: [
+      "Requester (Department Head / Cost Center Owner)",
+      "Warehouse Clerk",
+    ],
+    steps: [
+      {
+        id: "mm-reservation-step-1",
+        stepNumber: 1,
+        titleEN: "Create Reservation (MB21)",
+        titleAR: "إنشاء الحجز (MB21)",
+        tCode: "MB21",
+        role: "Requester (Department Head / Cost Center Owner)",
+        whatToDoEN:
+          "In MB21, create a goods reservation. Enter movement type 201 (goods issue to cost center) or the appropriate movement type for the consumption. Enter the plant, storage location, material number, quantity, and the cost center or order that will receive the cost. Set the requirements date (when the goods are needed). Save the reservation.",
+        whatToDoAR:
+          "في MB21، أنشئ حجز بضائع. أدخل نوع الحركة 201 (إصدار بضائع لمركز التكلفة) أو نوع الحركة المناسب للاستهلاك. أدخل المصنع وموقع التخزين ورقم المادة والكمية ومركز التكلفة أو الأمر الذي سيتلقى التكلفة. حدِّد تاريخ المتطلبات (متى تكون البضائع مطلوبة). احفظ الحجز.",
+        whatSAPDoesEN:
+          "Creates a reservation document (movement type 201 or other). Reduces available-to-pick quantity for the material but does not post a goods movement yet. Reservation number generated.",
+        whatSAPDoesAR:
+          "ينشئ مستند حجز (نوع الحركة 201 أو غيره). يخفض الكمية المتاحة للانتقاء للمادة لكن لا يرحِّل حركة بضائع بعد. يتم توليد رقم الحجز.",
+        expectedOutputEN:
+          "Reservation created. Reservation number generated. Materials are now reserved for the requester.",
+        expectedOutputAR:
+          "تم إنشاء الحجز. تم توليد رقم الحجز. المواد محجوزة الآن للطالب.",
+      },
+      {
+        id: "mm-reservation-step-2",
+        stepNumber: 2,
+        titleEN: "Print Reservation Form (YRES201 – Form F-MM-BH1-RES-01)",
+        titleAR: "طباعة نموذج الحجز (YRES201 – النموذج F-MM-BH1-RES-01)",
+        tCode: "YRES201",
+        role: "Requester (Department Head / Cost Center Owner)",
+        whatToDoEN:
+          "In YRES201 (AWP custom reservation print program), enter the reservation number created in MB21. Execute the report to print the AWP reservation form (custom form F-MM-BH1-RES-01). This form must be signed by the department head and presented to the warehouse when collecting the goods. The form serves as physical authorization for the goods issue.",
+        whatToDoAR:
+          "في YRES201 (برنامج طباعة الحجز المخصص لـ AWP)، أدخل رقم الحجز المنشأ في MB21. نفِّذ التقرير لطباعة نموذج حجز AWP (النموذج المخصص F-MM-BH1-RES-01). يجب أن يوقِّع مدير الإدارة على هذا النموذج ويُقدِّمه إلى المستودع عند استلام البضائع. يعمل النموذج كتفويض فعلي لإصدار البضائع.",
+        whatSAPDoesEN:
+          "YRES201 generates and prints the AWP-specific reservation form using the reservation data from MB21. No stock movement occurs at this step.",
+        whatSAPDoesAR:
+          "يُنشئ YRES201 ويطبع نموذج الحجز الخاص بـ AWP باستخدام بيانات الحجز من MB21. لا تحدث حركة مخزون في هذه الخطوة.",
+        expectedOutputEN:
+          "Reservation form printed (F-MM-BH1-RES-01). Form signed by department head. Ready to present to warehouse.",
+        expectedOutputAR:
+          "تمت طباعة نموذج الحجز (F-MM-BH1-RES-01). النموذج موقَّع من مدير الإدارة. جاهز للتقديم إلى المستودع.",
+      },
+      {
+        id: "mm-reservation-step-3",
+        stepNumber: 3,
+        titleEN: "Monitor Open Reservations (MB25)",
+        titleAR: "متابعة الحجوزات المفتوحة (MB25)",
+        tCode: "MB25",
+        role: "Warehouse Clerk",
+        whatToDoEN:
+          "In MB25, run the reservations list to view all open reservations. Filter by plant, movement type, or requirements date as needed. Use this report to plan daily warehouse operations and ensure reservations due today are fulfilled. Identify any overdue or cancelled reservations.",
+        whatToDoAR:
+          "في MB25، شغِّل قائمة الحجوزات لعرض جميع الحجوزات المفتوحة. رشِّح حسب المصنع أو نوع الحركة أو تاريخ المتطلبات حسب الحاجة. استخدم هذا التقرير لتخطيط عمليات المستودع اليومية والتأكد من تنفيذ الحجوزات المستحقة اليوم. حدِّد أي حجوزات متأخرة أو ملغاة.",
+        whatSAPDoesEN:
+          "MB25 displays a list of all open reservations filtered by the selection criteria. Shows reserved quantity, requirement date, cost center/order, and fulfillment status.",
+        whatSAPDoesAR:
+          "يعرض MB25 قائمة بجميع الحجوزات المفتوحة مرشَّحة حسب معايير الاختيار. يُظهر الكمية المحجوزة وتاريخ المتطلبات ومركز التكلفة/الأمر وحالة التنفيذ.",
+        expectedOutputEN:
+          "Reservations list displayed. Today's due reservations identified. Warehouse team prepared to fulfill them.",
+        expectedOutputAR:
+          "عرض قائمة الحجوزات. تحديد الحجوزات المستحقة اليوم. فريق المستودع مُعدٌّ لتنفيذها.",
+      },
+      {
+        id: "mm-reservation-step-4",
+        stepNumber: 4,
+        titleEN: "Issue Goods Against Reservation (MIGO – MT201)",
+        titleAR: "إصدار البضائع بالاستناد إلى الحجز (MIGO – MT201)",
+        tCode: "MIGO",
+        role: "Warehouse Clerk",
+        whatToDoEN:
+          "When the requester presents the signed reservation form, in MIGO select 'Goods Issue' and reference the reservation number (or enter movement type 201 directly with reference to reservation). Enter the quantity actually issued (may be less than reserved if partial). Verify that the cost center/order is correct. Post the goods issue. File the signed physical reservation form.",
+        whatToDoAR:
+          "عندما يُقدِّم الطالب نموذج الحجز الموقَّع، في MIGO اختر 'إصدار البضائع' واستند إلى رقم الحجز (أو أدخل نوع الحركة 201 مباشرةً مع الاستناد إلى الحجز). أدخل الكمية المصدَرة فعلياً (قد تكون أقل من المحجوزة في حالة الجزئي). تحقق من صحة مركز التكلفة/الأمر. ارحِّل إصدار البضائع. احفظ نموذج الحجز الفعلي الموقَّع.",
+        whatSAPDoesEN:
+          "Posts goods issue movement type 201. Reduces unrestricted stock. Creates material document and accounting entry (debit cost center expense account, credit inventory account). Reservation status updated to fulfilled (or partially fulfilled).",
+        whatSAPDoesAR:
+          "يرحِّل إصدار البضائع بنوع الحركة 201. يخفض المخزون غير المقيد. ينشئ مستند مادة وقيد محاسبة (مدين حساب مصروفات مركز التكلفة، دائن حساب المخزون). يُحدَّث حالة الحجز إلى مُنفَّذ (أو مُنفَّذ جزئياً).",
+        expectedOutputEN:
+          "Goods issued against reservation. Material document created. Cost center charged. Reservation fulfilled.",
+        expectedOutputAR:
+          "تم إصدار البضائع بالاستناد إلى الحجز. تم إنشاء مستند المادة. تم تحميل مركز التكلفة. تم تنفيذ الحجز.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
