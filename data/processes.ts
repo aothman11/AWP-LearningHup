@@ -2636,6 +2636,872 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: Petty Cash Purchasing ────────────────────────────────────────────
+  {
+    id: "mm-petty-cash-purchasing",
+    icon: "💵",
+    duration: "30–45 min",
+    titleEN: "Purchasing with Petty Cash (Workshop / Maintenance)",
+    titleAR: "الشراء بالنقد الصغير (الورشة / الصيانة)",
+    descriptionEN:
+      "Process for recording unplanned spare-part purchases made directly by maintenance departments using workshop petty cash, primarily at Qassim. The aim is to capture all cash transactions in SAP to measure their volume and control unplanned procurement. PO document type Y011, purchasing group 007. ~50 transactions/day.",
+    descriptionAR:
+      "عملية لتسجيل مشتريات قطع الغيار غير المخططة التي تُجريها أقسام الصيانة مباشرةً باستخدام النقد الصغير للورشة، وبصفة رئيسية في القصيم. الهدف هو تسجيل جميع معاملات النقد في SAP لقياس حجمها والتحكم في المشتريات غير المخططة. نوع مستند الشراء: Y011، مجموعة الشراء: 007. ~50 معاملة/يوم.",
+    module: "MM",
+    roles: [
+      "Maintenance Requester",
+      "Purchasing Representative",
+      "Stock Keeper",
+      "AP Accountant",
+    ],
+    steps: [
+      {
+        id: "mm-petty-cash-step-1",
+        stepNumber: 1,
+        titleEN: "Create Reservation (MB21)",
+        titleAR: "إنشاء الحجز (MB21)",
+        tCode: "MB21",
+        role: "Maintenance Requester",
+        whatToDoEN:
+          "In MB21, create a goods reservation for the required spare parts. Enter movement type 201 (goods issue to cost center), plant (e.g. 1310 Fleet Central Workshop), relevant storage location (e.g. Q021, Q022, Q023, Q024, Q032), material, quantity, and the cost center. This establishes the internal requirement before purchasing.",
+        whatToDoAR:
+          "في MB21، أنشئ حجز بضائع لقطع الغيار المطلوبة. أدخل نوع الحركة 201 (إصدار بضائع لمركز التكلفة)، المصنع (مثل 1310 ورشة الأسطول المركزية)، موقع التخزين المناسب (مثل Q021، Q022، Q023، Q024، Q032)، المادة، الكمية، ومركز التكلفة. هذا يُحدِّد الاحتياج الداخلي قبل الشراء.",
+        whatSAPDoesEN:
+          "Creates a reservation document. Reserved quantity is tracked against the cost center. No goods movement posted yet.",
+        whatSAPDoesAR:
+          "ينشئ مستند حجز. يُتابَع المخزون المحجوز مقابل مركز التكلفة. لا تُرحَّل حركة بضائع بعد.",
+        expectedOutputEN:
+          "Reservation created with reservation number. Internal requirement documented.",
+        expectedOutputAR:
+          "تم إنشاء الحجز برقم الحجز. تم توثيق الاحتياج الداخلي.",
+      },
+      {
+        id: "mm-petty-cash-step-2",
+        stepNumber: 2,
+        titleEN: "Create Purchase Requisition (ME51N)",
+        titleAR: "إنشاء طلب الشراء (ME51N)",
+        tCode: "ME51N",
+        role: "Maintenance Requester",
+        whatToDoEN:
+          "In ME51N, create a purchase requisition for the items to be purchased with petty cash. Reference the reservation if applicable. Enter material description, quantity, unit of price, required delivery date, plant, and cost center account assignment. The PR is the formal internal request before the PO is created.",
+        whatToDoAR:
+          "في ME51N، أنشئ طلب شراء للعناصر التي سيتم شراؤها بالنقد الصغير. استند إلى الحجز إذا انطبق. أدخل وصف المادة والكمية ووحدة السعر وتاريخ التسليم المطلوب والمصنع وتعيين الحساب لمركز التكلفة. طلب الشراء هو الطلب الداخلي الرسمي قبل إنشاء أمر الشراء.",
+        whatSAPDoesEN:
+          "Creates a purchase requisition document. PR is now available for conversion to a purchase order by the purchasing team.",
+        whatSAPDoesAR:
+          "ينشئ مستند طلب شراء. طلب الشراء متاح الآن للتحويل إلى أمر شراء من قِبَل فريق المشتريات.",
+        expectedOutputEN:
+          "PR created. Purchasing representative notified to create PO.",
+        expectedOutputAR:
+          "تم إنشاء طلب الشراء. تم إبلاغ مسؤول المشتريات لإنشاء أمر الشراء.",
+      },
+      {
+        id: "mm-petty-cash-step-3",
+        stepNumber: 3,
+        titleEN: "Create Petty Cash Purchase Order (ME21N – Type Y011)",
+        titleAR: "إنشاء أمر شراء نقد صغير (ME21N – النوع Y011)",
+        tCode: "ME21N",
+        role: "Purchasing Representative",
+        whatToDoEN:
+          "In ME21N, create a purchase order with document type Y011 (Direct Procurement – Cash) and purchasing group 007 (Workshop – Petty Cash). Reference the purchase requisition. Enter the vendor (cash supplier), material, quantity, price, and delivery details. The PO authorizes the cash purchase. Print using custom form YPO_LOCAL (F-MM-J45-002).",
+        whatToDoAR:
+          "في ME21N، أنشئ أمر شراء بنوع المستند Y011 (شراء مباشر – نقد) ومجموعة الشراء 007 (ورشة – نقد صغير). استند إلى طلب الشراء. أدخل المورد (مورد النقد) والمادة والكمية والسعر وتفاصيل التسليم. يُجيز أمر الشراء عملية الشراء النقدي. اطبع باستخدام النموذج المخصص YPO_LOCAL (F-MM-J45-002).",
+        whatSAPDoesEN:
+          "Creates a purchase order of type Y011 in number range 4100000000–4199999999. PO is now released for goods receipt. Open purchase commitment recorded.",
+        whatSAPDoesAR:
+          "ينشئ أمر شراء من نوع Y011 في نطاق الأرقام 4100000000–4199999999. أمر الشراء محرَّر الآن لاستلام البضائع. يُسجَّل التزام الشراء المفتوح.",
+        expectedOutputEN:
+          "Petty cash PO created (type Y011). PO printed for cash purchase authorization.",
+        expectedOutputAR:
+          "تم إنشاء أمر شراء النقد الصغير (النوع Y011). تمت طباعة أمر الشراء لتفويض الشراء النقدي.",
+      },
+      {
+        id: "mm-petty-cash-step-4",
+        stepNumber: 4,
+        titleEN: "Receive Goods at Storage Location (MIGO)",
+        titleAR: "استلام البضائع في موقع التخزين (MIGO)",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "In MIGO, post goods receipt (movement type 101) against the Y011 purchase order. Enter the plant, storage location (e.g. Q021 Motor Pool 1, Q022 Motor Pool 2, Q032 EWS&Heavy Machine Spare Parts), material, batch if applicable, and quantity received. Print the material document using form Y_S4P_INV (F-MM-120-01).",
+        whatToDoAR:
+          "في MIGO، ارحِّل استلام البضائع (نوع الحركة 101) بالاستناد إلى أمر الشراء Y011. أدخل المصنع وموقع التخزين (مثل Q021 موقف السيارات 1، Q022 موقف السيارات 2، Q032 قطع غيار الماكينات الثقيلة) والمادة والدفعة إذا انطبق والكمية المستلمة. اطبع مستند المادة باستخدام النموذج Y_S4P_INV (F-MM-120-01).",
+        whatSAPDoesEN:
+          "Posts GR MT101. Increases stock in the specified storage location. Creates material document and accounting entry (debit stock account, credit GR/IR liability).",
+        whatSAPDoesAR:
+          "يرحِّل استلام البضائع MT101. يزيد المخزون في موقع التخزين المحدد. ينشئ مستند مادة وقيد محاسبة (مدين حساب المخزون، دائن مسؤولية GR/IR).",
+        expectedOutputEN:
+          "Goods received and in stock. Material document created and printed.",
+        expectedOutputAR:
+          "تم استلام البضائع وإضافتها للمخزون. تم إنشاء مستند المادة وطباعته.",
+      },
+      {
+        id: "mm-petty-cash-step-5",
+        stepNumber: 5,
+        titleEN: "Enter Supplier Invoice (MIRO)",
+        titleAR: "إدخال فاتورة المورد (MIRO)",
+        tCode: "MIRO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "In MIRO, post the supplier invoice against the Y011 purchase order to reimburse the petty cash. Enter invoice date, amount, and tax details. Verify the invoice matches the GR quantity and value. Post the invoice. This creates the accounts payable entry and clears the GR/IR account.",
+        whatToDoAR:
+          "في MIRO، ارحِّل فاتورة المورد بالاستناد إلى أمر الشراء Y011 لاسترداد النقد الصغير. أدخل تاريخ الفاتورة والمبلغ وتفاصيل الضريبة. تحقق من تطابق الفاتورة مع كمية وقيمة استلام البضائع. ارحِّل الفاتورة. ينشئ هذا قيد الحسابات الدائنة ويصفِّي حساب GR/IR.",
+        whatSAPDoesEN:
+          "Posts supplier invoice. Creates AP liability entry. Clears GR/IR account. Triggers payment run.",
+        whatSAPDoesAR:
+          "يرحِّل فاتورة المورد. ينشئ قيد مسؤولية الحسابات الدائنة. يصفِّي حساب GR/IR. يُشغِّل تشغيل الدفع.",
+        expectedOutputEN:
+          "Invoice posted. Petty cash reimbursement cycle complete. AP liability recorded.",
+        expectedOutputAR:
+          "تم ترحيل الفاتورة. اكتمل دورة استرداد النقد الصغير. تم تسجيل مسؤولية الحسابات الدائنة.",
+      },
+      {
+        id: "mm-petty-cash-step-6",
+        stepNumber: 6,
+        titleEN: "Issue Reservation from Storage Location (MIGO)",
+        titleAR: "إصدار الحجز من موقع التخزين (MIGO)",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "In MIGO, post goods issue (movement type 201) with reference to the reservation created in step 1. This transfers the cost from the inventory account to the maintenance cost center. Enter quantity issued and confirm the cost center assignment. Save.",
+        whatToDoAR:
+          "في MIGO، ارحِّل إصدار البضائع (نوع الحركة 201) بالاستناد إلى الحجز المنشأ في الخطوة 1. يحوِّل هذا التكلفة من حساب المخزون إلى مركز تكلفة الصيانة. أدخل الكمية المصدَرة وأكِّد تعيين مركز التكلفة. احفظ.",
+        whatSAPDoesEN:
+          "Posts MT201 goods issue. Reduces stock. Debits maintenance cost center. Reservation closed. Full petty cash procurement cycle complete.",
+        whatSAPDoesAR:
+          "يرحِّل إصدار البضائع MT201. يخفض المخزون. يُحمِّل مركز تكلفة الصيانة. يُغلَق الحجز. اكتملت دورة شراء النقد الصغير بالكامل.",
+        expectedOutputEN:
+          "Goods issued to maintenance cost center. Reservation fulfilled. Full cycle closed.",
+        expectedOutputAR:
+          "تم إصدار البضائع لمركز تكلفة الصيانة. تم تنفيذ الحجز. اكتمل الدورة الكاملة.",
+      },
+    ],
+  },
+
+  // ─── MM: Quotation for Procurement (RFQ) ──────────────────────────────────
+  {
+    id: "mm-quotation-procurement",
+    icon: "📝",
+    duration: "1–3 days",
+    titleEN: "Quotation for Procurement (RFQ Process)",
+    titleAR: "طلب عروض الأسعار (عملية RFQ)",
+    descriptionEN:
+      "Process for inviting vendors to submit quotations (bids) for supply of materials or services, comparing bids, selecting the best supplier, and updating the source of supply. RFQ document types YANL (local) and YANF (foreign). AWP custom comparison form YPUR01. ~100 RFQs/day.",
+    descriptionAR:
+      "عملية دعوة الموردين لتقديم عروض أسعار (مناقصات) لتوريد المواد أو الخدمات، ومقارنة العروض، واختيار أفضل مورد، وتحديث مصدر التوريد. أنواع مستندات RFQ: YANL (محلي) و YANF (أجنبي). نموذج المقارنة المخصص لـ AWP: YPUR01. ~100 طلب عروض/يوم.",
+    module: "MM",
+    roles: [
+      "Purchaser",
+      "Source of Supply Maintainer",
+    ],
+    steps: [
+      {
+        id: "mm-rfq-step-1",
+        stepNumber: 1,
+        titleEN: "Create Request for Quotation (ME41)",
+        titleAR: "إنشاء طلب عرض الأسعار (ME41)",
+        tCode: "ME41",
+        role: "Purchaser",
+        whatToDoEN:
+          "In ME41, create a new Request for Quotation. Select document type YANL for local suppliers or YANF for foreign suppliers. Enter the collective number (= purchase requisition number for traceability), quotation submission deadline, delivery date, plant, and line items (material, quantity, unit of measure). Assign the RFQ to the relevant vendors. Fill in incoterms, incoterms location, terms of payment, and supplier quotation number fields as mandatory.",
+        whatToDoAR:
+          "في ME41، أنشئ طلب عرض أسعار جديداً. اختر نوع المستند YANL للموردين المحليين أو YANF للموردين الأجانب. أدخل الرقم الجماعي (= رقم طلب الشراء للتتبع)، الموعد النهائي لتقديم العروض، تاريخ التسليم، المصنع، وبنود الأصناف (المادة، الكمية، وحدة القياس). عيِّن طلب عرض الأسعار للموردين المعنيين. أدخل Incoterms وموقع Incoterms وشروط الدفع ورقم عرض المورد كحقول إلزامية.",
+        whatSAPDoesEN:
+          "Creates RFQ document in number range YL (5600000000–5699999999) for YANL or YF (5700000000–5799999999) for YANF. RFQ is sent to selected vendors for bidding.",
+        whatSAPDoesAR:
+          "ينشئ مستند RFQ في نطاق أرقام YL (5600000000–5699999999) لـ YANL أو YF (5700000000–5799999999) لـ YANF. يُرسَل RFQ إلى الموردين المختارين للمناقصة.",
+        expectedOutputEN:
+          "RFQ created. Vendors identified and RFQ ready to print and send.",
+        expectedOutputAR:
+          "تم إنشاء RFQ. تم تحديد الموردين وRFQ جاهز للطباعة والإرسال.",
+      },
+      {
+        id: "mm-rfq-step-2",
+        stepNumber: 2,
+        titleEN: "List and Print RFQs (ME4S / ME9A)",
+        titleAR: "عرض وطباعة طلبات عروض الأسعار (ME4S / ME9A)",
+        tCode: "ME9A",
+        role: "Purchaser",
+        whatToDoEN:
+          "Use ME4S to list all RFQs by collective number (linked to the purchase requisition). Then use ME9A to print the RFQ documents using AWP form YMM_RFQ (WRICEF: F-MM-ZM2-001). Send the printed or electronic RFQs to the selected vendors and request their quotations by the submission deadline.",
+        whatToDoAR:
+          "استخدم ME4S لعرض جميع RFQs حسب الرقم الجماعي (المرتبط بطلب الشراء). ثم استخدم ME9A لطباعة مستندات RFQ باستخدام نموذج AWP المخصص YMM_RFQ (WRICEF: F-MM-ZM2-001). أرسل RFQs المطبوعة أو الإلكترونية إلى الموردين المختارين واطلب عروضهم قبل الموعد النهائي للتقديم.",
+        whatSAPDoesEN:
+          "ME4S provides a list view of RFQs by collective number. ME9A outputs the RFQ forms for vendor communication.",
+        whatSAPDoesAR:
+          "يوفر ME4S عرضاً قائمياً لـ RFQs حسب الرقم الجماعي. يُخرج ME9A نماذج RFQ للتواصل مع الموردين.",
+        expectedOutputEN:
+          "RFQs printed and sent to vendors. Vendors are requested to submit quotations by deadline.",
+        expectedOutputAR:
+          "تمت طباعة RFQs وإرسالها إلى الموردين. يُطلب من الموردين تقديم عروضهم قبل الموعد النهائي.",
+      },
+      {
+        id: "mm-rfq-step-3",
+        stepNumber: 3,
+        titleEN: "Maintain Vendor Quotations (ME47)",
+        titleAR: "إدخال عروض أسعار الموردين (ME47)",
+        tCode: "ME47",
+        role: "Purchaser",
+        whatToDoEN:
+          "When vendor quotations are received, open each RFQ in ME47 and enter the vendor's quoted prices, delivery times, and any conditions. Record the actual quotation submission date. For bulk price uploads, use the LSMW program YRFQ_UPL (WRICEF: E-MM-ZM2-002) to upload quotation prices automatically. Ensure all mandatory fields are filled (collective number, submission date, incoterms, supplier quotation number, payment terms).",
+        whatToDoAR:
+          "عند استلام عروض أسعار الموردين، افتح كل RFQ في ME47 وأدخل الأسعار المقدمة من المورد وأوقات التسليم وأي شروط. سجِّل تاريخ تقديم العرض الفعلي. لتحميل الأسعار بالجملة، استخدم برنامج LSMW المسمى YRFQ_UPL (WRICEF: E-MM-ZM2-002) لتحميل أسعار العروض تلقائياً. تأكد من ملء جميع الحقول الإلزامية (الرقم الجماعي، تاريخ التقديم، Incoterms، رقم عرض المورد، شروط الدفع).",
+        whatSAPDoesEN:
+          "Updates each vendor's RFQ with their quoted prices and conditions. System is now ready for price comparison.",
+        whatSAPDoesAR:
+          "يُحدِّث RFQ كل مورد بأسعاره وشروطه المقدَّمة. النظام جاهز الآن لمقارنة الأسعار.",
+        expectedOutputEN:
+          "All vendor quotations entered in SAP. Quotations ready for comparison.",
+        expectedOutputAR:
+          "تم إدخال جميع عروض أسعار الموردين في SAP. العروض جاهزة للمقارنة.",
+      },
+      {
+        id: "mm-rfq-step-4",
+        stepNumber: 4,
+        titleEN: "Compare and Select Best Quotation (ME49 / YPUR01)",
+        titleAR: "مقارنة واختيار أفضل عرض (ME49 / YPUR01)",
+        tCode: "ME49",
+        role: "Purchaser",
+        whatToDoEN:
+          "In ME49, run the price comparison for all quotations received under the collective number. The system displays all vendor prices side by side. Review price, delivery, and terms. Select the most favorable quotation. Use AWP custom report YPUR01 to print the comparison form for management review. Mark the unsuccessful vendors for automatic rejection letter generation.",
+        whatToDoAR:
+          "في ME49، شغِّل مقارنة الأسعار لجميع العروض المستلمة تحت الرقم الجماعي. يعرض النظام جميع أسعار الموردين جنباً إلى جنب. راجع السعر والتسليم والشروط. اختر العرض الأفضل. استخدم التقرير المخصص لـ AWP YPUR01 لطباعة نموذج المقارنة لمراجعة الإدارة. ضع علامة على الموردين غير المقبولين لتوليد خطابات الرفض تلقائياً.",
+        whatSAPDoesEN:
+          "ME49 generates a price comparison list across all vendor quotations. YPUR01 prints the AWP-format comparison form. System identifies the best quotation automatically.",
+        whatSAPDoesAR:
+          "يُنشئ ME49 قائمة مقارنة أسعار عبر جميع عروض الموردين. يطبع YPUR01 نموذج المقارنة بتنسيق AWP. يُحدِّد النظام أفضل عرض تلقائياً.",
+        expectedOutputEN:
+          "Best quotation identified. Comparison form printed. Unsuccessful vendors marked for rejection.",
+        expectedOutputAR:
+          "تم تحديد أفضل عرض. تمت طباعة نموذج المقارنة. تم تحديد الموردين غير المقبولين للرفض.",
+      },
+      {
+        id: "mm-rfq-step-5",
+        stepNumber: 5,
+        titleEN: "Update Source of Supply / Purchasing Info Record (ME11)",
+        titleAR: "تحديث مصدر التوريد / سجل معلومات الشراء (ME11)",
+        tCode: "ME11",
+        role: "Source of Supply Maintainer",
+        whatToDoEN:
+          "After selecting the winning vendor, in ME11 create or update the purchasing info record to store the agreed price and conditions for future use. This ensures the supplier's price is available for automatic price proposal in future purchase orders. Optionally create a source list to fix the supplier as the preferred source for the material.",
+        whatToDoAR:
+          "بعد اختيار المورد الفائز، في ME11 أنشئ أو حدِّث سجل معلومات الشراء لتخزين السعر والشروط المتفق عليها للاستخدام المستقبلي. هذا يضمن توافر سعر المورد لاقتراح السعر التلقائي في أوامر الشراء المستقبلية. اختيارياً أنشئ قائمة مصادر لتثبيت المورد كمصدر مفضل للمادة.",
+        whatSAPDoesEN:
+          "Creates or updates the purchasing info record with the agreed price and conditions. Source list can be configured to propose this vendor automatically in future PRs and POs.",
+        whatSAPDoesAR:
+          "ينشئ أو يُحدِّث سجل معلومات الشراء بالسعر والشروط المتفق عليها. يمكن تهيئة قائمة المصادر لاقتراح هذا المورد تلقائياً في طلبات وأوامر الشراء المستقبلية.",
+        expectedOutputEN:
+          "Purchasing info record updated. Supplier locked in as preferred source. RFQ process complete.",
+        expectedOutputAR:
+          "تم تحديث سجل معلومات الشراء. تم تثبيت المورد كمصدر مفضل. اكتملت عملية RFQ.",
+      },
+    ],
+  },
+
+  // ─── MM: Service Procurement ───────────────────────────────────────────────
+  {
+    id: "mm-service-procurement",
+    icon: "🔨",
+    duration: "3–5 days",
+    titleEN: "Service Procurement (External Services)",
+    titleAR: "شراء الخدمات (الخدمات الخارجية)",
+    descriptionEN:
+      "End-to-end procurement process for externally performed services (maintenance, construction, translation, etc.). Covers service PR creation, monitoring, RFQ, PO with item category D, service entry sheet creation and acceptance, and invoice verification. ~100 service orders/month. PO document type based on department; generic type YZ01 (Head Office Services) available for departments without a dedicated type.",
+    descriptionAR:
+      "عملية شراء متكاملة للخدمات المُنجَزة خارجياً (صيانة، إنشاء، ترجمة، إلخ). تشمل إنشاء طلب شراء الخدمة، المراقبة، RFQ، أمر الشراء بفئة البند D، إنشاء ورقة إدخال الخدمة وقبولها، والتحقق من الفاتورة. ~100 أمر خدمة/شهر. نوع مستند PO حسب القسم؛ النوع العام YZ01 (خدمات المكتب الرئيسي) متاح للأقسام التي لا تملك نوعاً مخصصاً.",
+    module: "MM",
+    roles: [
+      "Department Requester",
+      "Service Purchaser",
+      "Service Acceptance Responsible",
+      "AP Accountant",
+    ],
+    steps: [
+      {
+        id: "mm-service-proc-step-1",
+        stepNumber: 1,
+        titleEN: "Create Service Purchase Requisition (ME51N)",
+        titleAR: "إنشاء طلب شراء الخدمة (ME51N)",
+        tCode: "ME51N",
+        role: "Department Requester",
+        whatToDoEN:
+          "In ME51N, create a purchase requisition for the required service. Use the department-specific document type if available, or YZ01 (Head Office Services, number range 0037000000–0037999999) for general service requests. In the item, select item category D (service) and enter a detailed service description, quantity (usually 1 AU – Activity Unit), plant, cost center, and required date. Detailed service specifications must be included to enable proper RFQ and vendor communication.",
+        whatToDoAR:
+          "في ME51N، أنشئ طلب شراء للخدمة المطلوبة. استخدم نوع المستند الخاص بالقسم إذا كان متاحاً، أو YZ01 (خدمات المكتب الرئيسي، نطاق الأرقام 0037000000–0037999999) لطلبات الخدمة العامة. في البند، اختر فئة البند D (خدمة) وأدخل وصفاً تفصيلياً للخدمة والكمية (عادةً 1 AU – وحدة نشاط) والمصنع ومركز التكلفة والتاريخ المطلوب. يجب تضمين مواصفات الخدمة التفصيلية لتمكين RFQ والتواصل السليم مع المورد.",
+        whatSAPDoesEN:
+          "Creates a service purchase requisition with item category D. Requisition is available for monitoring in MSRV2.",
+        whatSAPDoesAR:
+          "ينشئ طلب شراء خدمة بفئة البند D. طلب الشراء متاح للمراقبة في MSRV2.",
+        expectedOutputEN:
+          "Service PR created. PR available for purchasing team review.",
+        expectedOutputAR:
+          "تم إنشاء طلب شراء الخدمة. طلب الشراء متاح لمراجعة فريق المشتريات.",
+      },
+      {
+        id: "mm-service-proc-step-2",
+        stepNumber: 2,
+        titleEN: "Monitor Service Requirements (MSRV2)",
+        titleAR: "مراقبة متطلبات الخدمة (MSRV2)",
+        tCode: "MSRV2",
+        role: "Service Purchaser",
+        whatToDoEN:
+          "In MSRV2, run the service list for requisitions to monitor all open service requirements. Review outstanding service PRs, verify completeness of service descriptions, and prioritize. Identify which PRs are ready to proceed to RFQ and sourcing. Use MSRV1 (service list), MSRV3 (service list per PO), and ME2S (services per PO) for additional monitoring.",
+        whatToDoAR:
+          "في MSRV2، شغِّل قائمة الخدمات لطلبات الشراء لمراقبة جميع متطلبات الخدمة المفتوحة. راجع طلبات الشراء الخدمية المعلقة وتحقق من اكتمال أوصاف الخدمة وحدِّد الأولويات. حدِّد طلبات الشراء الجاهزة للمتابعة مع RFQ والتوريد. استخدم MSRV1 (قائمة الخدمات)، MSRV3 (قائمة الخدمات لكل PO)، و ME2S (الخدمات لكل PO) للمراقبة الإضافية.",
+        whatSAPDoesEN:
+          "MSRV2 lists all service requisitions with their service lines and status. Provides the purchaser visibility over all outstanding service requirements.",
+        whatSAPDoesAR:
+          "يُدرج MSRV2 جميع طلبات الشراء الخدمية مع سطور خدماتها وحالتها. يوفر للمشتري رؤية على جميع متطلبات الخدمة المعلقة.",
+        expectedOutputEN:
+          "Open service requirements reviewed. Priority PRs identified for RFQ process.",
+        expectedOutputAR:
+          "تمت مراجعة متطلبات الخدمة المفتوحة. تحديد طلبات الشراء ذات الأولوية لعملية RFQ.",
+      },
+      {
+        id: "mm-service-proc-step-3",
+        stepNumber: 3,
+        titleEN: "Create Service Purchase Order – Item Category D (ME21N)",
+        titleAR: "إنشاء أمر شراء الخدمة – فئة البند D (ME21N)",
+        tCode: "ME21N",
+        role: "Service Purchaser",
+        whatToDoEN:
+          "After completing the RFQ and selecting the vendor (via the MM-ZM2 quotation process), in ME21N create a service purchase order. Select the winning vendor, reference the released PR, and set item category to D (service). In the service tab, enter detailed service specifications (service number or free-form description, quantity, unit, and price). Enter account assignment (cost center or project). Release the PO per the release strategy for purchasing group 002 (Services & Project). Print the PO for the vendor.",
+        whatToDoAR:
+          "بعد اكتمال RFQ واختيار المورد (عبر عملية عروض الأسعار MM-ZM2)، أنشئ في ME21N أمر شراء خدمة. اختر المورد الفائز واستند إلى طلب الشراء المُطلَق واضبط فئة البند على D (خدمة). في تبويب الخدمة، أدخل مواصفات الخدمة التفصيلية (رقم الخدمة أو وصف حر، الكمية، الوحدة، والسعر). أدخل تعيين الحساب (مركز التكلفة أو المشروع). أطلق أمر الشراء وفق استراتيجية الإصدار لمجموعة الشراء 002 (الخدمات والمشاريع). اطبع أمر الشراء للمورد.",
+        whatSAPDoesEN:
+          "Creates a service PO with item category D and service specifications. Open service commitment recorded against cost center. PO sent to vendor.",
+        whatSAPDoesAR:
+          "ينشئ أمر شراء خدمة بفئة البند D ومواصفات الخدمة. يُسجَّل الالتزام بالخدمة المفتوح مقابل مركز التكلفة. يُرسَل أمر الشراء إلى المورد.",
+        expectedOutputEN:
+          "Service PO created and released. Vendor authorized to perform the service.",
+        expectedOutputAR:
+          "تم إنشاء وإطلاق أمر شراء الخدمة. تم تفويض المورد لتنفيذ الخدمة.",
+      },
+      {
+        id: "mm-service-proc-step-4",
+        stepNumber: 4,
+        titleEN: "Create and Accept Service Entry Sheet (ML81N / ML83)",
+        titleAR: "إنشاء وقبول ورقة إدخال الخدمة (ML81N / ML83)",
+        tCode: "ML81N",
+        role: "Service Acceptance Responsible",
+        whatToDoEN:
+          "After the vendor performs the service, in ML81N create a service entry sheet referencing the PO. Enter each service line with actual quantities performed. Set the acceptance status once you verify the work is satisfactory. A responsible person checks and accepts the service entry sheet. Then in ML83, print the service entry sheet acceptance document for the records. This step is the equivalent of goods receipt for services.",
+        whatToDoAR:
+          "بعد تنفيذ المورد للخدمة، أنشئ في ML81N ورقة إدخال خدمة مستندةً إلى أمر الشراء. أدخل كل سطر خدمة بالكميات الفعلية المُنفَّذة. اضبط حالة القبول بمجرد التحقق من رضاك عن العمل. يفحص شخص مسؤول ويقبل ورقة إدخال الخدمة. ثم في ML83، اطبع مستند قبول ورقة إدخال الخدمة للسجلات. هذه الخطوة مكافئة لاستلام البضائع في الخدمات.",
+        whatSAPDoesEN:
+          "ML81N creates the service entry sheet and posts the service acceptance. Creates accounting entry (debit service expense/cost center, credit GR/IR services account). Triggers invoice verification in MIRO.",
+        whatSAPDoesAR:
+          "ينشئ ML81N ورقة إدخال الخدمة ويرحِّل قبول الخدمة. ينشئ قيد محاسبة (مدين مصروف الخدمة/مركز التكلفة، دائن حساب GR/IR للخدمات). يُشغِّل التحقق من الفاتورة في MIRO.",
+        expectedOutputEN:
+          "Service entry sheet created and accepted. Acceptance document printed. Service cost posted to cost center.",
+        expectedOutputAR:
+          "تم إنشاء وقبول ورقة إدخال الخدمة. تمت طباعة مستند القبول. تم ترحيل تكلفة الخدمة على مركز التكلفة.",
+      },
+      {
+        id: "mm-service-proc-step-5",
+        stepNumber: 5,
+        titleEN: "Verify Supplier Invoice for Services (MIRO)",
+        titleAR: "التحقق من فاتورة المورد للخدمات (MIRO)",
+        tCode: "MIRO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "In MIRO, post the vendor invoice for services referencing the service PO. The system will propose the service amounts from the accepted service entry sheet. Verify amounts, tax, and payment terms. Post the invoice. This clears the GR/IR services account and creates the accounts payable entry for payment.",
+        whatToDoAR:
+          "في MIRO، ارحِّل فاتورة المورد للخدمات مستندةً إلى أمر الشراء الخدمي. سيقترح النظام المبالغ من ورقة إدخال الخدمة المقبولة. تحقق من المبالغ والضريبة وشروط الدفع. ارحِّل الفاتورة. يصفِّي هذا حساب GR/IR للخدمات وينشئ قيد الحسابات الدائنة للدفع.",
+        whatSAPDoesEN:
+          "Posts service invoice. Clears GR/IR services liability. Creates AP entry. Full service procurement cycle closed.",
+        whatSAPDoesAR:
+          "يرحِّل فاتورة الخدمة. يصفِّي مسؤولية GR/IR للخدمات. ينشئ قيد الحسابات الدائنة. اكتملت دورة شراء الخدمة بالكامل.",
+        expectedOutputEN:
+          "Service invoice posted. AP liability created. Service procurement process complete.",
+        expectedOutputAR:
+          "تم ترحيل فاتورة الخدمة. تم إنشاء مسؤولية الحسابات الدائنة. اكتملت عملية شراء الخدمة.",
+      },
+    ],
+  },
+
+  // ─── MM: Asset Procurement ─────────────────────────────────────────────────
+  {
+    id: "mm-asset-procurement",
+    icon: "🏗️",
+    duration: "3–7 days",
+    titleEN: "Asset Procurement",
+    titleAR: "شراء الأصول",
+    descriptionEN:
+      "Procurement process for fixed assets (equipment, vehicles, machinery). A fixed asset master is created in FI-AA before the PO, and the purchase order is created with account assignment category A (asset). ~10 asset purchases/month. Custom AWP report YMM020 links GR material documents to PRs and POs for delivery tracking.",
+    descriptionAR:
+      "عملية شراء الأصول الثابتة (المعدات، المركبات، الآلات). يُنشأ سجل أصل ثابت في FI-AA قبل أمر الشراء، ويُنشأ أمر الشراء بفئة تعيين الحساب A (أصل). ~10 مشتريات أصول/شهر. التقرير المخصص لـ AWP: YMM020 يربط مستندات المادة من استلام البضائع بطلبات الشراء وأوامر الشراء لتتبع التسليم.",
+    module: "MM",
+    roles: [
+      "Asset Accountant",
+      "Purchaser",
+      "Asset Stock Keeper",
+    ],
+    steps: [
+      {
+        id: "mm-asset-proc-step-1",
+        stepNumber: 1,
+        titleEN: "Monitor Asset Purchase Requisitions (ME5A / YAST_PR)",
+        titleAR: "مراقبة طلبات شراء الأصول (ME5A / YAST_PR)",
+        tCode: "ME5A",
+        role: "Asset Accountant",
+        whatToDoEN:
+          "In ME5A (or custom report YAST_PR), monitor open purchase requisitions with account assignment 'U' (unknown — pending asset number assignment). These are PRs raised by departments for new assets. Review each PR to confirm the asset requirement and prepare for asset master creation. Also use custom report YMM020 for a consolidated view linking PR, PO, and GR documents.",
+        whatToDoAR:
+          "في ME5A (أو التقرير المخصص YAST_PR)، راقب طلبات الشراء المفتوحة بتعيين الحساب 'U' (غير محدد — في انتظار تعيين رقم الأصل). هذه طلبات شراء مُرفوعة من الأقسام للأصول الجديدة. راجع كل طلب شراء لتأكيد متطلبات الأصل والتحضير لإنشاء سجل الأصل الرئيسي. استخدم أيضاً التقرير المخصص YMM020 للحصول على عرض موحَّد يربط مستندات طلب الشراء وأمر الشراء واستلام البضائع.",
+        whatSAPDoesEN:
+          "ME5A/YAST_PR displays open PRs filtered by account assignment U. Allows the asset accountant to track which asset requisitions are pending asset number assignment.",
+        whatSAPDoesAR:
+          "يعرض ME5A/YAST_PR طلبات الشراء المفتوحة مرشَّحة حسب تعيين الحساب U. يسمح لمحاسب الأصول بتتبع طلبات شراء الأصول التي تنتظر تعيين رقم الأصل.",
+        expectedOutputEN:
+          "Open asset PRs identified. Asset requirements confirmed.",
+        expectedOutputAR:
+          "تحديد طلبات شراء الأصول المفتوحة. تأكيد متطلبات الأصول.",
+      },
+      {
+        id: "mm-asset-proc-step-2",
+        stepNumber: 2,
+        titleEN: "Create New Asset Master Record (AS01)",
+        titleAR: "إنشاء سجل الأصل الرئيسي الجديد (AS01)",
+        tCode: "AS01",
+        role: "Asset Accountant",
+        whatToDoEN:
+          "In AS01, create a new fixed asset master record. Select the appropriate asset class (determines depreciation rules, G/L accounts). Enter a descriptive asset name, cost center, plant, and other relevant data. Save to generate the asset number. This asset number will be used in the purchase order account assignment to ensure costs are capitalized directly to the asset.",
+        whatToDoAR:
+          "في AS01، أنشئ سجل أصل ثابت رئيسي جديداً. اختر فئة الأصل المناسبة (تحدد قواعد الاستهلاك وحسابات دفتر الأستاذ العام). أدخل اسماً وصفياً للأصل ومركز التكلفة والمصنع والبيانات الأخرى ذات الصلة. احفظ لتوليد رقم الأصل. سيُستخدم رقم الأصل هذا في تعيين حساب أمر الشراء لضمان رسملة التكاليف مباشرةً على الأصل.",
+        whatSAPDoesEN:
+          "Creates a fixed asset master record in FI-AA. Asset number generated. Depreciation parameters set per asset class. Asset is now ready to receive procurement costs.",
+        whatSAPDoesAR:
+          "ينشئ سجل أصل ثابت رئيسي في FI-AA. يتم توليد رقم الأصل. تُحدَّد معاملات الاستهلاك حسب فئة الأصل. الأصل جاهز الآن لاستلام تكاليف المشتريات.",
+        expectedOutputEN:
+          "Asset master record created. Asset number generated and ready for PO account assignment.",
+        expectedOutputAR:
+          "تم إنشاء سجل الأصل الرئيسي. تم توليد رقم الأصل وهو جاهز لتعيين حساب أمر الشراء.",
+      },
+      {
+        id: "mm-asset-proc-step-3",
+        stepNumber: 3,
+        titleEN: "Assign Asset Number to PR and Release (ME54N / ME55)",
+        titleAR: "تعيين رقم الأصل لطلب الشراء وإطلاقه (ME54N / ME55)",
+        tCode: "ME54N",
+        role: "Asset Accountant",
+        whatToDoEN:
+          "In ME54N, open the asset purchase requisition and change the account assignment from 'U' to 'A' (asset). Enter the asset number created in AS01. Verify the PR details are correct. Release the PR using ME54N (individual release) or ME55 (collective release) per the asset PR release strategy. The PR is now released for conversion to a purchase order by the purchaser.",
+        whatToDoAR:
+          "في ME54N، افتح طلب شراء الأصل وغيِّر تعيين الحساب من 'U' إلى 'A' (أصل). أدخل رقم الأصل المنشأ في AS01. تحقق من صحة تفاصيل طلب الشراء. أطلق طلب الشراء باستخدام ME54N (إطلاق فردي) أو ME55 (إطلاق جماعي) وفق استراتيجية إطلاق طلب شراء الأصل. طلب الشراء محرَّر الآن للتحويل إلى أمر شراء من قِبَل المشتري.",
+        whatSAPDoesEN:
+          "Updates PR account assignment to 'A' with the asset number. Releases the PR. Asset number is now linked to the requisition and will flow through to the PO and GR.",
+        whatSAPDoesAR:
+          "يُحدِّث تعيين حساب طلب الشراء إلى 'A' برقم الأصل. يُطلق طلب الشراء. رقم الأصل مرتبط الآن بطلب الشراء وسيتدفق إلى أمر الشراء واستلام البضائع.",
+        expectedOutputEN:
+          "Asset number assigned to PR. PR released. Ready for PO creation.",
+        expectedOutputAR:
+          "تم تعيين رقم الأصل لطلب الشراء. تم إطلاق طلب الشراء. جاهز لإنشاء أمر الشراء.",
+      },
+      {
+        id: "mm-asset-proc-step-4",
+        stepNumber: 4,
+        titleEN: "Create Asset Purchase Order (ME21N – Account Assignment A)",
+        titleAR: "إنشاء أمر شراء الأصل (ME21N – تعيين الحساب A)",
+        tCode: "ME21N",
+        role: "Purchaser",
+        whatToDoEN:
+          "In ME21N, create the purchase order with reference to the released asset PR. Account assignment category must be A (asset). The asset number from the PR flows automatically into the PO. Verify vendor, price, delivery terms, and plant. Release the PO per the assets purchasing group (004) release strategy. Print the PO using ME9F for vendor communication.",
+        whatToDoAR:
+          "في ME21N، أنشئ أمر الشراء بالاستناد إلى طلب شراء الأصل المُطلَق. يجب أن تكون فئة تعيين الحساب A (أصل). ينتقل رقم الأصل من طلب الشراء تلقائياً إلى أمر الشراء. تحقق من المورد والسعر وشروط التسليم والمصنع. أطلق أمر الشراء وفق استراتيجية الإطلاق لمجموعة شراء الأصول (004). اطبع أمر الشراء باستخدام ME9F للتواصل مع المورد.",
+        whatSAPDoesEN:
+          "Creates asset PO with account assignment A. Open commitment recorded against the asset. PO printed for vendor.",
+        whatSAPDoesAR:
+          "ينشئ أمر شراء الأصل بتعيين الحساب A. يُسجَّل الالتزام المفتوح مقابل الأصل. يُطبع أمر الشراء للمورد.",
+        expectedOutputEN:
+          "Asset PO created and released. PO printed and sent to vendor.",
+        expectedOutputAR:
+          "تم إنشاء وإطلاق أمر شراء الأصل. تمت طباعة أمر الشراء وإرساله إلى المورد.",
+      },
+      {
+        id: "mm-asset-proc-step-5",
+        stepNumber: 5,
+        titleEN: "Receive Asset at Receiving Area (MIGO_GR)",
+        titleAR: "استلام الأصل في منطقة الاستلام (MIGO_GR)",
+        tCode: "MIGO_GR",
+        role: "Asset Stock Keeper",
+        whatToDoEN:
+          "When the asset arrives, in MIGO_GR post the goods receipt against the asset purchase order (movement type 101). The system automatically posts the asset value to the fixed asset account (capitalizes the asset). Enter quantity (usually 1 for assets), verify asset number, plant, and asset receiving area storage location. Inspect the asset before posting. Print the GR material document using report YMM020 to link GR to the original requisitioner.",
+        whatToDoAR:
+          "عند وصول الأصل، ارحِّل في MIGO_GR استلام البضائع بالاستناد إلى أمر شراء الأصل (نوع الحركة 101). يُرحِّل النظام تلقائياً قيمة الأصل على حساب الأصل الثابت (رسملة الأصل). أدخل الكمية (عادةً 1 للأصول) وتحقق من رقم الأصل والمصنع وموقع تخزين منطقة استلام الأصول. افحص الأصل قبل الترحيل. اطبع مستند المادة من استلام البضائع باستخدام التقرير YMM020 لربط الاستلام بطالب الشراء الأصلي.",
+        whatSAPDoesEN:
+          "Posts GR MT101 against asset PO. Asset value capitalized to fixed asset account in FI-AA. GR/IR account cleared upon invoice posting. Asset becomes active in the asset register.",
+        whatSAPDoesAR:
+          "يرحِّل استلام البضائع MT101 مقابل أمر شراء الأصل. تُرسمَل قيمة الأصل على حساب الأصل الثابت في FI-AA. يُصفَّى حساب GR/IR عند ترحيل الفاتورة. يصبح الأصل نشطاً في سجل الأصول.",
+        expectedOutputEN:
+          "Asset received and capitalized. GR document printed. Asset now in the fixed asset register. Process complete.",
+        expectedOutputAR:
+          "تم استلام الأصل ورسملته. تمت طباعة مستند الاستلام. الأصل الآن في سجل الأصول الثابتة. اكتملت العملية.",
+      },
+    ],
+  },
+
+  // ─── MM: Supplier Creation ─────────────────────────────────────────────────
+  {
+    id: "mm-supplier-creation",
+    icon: "🤝",
+    duration: "30–60 min",
+    titleEN: "Supplier Creation (Business Partner)",
+    titleAR: "إنشاء المورد (شريك الأعمال)",
+    descriptionEN:
+      "Process for creating a new supplier (vendor) as a Business Partner in SAP. Covers general data (address, contact), purchasing data (currency, incoterms, payment terms, purchasing group, planned delivery time), and company code data (reconciliation account, payment terms for FI). Managed jointly by Purchasing and Finance departments. ~2 new suppliers/month.",
+    descriptionAR:
+      "عملية إنشاء مورد جديد (بائع) كشريك أعمال في SAP. تشمل البيانات العامة (العنوان، التواصل)، بيانات الشراء (العملة، Incoterms، شروط الدفع، مجموعة الشراء، وقت التسليم المخطط)، وبيانات كود الشركة (حساب المطابقة، شروط الدفع في FI). تُدار مشتركةً بين قسمي المشتريات والمالية. ~2 مورد جديد/شهر.",
+    module: "MM",
+    roles: [
+      "Supplier Master Data Responsible – Purchasing",
+      "Supplier Master Data Responsible – Accounting",
+    ],
+    steps: [
+      {
+        id: "mm-supplier-creation-step-1",
+        stepNumber: 1,
+        titleEN: "Create General Data for Supplier (BP)",
+        titleAR: "إنشاء البيانات العامة للمورد (BP)",
+        tCode: "BP",
+        role: "Supplier Master Data Responsible – Purchasing",
+        whatToDoEN:
+          "In BP (Business Partner transaction), create a new business partner in the relevant account group: Y000 (Domestic Suppliers), Y001 (Foreign Suppliers), Y002 (Service & Construction Suppliers), Y003 (Affiliated Companies), or Y005 (One-Time Accounts). Enter mandatory general data: Title, Name, Search Term, City, Country, Language, Telephone, Fax, and Email. The system assigns the BP/vendor number based on the account group number range.",
+        whatToDoAR:
+          "في BP (معاملة شريك الأعمال)، أنشئ شريك أعمال جديداً في مجموعة الحساب المناسبة: Y000 (موردون محليون)، Y001 (موردون أجانب)، Y002 (موردو خدمات وإنشاء)، Y003 (شركات تابعة)، أو Y005 (حسابات لمرة واحدة). أدخل البيانات العامة الإلزامية: اللقب، الاسم، مصطلح البحث، المدينة، الدولة، اللغة، الهاتف، الفاكس، والبريد الإلكتروني. يُعيِّن النظام رقم BP/المورد بناءً على نطاق أرقام مجموعة الحساب.",
+        whatSAPDoesEN:
+          "Creates a Business Partner with the general data. BP number generated per account group number range (e.g. 1000000–1999999 for Y000 domestic). BP is now a base record pending purchasing and FI data.",
+        whatSAPDoesAR:
+          "ينشئ شريك أعمال بالبيانات العامة. يتم توليد رقم BP وفق نطاق أرقام مجموعة الحساب (مثل 1000000–1999999 للـ Y000 المحلي). BP الآن سجل أساسي في انتظار بيانات الشراء والمالية.",
+        expectedOutputEN:
+          "BP general record created. BP/vendor number assigned. Address and contact data saved.",
+        expectedOutputAR:
+          "تم إنشاء السجل العام لـ BP. تم تعيين رقم BP/المورد. تم حفظ العنوان وبيانات التواصل.",
+      },
+      {
+        id: "mm-supplier-creation-step-2",
+        stepNumber: 2,
+        titleEN: "Maintain Purchasing Data (BP – Supplier Role)",
+        titleAR: "إدخال بيانات الشراء (BP – دور المورد)",
+        tCode: "BP",
+        role: "Supplier Master Data Responsible – Purchasing",
+        whatToDoEN:
+          "In BP, switch to the Supplier role and navigate to the Purchasing Data tab. Enter mandatory purchasing fields: Order Currency, Terms of Payment, Incoterms (Part 1 and Location), Purchasing Group, Payment Conditions, Planned Delivery Time in Days, and Group for Calculation Schema (pricing procedure). Optionally enter the Sales Person and Telephone for the supplier's sales contact. Save.",
+        whatToDoAR:
+          "في BP، انتقل إلى دور المورد وانتقل إلى تبويب بيانات الشراء. أدخل حقول الشراء الإلزامية: عملة الأمر، شروط الدفع، Incoterms (الجزء 1 والموقع)، مجموعة الشراء، شروط الدفع، وقت التسليم المخطط بالأيام، ومجموعة مخطط الحساب (إجراء التسعير). اختيارياً أدخل مندوب المبيعات والهاتف لجهة اتصال مبيعات المورد. احفظ.",
+        whatSAPDoesEN:
+          "Updates the BP supplier role with purchasing data. Supplier is now usable in purchase orders, info records, and RFQs for the specified purchasing organizations.",
+        whatSAPDoesAR:
+          "يُحدِّث دور BP للمورد ببيانات الشراء. المورد الآن قابل للاستخدام في أوامر الشراء وسجلات المعلومات و RFQs لمنظمات الشراء المحددة.",
+        expectedOutputEN:
+          "Purchasing data maintained. Supplier can now be used in procurement transactions.",
+        expectedOutputAR:
+          "تم إدخال بيانات الشراء. يمكن استخدام المورد الآن في معاملات المشتريات.",
+      },
+      {
+        id: "mm-supplier-creation-step-3",
+        stepNumber: 3,
+        titleEN: "Maintain Company Code Data (BP – FI Vendor Role)",
+        titleAR: "إدخال بيانات كود الشركة (BP – دور مورد FI)",
+        tCode: "BP",
+        role: "Supplier Master Data Responsible – Accounting",
+        whatToDoEN:
+          "In BP, switch to the FI Vendor role and navigate to the company code-specific data (company code 1000 – Al-Watania Poultry). Enter the mandatory Reconciliation Account (AP reconciliation G/L account) and Terms of Payment for financial accounting. These settings control how supplier invoices and payments are posted in FI. Save to complete the supplier master record.",
+        whatToDoAR:
+          "في BP، انتقل إلى دور مورد FI وانتقل إلى بيانات كود الشركة المحددة (كود الشركة 1000 – الوطنية للدواجن). أدخل حساب المطابقة الإلزامي (حساب دفتر الأستاذ العام للمطابقة في الحسابات الدائنة) وشروط الدفع للمحاسبة المالية. تتحكم هذه الإعدادات في كيفية ترحيل فواتير المورد ومدفوعاته في FI. احفظ لاستكمال سجل المورد الرئيسي.",
+        whatSAPDoesEN:
+          "Completes the supplier Business Partner with FI company code data. Supplier is now fully active for purchasing (MM) and financial accounting (FI-AP) transactions. Vendor number synchronized between MM and FI via BP-Vendor synchronization (account groups Z000–Z007).",
+        whatSAPDoesAR:
+          "يُكمِّل شريك أعمال المورد ببيانات كود شركة FI. المورد الآن نشط بالكامل لمعاملات الشراء (MM) والمحاسبة المالية (FI-AP). رقم المورد متزامن بين MM و FI عبر مزامنة BP-Vendor (مجموعات الحسابات Z000–Z007).",
+        expectedOutputEN:
+          "Company code data maintained. Supplier master record complete. Supplier ready for all procurement and AP transactions.",
+        expectedOutputAR:
+          "تم إدخال بيانات كود الشركة. اكتمل سجل المورد الرئيسي. المورد جاهز لجميع معاملات المشتريات والحسابات الدائنة.",
+      },
+    ],
+  },
+
+  // ─── MM: Supplier Evaluation ───────────────────────────────────────────────
+  {
+    id: "mm-supplier-evaluation",
+    icon: "⭐",
+    duration: "1–2 hours",
+    titleEN: "Supplier Evaluation (Fiori)",
+    titleAR: "تقييم المورد (فايوري)",
+    descriptionEN:
+      "Monthly process for evaluating supplier performance across multiple dimensions: quantity compliance, operational KPIs, delivery timeliness, and pricing. All steps performed via SAP Fiori apps. Results feed strategic sourcing decisions and source list management. ~1 evaluation cycle/month.",
+    descriptionAR:
+      "عملية شهرية لتقييم أداء الموردين عبر أبعاد متعددة: الامتثال للكمية، مؤشرات الأداء التشغيلية، دقة التسليم، والتسعير. تُنفَّذ جميع الخطوات عبر تطبيقات SAP Fiori. تُغذِّي النتائج قرارات التوريد الاستراتيجي وإدارة قائمة المصادر. ~دورة تقييم واحدة/شهر.",
+    module: "MM",
+    roles: [
+      "Purchasing Manager",
+      "Purchaser",
+    ],
+    steps: [
+      {
+        id: "mm-supplier-eval-step-1",
+        stepNumber: 1,
+        titleEN: "Supplier Evaluation by Quantity (Fiori)",
+        titleAR: "تقييم المورد حسب الكمية (فايوري)",
+        tCode: "",
+        role: "Purchaser",
+        whatToDoEN:
+          "Open the 'Supplier Evaluation by Quantity' Fiori app. Select the purchasing organization (1000) and the evaluation period. Review the quantity compliance score for each supplier — comparing ordered quantities vs. delivered quantities. Identify suppliers with significant shortfalls or over-deliveries. Document findings for the overall evaluation.",
+        whatToDoAR:
+          "افتح تطبيق 'تقييم المورد حسب الكمية' في Fiori. اختر منظمة الشراء (1000) وفترة التقييم. راجع نقاط الامتثال للكمية لكل مورد — مقارنةً بين الكميات المطلوبة والمسلَّمة. حدِّد الموردين الذين لديهم عجز أو فائض كبير في التسليم. وثِّق النتائج للتقييم الإجمالي.",
+        whatSAPDoesEN:
+          "Fiori app calculates quantity compliance score per supplier based on PO vs. GR quantity data. Score is used as one dimension in the overall supplier evaluation.",
+        whatSAPDoesAR:
+          "يحسب تطبيق Fiori نقاط الامتثال للكمية لكل مورد بناءً على بيانات كمية أمر الشراء مقابل استلام البضائع. تُستخدم النقاط كأحد أبعاد التقييم الإجمالي للمورد.",
+        expectedOutputEN:
+          "Quantity compliance scores reviewed. Underperforming suppliers flagged.",
+        expectedOutputAR:
+          "تمت مراجعة نقاط الامتثال للكمية. تحديد الموردين ذوي الأداء المنخفض.",
+      },
+      {
+        id: "mm-supplier-eval-step-2",
+        stepNumber: 2,
+        titleEN: "Operational Supplier Evaluation (Fiori)",
+        titleAR: "تقييم المورد التشغيلي (فايوري)",
+        tCode: "",
+        role: "Purchaser",
+        whatToDoEN:
+          "Open the 'Operational Supplier Evaluation' Fiori app. Review the composite operational score for each supplier, which considers multiple KPIs such as defect rates, returns, and invoice accuracy. Use this evaluation to assess the overall operational reliability of each vendor.",
+        whatToDoAR:
+          "افتح تطبيق 'تقييم المورد التشغيلي' في Fiori. راجع النقاط التشغيلية المركَّبة لكل مورد، والتي تأخذ في الاعتبار عدة مؤشرات أداء مثل معدلات العيوب والمرتجعات ودقة الفاتورة. استخدم هذا التقييم لتقييم الموثوقية التشغيلية الإجمالية لكل مورد.",
+        whatSAPDoesEN:
+          "Fiori app computes an operational score from multiple data points in MM and QM. Provides a single view of vendor reliability across operational dimensions.",
+        whatSAPDoesAR:
+          "يحسب تطبيق Fiori نقاطاً تشغيلية من نقاط بيانات متعددة في MM و QM. يوفر عرضاً موحَّداً لموثوقية المورد عبر الأبعاد التشغيلية.",
+        expectedOutputEN:
+          "Operational scores reviewed. Reliability assessment documented.",
+        expectedOutputAR:
+          "تمت مراجعة النقاط التشغيلية. توثيق تقييم الموثوقية.",
+      },
+      {
+        id: "mm-supplier-eval-step-3",
+        stepNumber: 3,
+        titleEN: "Supplier Evaluation by Time (Fiori)",
+        titleAR: "تقييم المورد حسب الوقت (فايوري)",
+        tCode: "",
+        role: "Purchaser",
+        whatToDoEN:
+          "Open the 'Supplier Evaluation by Time' Fiori app. Review on-time delivery performance for each supplier — comparing promised delivery dates from POs with actual GR posting dates. Identify suppliers with consistent late deliveries. Note improvement trends or deterioration.",
+        whatToDoAR:
+          "افتح تطبيق 'تقييم المورد حسب الوقت' في Fiori. راجع أداء التسليم في الوقت المحدد لكل مورد — مقارنةً بين تواريخ التسليم الموعودة من أوامر الشراء وتواريخ ترحيل استلام البضائع الفعلية. حدِّد الموردين الذين يتأخرون باستمرار. لاحظ اتجاهات التحسن أو التراجع.",
+        whatSAPDoesEN:
+          "Fiori app calculates on-time delivery score per supplier by comparing PO delivery dates to GR posting dates. Generates timeliness KPI for each vendor.",
+        whatSAPDoesAR:
+          "يحسب تطبيق Fiori نقاط التسليم في الوقت المحدد لكل مورد بمقارنة تواريخ تسليم أمر الشراء بتواريخ ترحيل استلام البضائع. يُنشئ مؤشر أداء التوقيت لكل مورد.",
+        expectedOutputEN:
+          "Delivery timeliness scores reviewed. Late delivery patterns identified.",
+        expectedOutputAR:
+          "تمت مراجعة نقاط التسليم في الوقت المحدد. تحديد أنماط التأخير في التسليم.",
+      },
+      {
+        id: "mm-supplier-eval-step-4",
+        stepNumber: 4,
+        titleEN: "Supplier Evaluation by Price (Fiori)",
+        titleAR: "تقييم المورد حسب السعر (فايوري)",
+        tCode: "",
+        role: "Purchaser",
+        whatToDoEN:
+          "Open the 'Supplier Evaluation by Price' Fiori app. Review price competitiveness scores for each supplier — comparing their quoted/invoiced prices against market benchmarks or internal targets. Identify suppliers offering premium value and those with inflated pricing. Use findings to guide future sourcing negotiations.",
+        whatToDoAR:
+          "افتح تطبيق 'تقييم المورد حسب السعر' في Fiori. راجع نقاط تنافسية الأسعار لكل مورد — مقارنةً بين أسعاره المقدَّمة/المفوترة ومعايير السوق أو الأهداف الداخلية. حدِّد الموردين الذين يقدمون قيمةً ممتازة وأولئك الذين لديهم أسعار مبالغ فيها. استخدم النتائج لتوجيه مفاوضات التوريد المستقبلية.",
+        whatSAPDoesEN:
+          "Fiori app evaluates price competitiveness using PO prices, GR values, and configured benchmarks. Price score is one dimension of the overall supplier evaluation.",
+        whatSAPDoesAR:
+          "يُقيِّم تطبيق Fiori تنافسية الأسعار باستخدام أسعار أوامر الشراء وقيم استلام البضائع والمعايير المهيَّأة. نقاط السعر هي أحد أبعاد التقييم الإجمالي للمورد.",
+        expectedOutputEN:
+          "Price competitiveness scores reviewed. High-cost suppliers flagged for negotiation.",
+        expectedOutputAR:
+          "تمت مراجعة نقاط تنافسية الأسعار. تحديد الموردين ذوي التكلفة العالية للتفاوض.",
+      },
+      {
+        id: "mm-supplier-eval-step-5",
+        stepNumber: 5,
+        titleEN: "Overall Supplier Evaluation and Decision (Fiori)",
+        titleAR: "التقييم الإجمالي للمورد واتخاذ القرار (فايوري)",
+        tCode: "",
+        role: "Purchasing Manager",
+        whatToDoEN:
+          "Open the 'Overall Supplier Evaluation' Fiori app. Review the composite score for each supplier combining quantity, operational, time, and price dimensions. Compare suppliers within the same category. Classify suppliers (strategic, preferred, approved, conditional, disqualified) based on scores. Document decisions: renew, renegotiate, put on watch list, or phase out. Update source lists accordingly.",
+        whatToDoAR:
+          "افتح تطبيق 'التقييم الإجمالي للمورد' في Fiori. راجع النقاط المركَّبة لكل مورد التي تجمع أبعاد الكمية والتشغيل والوقت والسعر. قارن الموردين ضمن نفس الفئة. صنِّف الموردين (استراتيجي، مفضَّل، معتمد، مشروط، مستبعَد) بناءً على النقاط. وثِّق القرارات: تجديد، إعادة تفاوض، وضع على قائمة المراقبة، أو تدريجي الإنهاء. حدِّث قوائم المصادر وفقاً لذلك.",
+        whatSAPDoesEN:
+          "Overall Supplier Evaluation Fiori app combines all dimension scores into a single supplier ranking. Supports strategic sourcing decisions and source list updates.",
+        whatSAPDoesAR:
+          "يجمع تطبيق Fiori للتقييم الإجمالي للمورد جميع نقاط الأبعاد في تصنيف موحَّد للمورد. يدعم قرارات التوريد الاستراتيجي وتحديثات قائمة المصادر.",
+        expectedOutputEN:
+          "Suppliers ranked and classified. Sourcing decisions documented. Source lists updated. Monthly evaluation complete.",
+        expectedOutputAR:
+          "تم تصنيف الموردين وترتيبهم. توثيق قرارات التوريد. تحديث قوائم المصادر. اكتمل التقييم الشهري.",
+      },
+    ],
+  },
+
+  // ─── MM: Spare Parts Requisitioning ───────────────────────────────────────
+  {
+    id: "mm-spare-parts-requisition",
+    icon: "⚙️",
+    duration: "15–30 min",
+    titleEN: "Requisitioning Spare Parts (Maintenance Departments)",
+    titleAR: "طلب قطع الغيار (أقسام الصيانة)",
+    descriptionEN:
+      "Process for maintenance departments (factories and vehicles workshop) to request spare parts through SAP. Differentiated by PR document type: YMF0 (Factory Spare Parts), YMV0 (Vehicles Spare Parts), YMG0 (General Maintenance Spare Parts). Two-level release strategy: maintenance manager approval then inventory controller review. ~15 PRs/day. Items ≥20,000 SAR require separate high-value asset process (MM-18J-046).",
+    descriptionAR:
+      "عملية لأقسام الصيانة (المصانع وورشة المركبات) لطلب قطع الغيار عبر SAP. مُمَيَّزة حسب نوع مستند طلب الشراء: YMF0 (قطع غيار المصانع)، YMV0 (قطع غيار المركبات)، YMG0 (قطع الغيار العامة للصيانة). استراتيجية إطلاق من مستويين: موافقة مدير الصيانة ثم مراجعة مراقب المخزون. ~15 طلب/يوم. العناصر التي تبلغ قيمتها ≥20,000 ريال تستلزم عملية الأصول ذات القيمة العالية المنفصلة (MM-18J-046).",
+    module: "MM",
+    roles: [
+      "Maintenance Department Employee",
+      "Maintenance Manager",
+      "Inventory Controller Specialist",
+    ],
+    steps: [
+      {
+        id: "mm-spare-parts-req-step-1",
+        stepNumber: 1,
+        titleEN: "Create Purchase Requisition for Spare Parts (ME51N)",
+        titleAR: "إنشاء طلب الشراء لقطع الغيار (ME51N)",
+        tCode: "ME51N",
+        role: "Maintenance Department Employee",
+        whatToDoEN:
+          "In ME51N, create a purchase requisition for the required spare parts. Select the appropriate document type: YMF0 for factory maintenance spare parts (number range Y3: 22000000–22999999), YMV0 for vehicles maintenance spare parts (Y4: 23000000–23999999), or YMG0 for general maintenance spare parts (Y5: 24000000–24999999). Enter material number (or description with full part number and specifications), quantity, unit, plant, storage location, required delivery date, purchasing group (003 Spare Parts or 005 General Items), and cost center/order. Items ≥20,000 SAR must be submitted as asset procurement instead.",
+        whatToDoAR:
+          "في ME51N، أنشئ طلب شراء لقطع الغيار المطلوبة. اختر نوع المستند المناسب: YMF0 لقطع غيار صيانة المصانع (نطاق الأرقام Y3: 22000000–22999999)، YMV0 لقطع غيار صيانة المركبات (Y4: 23000000–23999999)، أو YMG0 لقطع غيار الصيانة العامة (Y5: 24000000–24999999). أدخل رقم المادة (أو الوصف مع رقم القطعة الكامل والمواصفات) والكمية والوحدة والمصنع وموقع التخزين وتاريخ التسليم المطلوب ومجموعة الشراء (003 قطع الغيار أو 005 الأصناف العامة) ومركز التكلفة/الأمر. العناصر التي قيمتها ≥20,000 ريال يجب تقديمها كشراء أصول بدلاً من ذلك.",
+        whatSAPDoesEN:
+          "Creates the spare parts PR with document type YMF0/YMV0/YMG0. PR enters the release workflow. Inventory controller and planner are notified.",
+        whatSAPDoesAR:
+          "ينشئ طلب شراء قطع الغيار بنوع المستند YMF0/YMV0/YMG0. يدخل طلب الشراء سير عمل الإطلاق. يتم إبلاغ مراقب المخزون والمخطط.",
+        expectedOutputEN:
+          "Spare parts PR created. PR in pending release status.",
+        expectedOutputAR:
+          "تم إنشاء طلب شراء قطع الغيار. طلب الشراء في حالة إطلاق معلَّق.",
+      },
+      {
+        id: "mm-spare-parts-req-step-2",
+        stepNumber: 2,
+        titleEN: "Maintenance Manager Release (ME55 / ME54N / Fiori Inbox)",
+        titleAR: "إطلاق مدير الصيانة (ME55 / ME54N / صندوق وارد Fiori)",
+        tCode: "ME55",
+        role: "Maintenance Manager",
+        whatToDoEN:
+          "The maintenance manager reviews pending spare parts PRs in ME55 (collective release), ME54N (individual release), or via the Fiori Inbox app 'Approve Purchase Requisitions'. Release code: M1 for factory spare parts (YMF0), M2 for vehicles (YMV0), M3 for general (YMG0). Verify the requirement is valid, quantities are justified, and specifications are complete. Approve or reject. If plant maintenance triggered the PR (via IW31/IW32 maintenance order), the order can be reviewed in the Information Center (W0019) or IW38.",
+        whatToDoAR:
+          "يراجع مدير الصيانة طلبات شراء قطع الغيار المعلقة في ME55 (إطلاق جماعي) أو ME54N (إطلاق فردي) أو عبر تطبيق صندوق الوارد في Fiori 'الموافقة على طلبات الشراء'. كود الإطلاق: M1 لقطع غيار المصانع (YMF0)، M2 للمركبات (YMV0)، M3 للعامة (YMG0). تحقق من صحة الطلب وتبرير الكميات واكتمال المواصفات. وافِق أو ارفض. إذا كان صيانة المصنع قد أنشأ طلب الشراء (عبر IW31/IW32)، يمكن مراجعة الأمر في مركز المعلومات (W0019) أو IW38.",
+        whatSAPDoesEN:
+          "Maintenance manager release (code M1/M2/M3) applied to PR. PR moves to next release level: inventory controller review.",
+        whatSAPDoesAR:
+          "يُطبَّق إطلاق مدير الصيانة (كود M1/M2/M3) على طلب الشراء. ينتقل طلب الشراء إلى مستوى الإطلاق التالي: مراجعة مراقب المخزون.",
+        expectedOutputEN:
+          "Maintenance manager approval applied. PR forwarded to inventory controller.",
+        expectedOutputAR:
+          "تمت الموافقة من مدير الصيانة. تم إحالة طلب الشراء إلى مراقب المخزون.",
+      },
+      {
+        id: "mm-spare-parts-req-step-3",
+        stepNumber: 3,
+        titleEN: "Inventory Controller Review and Release (ME54N / Fiori Inbox)",
+        titleAR: "مراجعة مراقب المخزون وإطلاقه (ME54N / صندوق وارد Fiori)",
+        tCode: "ME54N",
+        role: "Inventory Controller Specialist",
+        whatToDoEN:
+          "In ME54N or Fiori Inbox, the inventory controller specialist reviews the spare parts PR. Check whether the item is already in stock (use MB52 or MMBE to verify). If stock is available, reject the PR and advise the requester to use existing stock. If stock is insufficient, verify the specifications and lead time, then apply release code M4 (Spare Parts Specialist release) to fully release the PR for purchasing conversion.",
+        whatToDoAR:
+          "في ME54N أو صندوق الوارد في Fiori، يراجع مراقب المخزون المتخصص طلب شراء قطع الغيار. تحقق مما إذا كان الصنف موجوداً بالمخزون بالفعل (استخدم MB52 أو MMBE للتحقق). إذا كان المخزون متاحاً، ارفض طلب الشراء وأبلغ الطالب باستخدام المخزون الموجود. إذا كان المخزون غير كافٍ، تحقق من المواصفات ووقت التسليم، ثم طبِّق كود الإطلاق M4 (إطلاق متخصص قطع الغيار) لإطلاق طلب الشراء بالكامل للتحويل إلى أمر شراء.",
+        whatSAPDoesEN:
+          "Inventory controller applies release code M4. PR is fully released (both M1/M2/M3 + M4 satisfied per strategy R1/R2/R3). PR is now open for conversion to a purchase order by the purchasing team.",
+        whatSAPDoesAR:
+          "يُطبِّق مراقب المخزون كود الإطلاق M4. يُطلَق طلب الشراء بالكامل (استيفاء كل من M1/M2/M3 + M4 وفق الاستراتيجية R1/R2/R3). طلب الشراء مفتوح الآن للتحويل إلى أمر شراء من قِبَل فريق المشتريات.",
+        expectedOutputEN:
+          "PR fully released. Purchasing team can now create PO. Spare parts procurement initiated.",
+        expectedOutputAR:
+          "تم إطلاق طلب الشراء بالكامل. يمكن لفريق المشتريات الآن إنشاء أمر الشراء. بدأ تدبير قطع الغيار.",
+      },
+    ],
+  },
+
+  // ─── MM: Goods Receipt from Production ────────────────────────────────────
+  {
+    id: "mm-gr-from-production",
+    icon: "🏭",
+    duration: "15–30 min",
+    titleEN: "Goods Receipt from Production",
+    titleAR: "استلام البضائع من الإنتاج",
+    descriptionEN:
+      "Process for receiving finished or semi-finished goods from production into the warehouse. Two variants: (1) Further Processing & Feed Mill — direct MIGO GR against production order (MT101); (2) Processing, Layer, Manure, Protein, Agriculture — shop floor confirmation (MF42N), reservation creation (MB21 MT311), then MIGO transfer posting hourly. ~154 receipts/day. FIFO batch management applied at receiving. Custom GR form: YMM_GR_PRD (F-MM-130-01).",
+    descriptionAR:
+      "عملية استلام البضائع المنتهية أو شبه المنتهية من الإنتاج في المستودع. متغيران: (1) المعالجة الإضافية ومصنع العلف — MIGO مباشر لاستلام البضائع بالاستناد إلى أمر الإنتاج (MT101)؛ (2) المعالجة والطبقة والسماد والبروتين والزراعة — تأكيد أرضية الإنتاج (MF42N)، إنشاء حجز (MB21 MT311)، ثم ترحيل MIGO للتحويل كل ساعة. ~154 استلام/يوم. تطبيق إدارة دفعات FIFO عند الاستلام. نموذج GR المخصص: YMM_GR_PRD (F-MM-130-01).",
+    module: "MM",
+    roles: [
+      "Stock Keeper",
+      "SFC Responsible (Shop Floor Control)",
+    ],
+    steps: [
+      {
+        id: "mm-gr-production-step-1a",
+        stepNumber: 1,
+        titleEN: "Path A – GR from Production Order (MIGO – MT101) [Further Processing & Feed Mill]",
+        titleAR: "المسار أ – استلام البضائع من أمر الإنتاج (MIGO – MT101) [المعالجة الإضافية ومصنع العلف]",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "For Further Processing (plant 1050) and Feed Mill (plant 1120): In MIGO, select 'Goods Receipt' and reference the Production Order. Movement type 101 is automatically assigned. Enter the finished/semi-finished material, quantity produced, batch number (set expiry date for FIFO), and receiving storage location. Verify quantity against the production order confirmation. Post the GR. Print the material document using custom form YMM_GR_PRD (F-MM-130-01) as the production slip.",
+        whatToDoAR:
+          "للمعالجة الإضافية (مصنع 1050) ومصنع العلف (مصنع 1120): في MIGO، اختر 'استلام البضائع' واستند إلى أمر الإنتاج. يُعيَّن نوع الحركة 101 تلقائياً. أدخل المادة المنتهية/شبه المنتهية والكمية المنتَجة ورقم الدفعة (حدد تاريخ انتهاء الصلاحية لـ FIFO) وموقع التخزين المستلم. تحقق من الكمية مقابل تأكيد أمر الإنتاج. ارحِّل استلام البضائع. اطبع مستند المادة باستخدام النموذج المخصص YMM_GR_PRD (F-MM-130-01) كقسيمة الإنتاج.",
+        whatSAPDoesEN:
+          "Posts GR MT101 against the production order. Increases finished/semi-finished stock. Creates material document and accounting entry (debit FG/SFG stock account, credit production order WIP account). Production order actual cost updated. Batch created with expiry date for FIFO management.",
+        whatSAPDoesAR:
+          "يرحِّل استلام البضائع MT101 بالاستناد إلى أمر الإنتاج. يزيد مخزون البضائع المنتهية/شبه المنتهية. ينشئ مستند مادة وقيد محاسبة (مدين حساب مخزون البضائع المنتهية/شبه المنتهية، دائن حساب WIP لأمر الإنتاج). تُحدَّث التكلفة الفعلية لأمر الإنتاج. يُنشأ الدفعة بتاريخ انتهاء الصلاحية لإدارة FIFO.",
+        expectedOutputEN:
+          "Production GR posted (MT101). Stock increased. Production slip printed. Batch created with expiry date.",
+        expectedOutputAR:
+          "تم ترحيل استلام البضائع من الإنتاج (MT101). تم زيادة المخزون. تمت طباعة قسيمة الإنتاج. تم إنشاء الدفعة بتاريخ انتهاء الصلاحية.",
+      },
+      {
+        id: "mm-gr-production-step-1b",
+        stepNumber: 2,
+        titleEN: "Path B – Shop Floor Confirmation (MF42N) [Processing / Layer / Manure / Protein / Agriculture]",
+        titleAR: "المسار ب – تأكيد أرضية الإنتاج (MF42N) [المعالجة / الطبقة / السماد / البروتين / الزراعة]",
+        tCode: "MF42N",
+        role: "SFC Responsible (Shop Floor Control)",
+        whatToDoEN:
+          "For Processing (1100), Layer – Laying (1250), Layer – Rearing (1260), Agriculture (4100), and related plants: In MF42N (Collective Entry of Confirmation), enter production confirmations for all production orders. Record actual quantities produced and yield. This triggers the system to update the production order status and prepares for the transfer reservation.",
+        whatToDoAR:
+          "للمعالجة (1100) والطبقة – وضع البيض (1250) والطبقة – التربية (1260) والزراعة (4100) والمصانع ذات الصلة: في MF42N (إدخال جماعي للتأكيد)، أدخل تأكيدات الإنتاج لجميع أوامر الإنتاج. سجِّل الكميات الفعلية المنتَجة والمردود. هذا يحفِّز النظام لتحديث حالة أمر الإنتاج والتحضير لحجز التحويل.",
+        whatSAPDoesEN:
+          "MF42N posts production confirmations. Production order quantities are confirmed. System is now ready for inventory transfer from production to FG storage location.",
+        whatSAPDoesAR:
+          "يرحِّل MF42N تأكيدات الإنتاج. تُأكَّد كميات أمر الإنتاج. النظام جاهز الآن لتحويل المخزون من الإنتاج إلى موقع تخزين البضائع المنتهية.",
+        expectedOutputEN:
+          "Production confirmations posted. Production order quantities confirmed.",
+        expectedOutputAR:
+          "تم ترحيل تأكيدات الإنتاج. تم تأكيد كميات أمر الإنتاج.",
+      },
+      {
+        id: "mm-gr-production-step-1c",
+        stepNumber: 3,
+        titleEN: "Path B – Create Transfer Reservation and Post Transfer (MB21 / MIGO – MT311)",
+        titleAR: "المسار ب – إنشاء حجز التحويل وترحيل التحويل (MB21 / MIGO – MT311)",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "In MB21, the SFC responsible creates a transfer reservation (movement type 311) to move produced quantities from the production storage location to the finished goods storage location. Then in MIGO, the stock keeper posts the transfer posting (MT311) referencing the reservation — one transfer per hour to keep pace with production. Enter batch number with expiry date for FIFO. Print the material document using custom form YMM_GR_PRD (F-MM-130-01).",
+        whatToDoAR:
+          "في MB21، يُنشئ مسؤول أرضية الإنتاج حجز تحويل (نوع الحركة 311) لنقل الكميات المنتَجة من موقع تخزين الإنتاج إلى موقع تخزين البضائع المنتهية. ثم في MIGO، يرحِّل أمين المستودع قيد التحويل (MT311) بالاستناد إلى الحجز — تحويل واحد في الساعة لمواكبة الإنتاج. أدخل رقم الدفعة وتاريخ انتهاء الصلاحية لـ FIFO. اطبع مستند المادة باستخدام النموذج المخصص YMM_GR_PRD (F-MM-130-01).",
+        whatSAPDoesEN:
+          "MB21 creates the transfer reservation. MIGO MT311 transfers stock from production location to FG storage. Creates material document. No financial impact (same plant, same valuation area). Batch created with expiry date.",
+        whatSAPDoesAR:
+          "يُنشئ MB21 حجز التحويل. يُحوِّل MIGO MT311 المخزون من موقع الإنتاج إلى مخزن البضائع المنتهية. ينشئ مستند مادة. لا تأثير مالي (نفس المصنع ونفس منطقة التقييم). تُنشأ الدفعة بتاريخ انتهاء الصلاحية.",
+        expectedOutputEN:
+          "Transfer posting completed. Finished goods in FG storage location. Batch created with expiry date for FIFO. Production slip printed.",
+        expectedOutputAR:
+          "اكتمل قيد التحويل. البضائع المنتهية في موقع تخزين البضائع المنتهية. تم إنشاء الدفعة بتاريخ انتهاء الصلاحية لـ FIFO. تمت طباعة قسيمة الإنتاج.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
