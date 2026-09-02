@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { logbookEntries } from "@/data/qm-logbook";
 import { learningPaths } from "@/data/learning-paths";
 import Link from "next/link";
@@ -10,8 +10,8 @@ import { useT } from "@/lib/i18n";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface ProgressState {
-  visited: Record<string, boolean>;  // entryId → visited
-  completed: Record<string, boolean>; // entryId → completed
+  visited: Record<string, boolean>;
+  completed: Record<string, boolean>;
 }
 
 function loadProgress(): ProgressState {
@@ -25,12 +25,30 @@ function saveProgress(state: ProgressState) {
   try { localStorage.setItem("awp-hub-progress", JSON.stringify(state)); } catch {}
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ── Module colours ─────────────────────────────────────────────────────────
 const MODULE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  PP:    { bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5" },
-  QM:    { bg: "#F8EBC5", text: "#7A5E0A", border: "#E8D585" },
+  PP:      { bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5" },
+  QM:      { bg: "#F8EBC5", text: "#7A5E0A", border: "#E8D585" },
   "PP/QM": { bg: "#EDE9E1", text: "#4A5568", border: "#D9D4C8" },
+  MM:      { bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8" },
+  PM:      { bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8" },
+  HCM:     { bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4" },
+  FICO:    { bg: "#E0F5EC", text: "#14532D", border: "#86EFAC" },
+  TM:      { bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A" },
+  EHS:     { bg: "#F0E0E8", text: "#6B1F40", border: "#E8A4C0" },
 };
+
+const MODULE_TABS = [
+  { id: "All",  label: "All Modules",   icon: "🔗" },
+  { id: "PP",   label: "PP",            icon: "🏭" },
+  { id: "QM",   label: "QM",            icon: "✅" },
+  { id: "MM",   label: "MM",            icon: "📦" },
+  { id: "PM",   label: "PM",            icon: "🔧" },
+  { id: "HCM",  label: "HCM",           icon: "👥" },
+  { id: "FICO", label: "FICO",          icon: "💰" },
+  { id: "TM",   label: "TM",            icon: "🚚" },
+  { id: "EHS",  label: "EHS",           icon: "⛑️" },
+] as const;
 
 const PHASE_ICONS: Record<string, string> = {
   planning:   "📋",
@@ -39,15 +57,6 @@ const PHASE_ICONS: Record<string, string> = {
   all:        "🔗",
 };
 
-const KNOWLEDGE_AREAS = [
-  { id: "MRP",            label: "MRP & Demand Planning",    icon: "📈", module: "PP",   desc: "Material Requirements Planning, demand signals, exception management" },
-  { id: "Production",     label: "Production Execution",     icon: "⚙️", module: "PP",   desc: "Production orders, confirmations, capacity planning, shop-floor" },
-  { id: "Quality",        label: "Quality Management",       icon: "✅", module: "QM",   desc: "Inspection lots, results recording, usage decisions, notifications" },
-  { id: "Master Data",    label: "Master Data & Config",     icon: "🗄️", module: "PP",   desc: "BOMs, routings, inspection plans, quality characteristics" },
-  { id: "Procurement",    label: "Procurement & GR",         icon: "📦", module: "PP",   desc: "Purchase orders, goods receipts, backflush error handling" },
-  { id: "Reporting",      label: "Reporting & Analytics",    icon: "📊", module: "PP/QM", desc: "MRP exceptions, capacity overview, quality control center" },
-];
-
 type HubTab = "critical" | "processes" | "paths" | "completed";
 
 export default function HubPage() {
@@ -55,11 +64,15 @@ export default function HubPage() {
   const t = useT();
   const [progress, setProgress] = useState<ProgressState>({ visited: {}, completed: {} });
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  const [activeArea, setActiveArea] = useState<string | null>(null);
-  const [cmdSearch, setCmdSearch] = useState("");
   const [activeTab, setActiveTab] = useState<HubTab>("critical");
 
-  // Process progress (for Completed tab)
+  // Command Centre modal state
+  const [showCmd, setShowCmd] = useState(false);
+  const [cmdModule, setCmdModule] = useState<string>("All");
+  const [cmdSearch, setCmdSearch] = useState("");
+  const cmdModalRef = useRef<HTMLDivElement>(null);
+
+  // Process progress
   const processProgress = useProcessProgress();
   const completedProcesses = useMemo(
     () => getCompletedProcesses(processProgress),
@@ -70,13 +83,48 @@ export default function HubPage() {
     setProgress(loadProgress());
   }, []);
 
-  // ── AWP High entries ───────────────────────────────────────────────────
+  // Close modal on outside click
+  useEffect(() => {
+    if (!showCmd) return;
+    function handler(e: MouseEvent) {
+      if (cmdModalRef.current && !cmdModalRef.current.contains(e.target as Node)) {
+        setShowCmd(false);
+      }
+    }
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showCmd]);
+
+  // Close modal on Esc
+  useEffect(() => {
+    if (!showCmd) return;
+    function handler(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowCmd(false);
+    }
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [showCmd]);
+
+  // ── Filtered entries for Command Centre ───────────────────────────────────
+  const cmdEntries = useMemo(() => {
+    const q = cmdSearch.trim().toLowerCase();
+    return logbookEntries.filter((e) => {
+      const matchesMod = cmdModule === "All" || e.module === cmdModule || e.module.startsWith(cmdModule);
+      const matchesSearch = !q ||
+        e.transactionCode.toLowerCase().includes(q) ||
+        e.title.toLowerCase().includes(q) ||
+        (e.description ?? "").toLowerCase().includes(q);
+      return matchesMod && matchesSearch;
+    });
+  }, [cmdModule, cmdSearch]);
+
+  // ── AWP High entries for critical tab ────────────────────────────────────
   const awpHighEntries = useMemo(
     () => logbookEntries.filter((e) => e.awpRelevance === "High"),
     []
   );
 
-  // ── Stats ─────────────────────────────────────────────────────────────
+  // ── Stats ─────────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
     const visitedCount = Object.values(progress.visited).filter(Boolean).length;
     const completedCount = Object.values(progress.completed).filter(Boolean).length;
@@ -84,12 +132,11 @@ export default function HubPage() {
       total: logbookEntries.length,
       awpHigh: awpHighEntries.length,
       paths: learningPaths.length,
-      visited: visitedCount,
       completed: completedCount,
+      visited: visitedCount,
     };
   }, [progress, awpHighEntries.length]);
 
-  // ── Path progress ──────────────────────────────────────────────────────
   function getPathProgress(pathId: string) {
     const path = learningPaths.find((p) => p.id === pathId);
     if (!path) return { done: 0, total: 0, pct: 0 };
@@ -110,17 +157,6 @@ export default function HubPage() {
   }
 
   const selectedPathData = selectedPath ? learningPaths.find((p) => p.id === selectedPath) : null;
-  const filteredAwp = useMemo(() => {
-    const q = cmdSearch.trim().toLowerCase();
-    return awpHighEntries.filter((e) => {
-      const matchesArea = !activeArea || e.category === activeArea || e.processArea === activeArea;
-      const matchesSearch = !q ||
-        e.transactionCode.toLowerCase().includes(q) ||
-        e.title.toLowerCase().includes(q) ||
-        (e.description ?? "").toLowerCase().includes(q);
-      return matchesArea && matchesSearch;
-    });
-  }, [awpHighEntries, activeArea, cmdSearch]);
 
   return (
     <div className="min-h-screen bg-[#F7F5F0] text-[#2A2E2B]">
@@ -128,16 +164,17 @@ export default function HubPage() {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <header className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-0 z-30">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          {/* Left: logo + title */}
+          <div className="flex items-center gap-3 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/alwatania-logo-white.png"
               alt="Al-Watania Poultry"
               className="h-10 w-auto shrink-0"
             />
-            <div>
+            <div className="min-w-0">
               <h1
-                className="text-xl font-light text-[#1C3A2B] leading-none tracking-wide"
+                className="text-xl font-light text-[#1C3A2B] leading-none tracking-wide truncate"
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
               >
                 AWP SAP Central Learning Hub
@@ -145,7 +182,17 @@ export default function HubPage() {
               <p className="text-xs text-[#6B7A6F] mt-0.5">Al-Watania Poultry · Internal Learning Platform</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Right: "Do you want to learn more?" + Command Centre + Lang toggle */}
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="hidden sm:block text-xs text-[#6B7A6F] italic">Do you want to learn more?</span>
+            <button
+              onClick={() => { setShowCmd(true); setCmdModule("All"); setCmdSearch(""); }}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-[#1C3A2B] text-[#F7F5F0] rounded-full hover:bg-[#2C5040] transition-colors"
+            >
+              <span>📚</span>
+              <span>T-Code Library</span>
+            </button>
             {/* Lang toggle */}
             <button
               onClick={toggleLang}
@@ -158,6 +205,136 @@ export default function HubPage() {
           </div>
         </div>
       </header>
+
+      {/* ── Command Centre Modal ──────────────────────────────────────────────── */}
+      {showCmd && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-[72px] px-4 pb-4" style={{ background: "rgba(28,58,43,0.45)", backdropFilter: "blur(2px)" }}>
+          <div
+            ref={cmdModalRef}
+            className="bg-[#FAFAF8] rounded-2xl shadow-2xl border border-[#D9D4C8] w-full max-w-5xl flex flex-col"
+            style={{ maxHeight: "calc(100vh - 96px)" }}
+          >
+            {/* Modal header */}
+            <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-[#D9D4C8]">
+              <div>
+                <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-0.5">Command Centre</p>
+                <h2 className="text-xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                  SAP T-Code Library
+                </h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7A6F] text-sm pointer-events-none">🔍</span>
+                  <input
+                    type="search"
+                    value={cmdSearch}
+                    onChange={(e) => setCmdSearch(e.target.value)}
+                    placeholder="Search T-codes…"
+                    className="pl-8 pr-3 py-2 text-sm border border-[#D9D4C8] rounded-lg bg-white text-[#2A2E2B] placeholder:text-[#9BA89F] focus:outline-none focus:border-[#4E7862] focus:ring-1 focus:ring-[#4E7862] transition-colors w-52"
+                    autoFocus
+                  />
+                </div>
+                <button
+                  onClick={() => setShowCmd(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-[#6B7A6F] hover:bg-[#E8F0E4] hover:text-[#1C3A2B] transition-colors text-lg leading-none"
+                  aria-label="Close"
+                >×</button>
+              </div>
+            </div>
+
+            {/* Module tabs */}
+            <div className="flex gap-1 px-6 py-3 border-b border-[#D9D4C8] overflow-x-auto">
+              {MODULE_TABS.map((mod) => {
+                const count = mod.id === "All"
+                  ? logbookEntries.length
+                  : logbookEntries.filter((e) => e.module === mod.id || e.module.startsWith(mod.id + "/")).length;
+                const mc = mod.id !== "All" ? MODULE_COLORS[mod.id] : null;
+                const active = cmdModule === mod.id;
+                return (
+                  <button
+                    key={mod.id}
+                    onClick={() => setCmdModule(mod.id)}
+                    className="text-xs px-3 py-1.5 rounded-full border transition-colors shrink-0 font-medium"
+                    style={
+                      active
+                        ? mc
+                          ? { background: mc.bg, color: mc.text, borderColor: mc.border }
+                          : { background: "#1C3A2B", color: "#F7F5F0", borderColor: "#1C3A2B" }
+                        : { background: "#F7F5F0", color: "#6B7A6F", borderColor: "#D9D4C8" }
+                    }
+                  >
+                    {mod.icon} {mod.label} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* T-code grid */}
+            <div className="overflow-y-auto flex-1 p-6">
+              {cmdEntries.length === 0 ? (
+                <p className="text-sm text-[#6B7A6F] py-8 text-center">
+                  No T-codes match{cmdSearch ? ` "${cmdSearch}"` : " this filter"}.{" "}
+                  {cmdSearch && (
+                    <button onClick={() => setCmdSearch("")} className="underline hover:text-[#1C3A2B] transition-colors">Clear search</button>
+                  )}
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {cmdEntries.map((entry) => {
+                    const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
+                    const done = progress.completed[entry.id];
+                    return (
+                      <div
+                        key={entry.id}
+                        className="bg-white border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all group"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <code className="text-sm font-mono font-semibold text-[#1C3A2B]">{entry.transactionCode}</code>
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="text-[9px] font-medium px-1.5 py-0.5 rounded"
+                              style={{ background: mc.bg, color: mc.text }}
+                            >
+                              {entry.module}
+                            </span>
+                            <button
+                              onClick={() => toggleCompleted(entry.id)}
+                              title={done ? "Mark incomplete" : "Mark complete"}
+                              className="w-5 h-5 rounded-full border flex items-center justify-center transition-colors text-[10px]"
+                              style={done
+                                ? { background: "#1C3A2B", borderColor: "#1C3A2B", color: "white" }
+                                : { background: "transparent", borderColor: "#D9D4C8", color: "#6B7A6F" }
+                              }
+                            >✓</button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-[#2A2E2B] font-medium leading-snug mb-1">{entry.title}</p>
+                        <p className="text-[11px] text-[#6B7A6F] leading-relaxed line-clamp-2">{entry.description}</p>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-[10px] text-[#6B7A6F]">{entry.category}</span>
+                          <Link
+                            href={`/logbook/${entry.id}`}
+                            onClick={() => setShowCmd(false)}
+                            className="text-[10px] text-[#4E7862] opacity-0 group-hover:opacity-100 hover:text-[#1C3A2B] transition-all"
+                          >
+                            Deep dive →
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal footer */}
+            <div className="px-6 py-3 border-t border-[#D9D4C8] flex items-center justify-between">
+              <span className="text-xs text-[#6B7A6F]">{cmdEntries.length} T-codes {cmdModule !== "All" ? `in ${cmdModule}` : "across all modules"}</span>
+              <button onClick={() => setShowCmd(false)} className="text-xs text-[#4E7862] hover:text-[#1C3A2B] transition-colors">Close ×</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Tab Bar ──────────────────────────────────────────────────────────── */}
       <nav className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-[73px] z-20" aria-label="Hub navigation">
@@ -207,9 +384,9 @@ export default function HubPage() {
           {/* Hero stats */}
           <div className="flex flex-wrap gap-6 sm:gap-10">
             {[
-              { value: stats.total,   label: "T-Codes" },
-              { value: stats.awpHigh, label: "AWP Critical" },
-              { value: stats.paths,   label: "Learning Paths" },
+              { value: stats.total,    label: "T-Codes" },
+              { value: stats.awpHigh,  label: "AWP Critical" },
+              { value: stats.paths,    label: "Learning Paths" },
               { value: stats.completed, label: "Completed" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center sm:text-left">
@@ -226,7 +403,7 @@ export default function HubPage() {
         </div>
       </section>
 
-      {/* ── Progress Banner (if any progress) ───────────────────────────────── */}
+      {/* ── Progress Banner ───────────────────────────────────────────────────── */}
       {stats.visited > 0 && (
         <div className="bg-[#E8F0E4] border-b border-[#C8DFC5]">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
@@ -253,53 +430,21 @@ export default function HubPage() {
         {activeTab === "critical" && (
           <div className="space-y-14">
             <section>
-              <div className="mb-5 flex flex-col sm:flex-row sm:items-end gap-4">
-                <div className="flex-1">
-                  <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">Command Centre</p>
-                  <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                    Explore by Knowledge Area
-                  </h3>
-                  <p className="text-sm text-[#6B7A6F] mt-1">Filter AWP-critical T-codes by functional domain.</p>
-                </div>
-                {/* Search */}
-                <div className="relative sm:w-64 shrink-0">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7A6F] text-sm pointer-events-none">🔍</span>
-                  <input
-                    type="search"
-                    value={cmdSearch}
-                    onChange={(e) => setCmdSearch(e.target.value)}
-                    placeholder="Search T-codes…"
-                    className="w-full pl-8 pr-3 py-2 text-sm border border-[#D9D4C8] rounded-lg bg-[#FAFAF8] text-[#2A2E2B] placeholder:text-[#9BA89F] focus:outline-none focus:border-[#4E7862] focus:ring-1 focus:ring-[#4E7862] transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 mb-6">
-                <button
-                  onClick={() => setActiveArea(null)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${!activeArea ? "bg-[#1C3A2B] text-white border-[#1C3A2B]" : "bg-[#FAFAF8] text-[#6B7A6F] border-[#D9D4C8] hover:border-[#4E7862]"}`}
-                >
-                  All AWP Critical ({stats.awpHigh})
-                </button>
-                {KNOWLEDGE_AREAS.map((area) => {
-                  const count = awpHighEntries.filter((e) => e.category === area.id || e.processArea === area.id).length;
-                  if (count === 0) return null;
-                  const mc = MODULE_COLORS[area.module];
-                  return (
-                    <button
-                      key={area.id}
-                      onClick={() => setActiveArea(activeArea === area.id ? null : area.id)}
-                      className="text-xs px-3 py-1.5 rounded-full border transition-colors"
-                      style={activeArea === area.id ? { background: mc.bg, color: mc.text, borderColor: mc.border } : { background: "#FAFAF8", color: "#6B7A6F", borderColor: "#D9D4C8" }}
-                    >
-                      {area.icon} {area.label} ({count})
-                    </button>
-                  );
-                })}
+              <div className="mb-5">
+                <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">AWP Critical</p>
+                <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                  High-Priority T-Codes
+                </h3>
+                <p className="text-sm text-[#6B7A6F] mt-1">
+                  T-codes rated <strong>High</strong> for AWP relevance — the ones you use daily.
+                  For the full library across all modules, use the{" "}
+                  <button onClick={() => setShowCmd(true)} className="underline text-[#4E7862] hover:text-[#1C3A2B] transition-colors">T-Code Library</button>.
+                </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {filteredAwp.map((entry) => {
+                {awpHighEntries.map((entry) => {
                   const done = progress.completed[entry.id];
-                  const mc = MODULE_COLORS[entry.module];
+                  const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
                   return (
                     <div key={entry.id} className="bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all group">
                       <div className="flex items-start justify-between gap-2 mb-2">
@@ -319,12 +464,8 @@ export default function HubPage() {
                   );
                 })}
               </div>
-              {filteredAwp.length === 0 && (
-                <p className="text-sm text-[#6B7A6F] py-8 text-center">
-                  No T-codes match{cmdSearch ? ` "${cmdSearch}"` : " this filter"}.{cmdSearch && (
-                    <button onClick={() => setCmdSearch("")} className="ml-2 underline hover:text-[#1C3A2B] transition-colors">Clear search</button>
-                  )}
-                </p>
+              {awpHighEntries.length === 0 && (
+                <p className="text-sm text-[#6B7A6F] py-8 text-center">No AWP-critical entries found.</p>
               )}
             </section>
           </div>
@@ -379,13 +520,14 @@ export default function HubPage() {
                         const entry = logbookEntries.find((e) => e.id === entryId);
                         if (!entry) return null;
                         const done = progress.completed[entryId];
+                        const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
                         return (
                           <li key={entryId} className="flex items-center gap-3 group">
                             <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors" style={{ background: done ? selectedPathData.dotColor : selectedPathData.dotColor + "20", color: done ? "white" : selectedPathData.dotColor }}>{done ? "✓" : i + 1}</span>
                             <div className="flex-1 flex items-center gap-3 min-w-0">
                               <code className="text-xs font-mono px-2 py-0.5 rounded shrink-0" style={{ background: selectedPathData.dotColor + "15", color: selectedPathData.dotColor }}>{entry.transactionCode}</code>
                               <span className="text-sm text-[#2A2E2B] truncate">{entry.title}</span>
-                              <span className="text-[10px] shrink-0 px-1.5 py-0.5 rounded" style={MODULE_COLORS[entry.module]}>{entry.module}</span>
+                              <span className="text-[10px] shrink-0 px-1.5 py-0.5 rounded" style={{ background: mc.bg, color: mc.text }}>{entry.module}</span>
                             </div>
                             <button onClick={() => toggleCompleted(entryId)} className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-xs px-2 py-0.5 rounded transition-all border" style={{ borderColor: selectedPathData.dotColor + "40", color: done ? "#9B3030" : selectedPathData.dotColor }}>{done ? "Undo" : "Mark done"}</button>
                             <Link href={`/logbook/${entryId}`} className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-xs text-[#6B7A6F] hover:text-[#1C3A2B] shrink-0 transition-opacity">View →</Link>
@@ -443,7 +585,7 @@ export default function HubPage() {
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="border-t border-[#D9D4C8] mt-12">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 flex items-center justify-between gap-4 text-xs text-[#6B7A6F]">
-          <span>AWP Central Learning Hub · SAP PP/QM</span>
+          <span>AWP Central Learning Hub · SAP S/4HANA</span>
           <div className="flex flex-wrap gap-4">
             <Link href="/learning/business-processes" className="hover:text-[#1C3A2B] transition-colors">Business Processes</Link>
             <Link href="/process-flow" className="hover:text-[#1C3A2B] transition-colors">Process Flow</Link>

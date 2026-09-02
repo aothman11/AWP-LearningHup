@@ -1,4 +1,4 @@
-export type Module = "PP" | "QM" | "PP/QM";
+export type Module = "PP" | "QM" | "PP/QM" | "MM" | "PM" | "HCM" | "FICO" | "TM" | "EHS";
 export type AwpRelevance = "High" | "Medium" | "Low" | "Not Used";
 export type ContentStatus = "quick-reference" | "detailed-guide" | "in-progress";
 
