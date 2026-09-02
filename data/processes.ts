@@ -1058,6 +1058,297 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: Stock Transport Order (STO) with Delivery ───────────────────────
+  {
+    id: "mm-sto-delivery",
+    icon: "🚛",
+    duration: "30 min",
+    titleEN: "Stock Transport Order (STO) with Delivery",
+    titleAR: "أمر نقل المخزون (STO) مع التسليم",
+    descriptionEN:
+      "Inter-plant stock transfer process using a Stock Transport Order with outbound delivery: create STO (ME21N), create outbound delivery (VL10D), post goods issue at sending plant (VL02N), monitor stock in transit (MB5T), and post goods receipt at receiving plant (MIGO). ~150 STOs per day across all branches.",
+    descriptionAR:
+      "عملية نقل المخزون بين المصانع باستخدام أمر نقل مخزون مع تسليم صادر: إنشاء STO (ME21N)، إنشاء التسليم الصادر (VL10D)، ترحيل إصدار البضاعة في المصنع المُرسِل (VL02N)، مراقبة المخزون في العبور (MB5T)، وترحيل استلام البضاعة في المصنع المستلم (MIGO). حوالي 150 STO يومياً عبر جميع الفروع.",
+    module: "MM",
+    roles: [
+      "STO / DRP Planner",
+      "Shipping Responsible (Issuing Branch)",
+      "Stock Keeper (Receiving Branch)",
+      "Transport Specialist",
+    ],
+    steps: [
+      {
+        id: "mm-sto-1",
+        stepNumber: 1,
+        titleEN: "Create Stock Transport Order (ME21N)",
+        titleAR: "إنشاء أمر نقل المخزون (ME21N)",
+        tCode: "ME21N",
+        role: "STO / DRP Planner",
+        whatToDoEN:
+          "Open ME21N. Select document type 'UB' (Stock Transfer) or the AWP STO type. Enter: supplying plant, receiving plant, material, quantity, and requested delivery date. Purchase Group 999 (Branches Stock Transfer). Save the STO — it appears in the shipping worklist for the issuing branch.",
+        whatToDoAR:
+          "افتح ME21N. حدد نوع المستند 'UB' (نقل المخزون) أو نوع STO الخاص بـ AWP. أدخل: المصنع المورِّد، المصنع المستلم، المادة، الكمية، وتاريخ التسليم المطلوب. مجموعة الشراء 999 (نقل مخزون الفروع). احفظ STO — يظهر في قائمة الشحن للفرع المُرسِل.",
+        whatSAPDoesEN:
+          "Creates a stock transport order linked between the supplying and receiving plants. Appears as a purchase order at the receiving plant and as a delivery-relevant document at the supplying plant.",
+        whatSAPDoesAR:
+          "ينشئ أمر نقل مخزون مرتبط بين المصنعَين المورِّد والمستلِم. يظهر كأمر شراء في المصنع المستلِم ومستند يستلزم التسليم في المصنع المورِّد.",
+        expectedOutputEN: "STO created. Shipping work item visible at issuing plant.",
+        expectedOutputAR: "تم إنشاء STO. بند العمل الخاص بالشحن مرئي في المصنع المُرسِل.",
+      },
+      {
+        id: "mm-sto-2",
+        stepNumber: 2,
+        titleEN: "Create Outbound Delivery (VL10D)",
+        titleAR: "إنشاء التسليم الصادر (VL10D)",
+        tCode: "VL10D",
+        role: "Shipping Responsible (Issuing Branch)",
+        whatToDoEN:
+          "Open VL10D (Deliveries for Purchase Orders from Supplying Plants). Filter by shipping point and delivery date. Select the STO and create the outbound delivery in background. Assign the driver number and truck number in the delivery header partner functions (mandatory fields Z1/Z2). Print the delivery document (VL71) with driver and truck details.",
+        whatToDoAR:
+          "افتح VL10D (التسليمات لأوامر الشراء من المصانع المورِّدة). قم بالتصفية حسب نقطة الشحن وتاريخ التسليم. حدد STO وأنشئ التسليم الصادر في الخلفية. عيّن رقم السائق ورقم الشاحنة في وظائف شريك رأس التسليم (حقول إلزامية Z1/Z2). اطبع مستند التسليم (VL71) بتفاصيل السائق والشاحنة.",
+        whatSAPDoesEN:
+          "Creates an outbound delivery document for the STO. Delivery cannot be processed without mandatory driver (Z2) and truck (Z1) partner function assignments.",
+        whatSAPDoesAR:
+          "ينشئ مستند تسليم صادر لـ STO. لا يمكن معالجة التسليم بدون تعيينات وظيفة شريك السائق (Z2) والشاحنة (Z1) الإلزامية.",
+        expectedOutputEN: "Outbound delivery created with driver and truck assigned. Delivery printed.",
+        expectedOutputAR: "تم إنشاء التسليم الصادر مع تعيين السائق والشاحنة. تمت طباعة التسليم.",
+      },
+      {
+        id: "mm-sto-3",
+        stepNumber: 3,
+        titleEN: "Post Goods Issue at Sending Plant (VL02N)",
+        titleAR: "ترحيل إصدار البضاعة في المصنع المُرسِل (VL02N)",
+        tCode: "VL02N",
+        role: "Stock Keeper (Issuing Branch)",
+        whatToDoEN:
+          "Open VL02N with the delivery number. Verify quantities and batch details. Post Goods Issue to transfer the stock from the issuing plant to 'stock in transit' at the receiving plant. Note: all quantities issued must equal all quantities received — no differences allowed.",
+        whatToDoAR:
+          "افتح VL02N برقم التسليم. تحقق من الكميات وتفاصيل الدفعة. ارحّل إصدار البضاعة لنقل المخزون من المصنع المُرسِل إلى 'المخزون في العبور' في المصنع المستلِم. ملاحظة: جميع الكميات المُصدَرة يجب أن تساوي جميع الكميات المستلَمة — لا يُسمح بالفروق.",
+        whatSAPDoesEN:
+          "Posts goods issue (movement type 641): reduces issuing plant stock and creates stock-in-transit at the receiving plant. Financial posting at the issuing plant valuation price.",
+        whatSAPDoesAR:
+          "يرحّل إصدار البضاعة (نوع حركة 641): يخفض مخزون المصنع المُرسِل وينشئ مخزوناً في العبور في المصنع المستلِم. ترحيل مالي بسعر تقييم المصنع المُرسِل.",
+        expectedOutputEN: "Stock in transit created at receiving plant. Issuing plant stock reduced.",
+        expectedOutputAR: "تم إنشاء المخزون في العبور في المصنع المستلِم. تم تخفيض مخزون المصنع المُرسِل.",
+      },
+      {
+        id: "mm-sto-4",
+        stepNumber: 4,
+        titleEN: "Monitor Stock in Transit (MB5T)",
+        titleAR: "مراقبة المخزون في العبور (MB5T)",
+        tCode: "MB5T",
+        role: "Transport Specialist",
+        whatToDoEN:
+          "Run MB5T (Stock in Transit) to monitor all in-transit quantities between plants. Verify that open STO quantities are being received at the destination. The report should be near-zero at period end — all in-transit stock must be received before period close.",
+        whatToDoAR:
+          "شغّل MB5T (المخزون في العبور) لمراقبة جميع الكميات في العبور بين المصانع. تحقق من استلام كميات STO المفتوحة في الوجهة. يجب أن يكون التقرير قريباً من الصفر في نهاية الفترة — يجب استلام جميع المخزون في العبور قبل إغلاق الفترة.",
+        whatSAPDoesEN:
+          "Displays stock quantities currently in transit between plants, grouped by material and supplying/receiving plant.",
+        whatSAPDoesAR:
+          "يعرض كميات المخزون الموجودة حالياً في العبور بين المصانع، مجمّعةً حسب المادة والمصنع المورِّد/المستلِم.",
+        expectedOutputEN: "In-transit stock monitored. Any overdue STOs flagged for follow-up.",
+        expectedOutputAR: "تمت مراقبة المخزون في العبور. يتم وضع علامة على أي STOs متأخرة للمتابعة.",
+      },
+      {
+        id: "mm-sto-5",
+        stepNumber: 5,
+        titleEN: "Receive Goods at Destination Plant (MIGO)",
+        titleAR: "استلام البضاعة في المصنع المستلِم (MIGO)",
+        tCode: "MIGO",
+        role: "Stock Keeper (Receiving Branch)",
+        whatToDoEN:
+          "Open MIGO. Select 'Goods Receipt' and reference document 'Purchase Order' (the STO number). Verify quantities match what was issued. Enter storage location and batch. Post goods receipt — stock moves from in-transit to unrestricted stock at the receiving plant. Confirm quantities are equal (no difference allowed).",
+        whatToDoAR:
+          "افتح MIGO. حدد 'استلام البضاعة' ومستند مرجعي 'أمر الشراء' (رقم STO). تحقق من تطابق الكميات مع ما تم إصداره. أدخل موقع التخزين والدفعة. ارحّل استلام البضاعة — ينتقل المخزون من العبور إلى المخزون الحر في المصنع المستلِم. تأكد من تساوي الكميات (لا فرق مسموح).",
+        whatSAPDoesEN:
+          "Posts GR (movement type 101): clears in-transit stock and increases unrestricted stock at the receiving plant. Completes the STO document flow.",
+        whatSAPDoesAR:
+          "يرحّل استلام البضاعة (نوع حركة 101): يصفّي المخزون في العبور ويزيد المخزون الحر في المصنع المستلِم. يُكمل تدفق مستند STO.",
+        expectedOutputEN: "Stock received at destination. STO fully closed. In-transit quantity cleared.",
+        expectedOutputAR: "تم استلام المخزون في الوجهة. STO مغلق بالكامل. تم تصفية كمية العبور.",
+      },
+    ],
+  },
+
+  // ─── MM: Physical Inventory ────────────────────────────────────────────────
+  {
+    id: "mm-physical-inventory",
+    icon: "🔢",
+    duration: "60 min",
+    titleEN: "Physical Inventory Process",
+    titleAR: "عملية الجرد المادي",
+    descriptionEN:
+      "Monthly physical inventory count process: create physical inventory documents (MI01/MI31), print count sheets (MI21), execute physical count, enter results (MI04), list differences (MI20), and post count differences (MI07). Covers all plants and storage locations at AWP. ~10 inventory sessions per month.",
+    descriptionAR:
+      "عملية الجرد المادي الشهرية: إنشاء مستندات الجرد المادي (MI01/MI31)، طباعة أوراق العد (MI21)، تنفيذ العد الفعلي، إدخال النتائج (MI04)، سرد الفروقات (MI20)، وترحيل فروقات العد (MI07). تشمل جميع المصانع ومواقع التخزين في AWP. حوالي 10 جلسات جرد شهرياً.",
+    module: "MM",
+    roles: [
+      "Physical Inventory Responsible",
+      "Stock Keeper",
+      "Costing & Inventory Control Department",
+    ],
+    steps: [
+      {
+        id: "mm-pi-1",
+        stepNumber: 1,
+        titleEN: "Create Physical Inventory Documents (MI01 / MI31)",
+        titleAR: "إنشاء مستندات الجرد المادي (MI01 / MI31)",
+        tCode: "MI01",
+        role: "Physical Inventory Responsible",
+        whatToDoEN:
+          "Open MI01 to create a physical inventory document for a specific plant and storage location. For mass creation across multiple storage locations, use MI31 (batch creation). The inventory document lists all materials to be counted. Set the planned count date. Save — the system freezes book inventory at this point for comparison after counting.",
+        whatToDoAR:
+          "افتح MI01 لإنشاء مستند جرد مادي لمصنع وموقع تخزين محدد. للإنشاء الجماعي عبر مواقع تخزين متعددة، استخدم MI31 (الإنشاء الدُفعي). يسرد مستند الجرد جميع المواد التي سيتم عدّها. عيّن تاريخ العد المخطط. احفظ — يجمّد النظام مخزون الكتب في هذه النقطة للمقارنة بعد العد.",
+        whatSAPDoesEN:
+          "Creates physical inventory document with all materials in the selected storage location. Book inventory value is frozen for later difference calculation.",
+        whatSAPDoesAR:
+          "ينشئ مستند جرد مادي بجميع المواد في موقع التخزين المحدد. يُجمَّد قيمة مخزون الكتب للحساب اللاحق للفروقات.",
+        expectedOutputEN: "Physical inventory document created. Materials listed for counting. Book inventory frozen.",
+        expectedOutputAR: "تم إنشاء مستند الجرد المادي. المواد مُدرَجة للعد. مخزون الكتب مُجمَّد.",
+      },
+      {
+        id: "mm-pi-2",
+        stepNumber: 2,
+        titleEN: "Print Physical Inventory Count Sheets (MI21)",
+        titleAR: "طباعة أوراق عد الجرد المادي (MI21)",
+        tCode: "MI21",
+        role: "Physical Inventory Responsible",
+        whatToDoEN:
+          "Open MI21 and select the physical inventory documents to print. Print the count sheets — these are handed to the counters. Quantities are NOT shown on the count sheets (blind count) to prevent biased counting. Each sheet shows material number, description, unit of measure, and storage location.",
+        whatToDoAR:
+          "افتح MI21 وحدد مستندات الجرد المادي للطباعة. اطبع أوراق العد — تُسلَّم هذه للعادّين. الكميات غير مُظهَرة في أوراق العد (عد أعمى) لمنع العد المتحيّز. تُظهر كل ورقة رقم المادة والوصف ووحدة القياس وموقع التخزين.",
+        whatSAPDoesEN: "Generates printable count sheets for each physical inventory document.",
+        whatSAPDoesAR: "ينشئ أوراق عد قابلة للطباعة لكل مستند جرد مادي.",
+        expectedOutputEN: "Count sheets printed and distributed to inventory team.",
+        expectedOutputAR: "تمت طباعة أوراق العد وتوزيعها على فريق الجرد.",
+      },
+      {
+        id: "mm-pi-3",
+        stepNumber: 3,
+        titleEN: "Execute Physical Count",
+        titleAR: "تنفيذ العد الفعلي",
+        role: "Stock Keeper / Physical Inventory Responsible",
+        whatToDoEN:
+          "Teams physically count all materials in the assigned storage locations. Record actual counts on the printed count sheets. If a material's count appears incorrect, a recount can be requested (MI11). Count must be completed within the planned date.",
+        whatToDoAR:
+          "تقوم الفرق بعدّ جميع المواد فعلياً في مواقع التخزين المخصصة. سجّل العدد الفعلي على أوراق العد المطبوعة. إذا بدا عدد مادة معينة غير صحيح، يمكن طلب إعادة عد (MI11). يجب اكتمال العد في التاريخ المخطط.",
+        whatSAPDoesEN: "No SAP action — physical count is performed manually. Recount can be triggered via MI11.",
+        whatSAPDoesAR: "لا يوجد إجراء في SAP — يُجرى العد الفعلي يدوياً. يمكن تشغيل إعادة العد عبر MI11.",
+        expectedOutputEN: "Physical count completed. Count sheets filled with actual quantities.",
+        expectedOutputAR: "اكتمل العد الفعلي. أوراق العد مملوءة بالكميات الفعلية.",
+      },
+      {
+        id: "mm-pi-4",
+        stepNumber: 4,
+        titleEN: "Enter Physical Count Results (MI04)",
+        titleAR: "إدخال نتائج الجرد المادي (MI04)",
+        tCode: "MI04",
+        role: "Physical Inventory Responsible",
+        whatToDoEN:
+          "Open MI04. Select the physical inventory document. Enter the actual counted quantities for each material line. If a material was not found (zero count), mark it explicitly. Save the entered count results.",
+        whatToDoAR:
+          "افتح MI04. حدد مستند الجرد المادي. أدخل الكميات المعدودة الفعلية لكل بند مادة. إذا لم يُعثَر على مادة (عد صفري)، ضع علامة صريحة عليها. احفظ نتائج العد المُدخَلة.",
+        whatSAPDoesEN:
+          "Saves count results against the physical inventory document. System calculates the difference between book inventory (frozen at document creation) and the entered count.",
+        whatSAPDoesAR:
+          "يحفظ نتائج العد مقابل مستند الجرد المادي. يحسب النظام الفرق بين مخزون الكتب (المُجمَّد عند إنشاء المستند) والعدد المُدخَل.",
+        expectedOutputEN: "Count results entered. Differences calculated and ready for review.",
+        expectedOutputAR: "تم إدخال نتائج العد. تم حساب الفروقات وهي جاهزة للمراجعة.",
+      },
+      {
+        id: "mm-pi-5",
+        stepNumber: 5,
+        titleEN: "Review Differences and Post Count (MI20 → MI07)",
+        titleAR: "مراجعة الفروقات وترحيل العد (MI20 ← MI07)",
+        tCode: "MI20",
+        role: "Costing & Inventory Control Department",
+        whatToDoEN:
+          "Open MI20 (List of Inventory Differences) to review all variances by storage location, material, and value. Investigate any significant differences with the warehouse team. Once differences are verified, open MI07 (Post Inventory Document) to post the count differences — SAP automatically adjusts book inventory to match the physical count. Accounting entries are created for the value adjustment.",
+        whatToDoAR:
+          "افتح MI20 (قائمة فروقات الجرد) لمراجعة جميع التباينات حسب موقع التخزين والمادة والقيمة. حقّق أي فروقات كبيرة مع فريق المستودع. بمجرد التحقق من الفروقات، افتح MI07 (ترحيل مستند الجرد) لترحيل فروقات العد — يضبط SAP تلقائياً مخزون الكتب ليطابق العد الفعلي. يتم إنشاء قيود محاسبية لتسوية القيمة.",
+        whatSAPDoesEN:
+          "MI07 posts inventory differences with movement type 701 (for shortages) or 702 (for surpluses). Creates accounting document adjusting inventory value. Report YMM019 provides the physical inventory documents report.",
+        whatSAPDoesAR:
+          "يرحّل MI07 فروقات الجرد بنوع حركة 701 (للنقص) أو 702 (للزيادة). ينشئ مستند محاسبة يضبط قيمة المخزون. يوفر التقرير YMM019 تقرير مستندات الجرد المادي.",
+        expectedOutputEN: "Inventory differences posted. Book stock aligned with physical count. Accounting entries created.",
+        expectedOutputAR: "تم ترحيل فروقات الجرد. مخزون الكتب متوافق مع العد الفعلي. تم إنشاء القيود المحاسبية.",
+      },
+    ],
+  },
+
+  // ─── MM: Logistics Invoice Verification (MIRO) ────────────────────────────
+  {
+    id: "mm-invoice-verification",
+    icon: "🧾",
+    duration: "20 min",
+    titleEN: "Logistics Invoice Verification (MIRO)",
+    titleAR: "التحقق من الفاتورة اللوجستية (MIRO)",
+    descriptionEN:
+      "Accounts Payable process for verifying and posting vendor invoices against purchase orders and goods receipts (GR-based invoice verification). Completes the procure-to-pay cycle. ~50 invoices per day, processed by AP Accountants at Qassim. Includes invoice cancellation (MR8M) and GR/IR balance monitoring (MB5S).",
+    descriptionAR:
+      "عملية الحسابات المدينة للتحقق من فواتير الموردين وترحيلها مقابل أوامر الشراء وإيصالات البضائع (التحقق من الفاتورة المبني على استلام البضاعة). تُكمل دورة الشراء إلى الدفع. حوالي 50 فاتورة يومياً، تعالجها محاسبة الحسابات المدينة في القصيم.",
+    module: "MM",
+    roles: [
+      "AP Accountant",
+    ],
+    steps: [
+      {
+        id: "mm-iv-1",
+        stepNumber: 1,
+        titleEN: "Enter and Post Vendor Invoice (MIRO)",
+        titleAR: "إدخال وترحيل فاتورة المورد (MIRO)",
+        tCode: "MIRO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "Open MIRO. Select transaction 'Invoice'. Enter: invoice date, posting date, vendor, and reference the purchase order number (or delivery note). SAP proposes PO line items with ordered quantities and prices. Verify: the invoice amount matches the GR quantities (GR-based invoice verification) and the agreed PO price. Adjust for any delivery cost differences if applicable. Post the invoice.",
+        whatToDoAR:
+          "افتح MIRO. حدد معاملة 'فاتورة'. أدخل: تاريخ الفاتورة وتاريخ الترحيل والمورد وأشِر إلى رقم أمر الشراء (أو مذكرة التسليم). يقترح SAP بنود أمر الشراء بالكميات والأسعار المطلوبة. تحقق من: تطابق مبلغ الفاتورة مع كميات استلام البضاعة (التحقق من الفاتورة المبني على استلام البضاعة) والسعر المتفق عليه في أمر الشراء. اضبط لأي فروقات في تكاليف التوصيل إن اقتضى الأمر. ارحّل الفاتورة.",
+        whatSAPDoesEN:
+          "Posts invoice document with accounting entries: debit GR/IR clearing account (clears the GR posting), credit vendor AP account. Any price variance between PO and invoice creates a price difference posting. Updates PO invoice history.",
+        whatSAPDoesAR:
+          "يرحّل مستند الفاتورة بقيود محاسبية: مدين حساب مقاصة GR/IR (يُصفّي ترحيل استلام البضاعة)، دائن حساب المورد في الحسابات المدينة. أي فرق في السعر بين أمر الشراء والفاتورة يُنشئ ترحيل فرق السعر. يحدّث سجل فاتورة أمر الشراء.",
+        expectedOutputEN: "Invoice posted. GR/IR clearing account settled. Vendor open item created for payment.",
+        expectedOutputAR: "تم ترحيل الفاتورة. تمت تسوية حساب مقاصة GR/IR. تم إنشاء بند مفتوح للمورد للدفع.",
+      },
+      {
+        id: "mm-iv-2",
+        stepNumber: 2,
+        titleEN: "Cancel Invoice if Incorrect (MR8M)",
+        titleAR: "إلغاء الفاتورة إذا كانت غير صحيحة (MR8M)",
+        tCode: "MR8M",
+        role: "AP Accountant",
+        whatToDoEN:
+          "If a posted invoice is incorrect, open MR8M to cancel it. Enter the invoice document number and fiscal year, select a cancellation reason, and post the cancellation. This creates a reversal document with the opposite accounting entries. The GR/IR clearing account is reopened and the vendor open item is cleared.",
+        whatToDoAR:
+          "إذا كانت الفاتورة المُرحَّلة غير صحيحة، افتح MR8M لإلغائها. أدخل رقم مستند الفاتورة والسنة المالية، وحدد سبب الإلغاء، وارحّل الإلغاء. ينشئ هذا مستند عكس بقيود محاسبية معاكسة. يُعاد فتح حساب مقاصة GR/IR ويُصفَّى البند المفتوح للمورد.",
+        whatSAPDoesEN:
+          "Creates a reversal document that cancels the original invoice posting. GR/IR account reopened — invoice can be re-entered correctly.",
+        whatSAPDoesAR:
+          "ينشئ مستند عكس يلغي الترحيل الأصلي للفاتورة. يُعاد فتح حساب GR/IR — يمكن إعادة إدخال الفاتورة بشكل صحيح.",
+        expectedOutputEN: "Invoice cancelled. GR/IR clearing account reopened. Ready for correct invoice re-entry.",
+        expectedOutputAR: "تم إلغاء الفاتورة. إعادة فتح حساب مقاصة GR/IR. جاهز لإعادة إدخال الفاتورة الصحيحة.",
+      },
+      {
+        id: "mm-iv-3",
+        stepNumber: 3,
+        titleEN: "Monitor GR/IR Clearing Account (MB5S / ZMR11)",
+        titleAR: "مراقبة حساب مقاصة GR/IR (MB5S / ZMR11)",
+        tCode: "MB5S",
+        role: "AP Accountant",
+        whatToDoEN:
+          "Run MB5S (List of GR/IR Balances) or custom report ZMR11 (GR/IR Clearing Report) to identify open GR/IR items — cases where a GR was posted but no invoice yet, or an invoice was posted with no matching GR. Investigate and resolve all open items before period close. Use MR11 to maintain the GR/IR clearing account for any differences.",
+        whatToDoAR:
+          "شغّل MB5S (قائمة أرصدة GR/IR) أو التقرير المخصص ZMR11 (تقرير مقاصة GR/IR) لتحديد بنود GR/IR المفتوحة — حالات تم فيها ترحيل استلام البضاعة بدون فاتورة بعد، أو ترحيل فاتورة بدون استلام بضاعة مطابق. حقّق وسوّ جميع البنود المفتوحة قبل إغلاق الفترة. استخدم MR11 لصيانة حساب مقاصة GR/IR لأي فروقات.",
+        whatSAPDoesEN:
+          "MB5S / ZMR11 provides a list of uncleared GR/IR items. MR11 can be used to write off small differences or to clear the account at period end.",
+        whatSAPDoesAR:
+          "يوفر MB5S / ZMR11 قائمة ببنود GR/IR غير المُصفّاة. يمكن استخدام MR11 لشطب الفروقات الصغيرة أو لتصفية الحساب في نهاية الفترة.",
+        expectedOutputEN: "GR/IR account monitored. All open items investigated and resolved before period close.",
+        expectedOutputAR: "تمت مراقبة حساب GR/IR. تم التحقيق في جميع البنود المفتوحة وتسويتها قبل إغلاق الفترة.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
