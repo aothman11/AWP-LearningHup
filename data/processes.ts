@@ -3091,6 +3091,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسترجع SAP تفاصيل أمر المبيعات ووحدة الشحن لمعالجة النقل الخارجي.",
         expectedOutputEN: "Sales order identified for external transfer.",
         expectedOutputAR: "تم تحديد أمر المبيعات للنقل الخارجي.",
+        screenshotUrl: "/process-charts/tm-transfer-so-external-p01.png",
       },
       {
         id: "tm-transfer-ext-02",
@@ -3104,6 +3105,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يُنشئ SAP أمر شحن مُعيَّن للناقل الخارجي مع وحدات الشحن ذات الصلة.",
         expectedOutputEN: "External carrier freight order created.",
         expectedOutputAR: "تم إنشاء أمر شحن الناقل الخارجي.",
+        screenshotUrl: "/process-charts/tm-transfer-so-external-p01.png",
       },
       {
         id: "tm-transfer-ext-03",
@@ -3117,6 +3119,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يحفظ SAP أمر الشحن للعمل الخارجي ويؤكده مع تحديث تدفق مستند TM.",
         expectedOutputEN: "Transfer confirmed; documents issued to external carrier.",
         expectedOutputAR: "تم تأكيد النقل؛ تم إصدار المستندات للناقل الخارجي.",
+        screenshotUrl: "/process-charts/tm-transfer-so-external-p02.png",
       },
     ],
   },
@@ -3143,6 +3146,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسترجع SAP أمر المبيعات ووحدة الشحن المرتبطة لتعيين الناقل الخارجي.",
         expectedOutputEN: "Sales order identified for Al Wataniyah / external client transfer.",
         expectedOutputAR: "تم تحديد أمر المبيعات لنقل الوطنية / العميل الخارجي.",
+        screenshotUrl: "/process-charts/tm-transfer-so-wataniyah-p01.png",
       },
       {
         id: "tm-wataniyah-02",
@@ -3156,6 +3160,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يعيِّن SAP الناقل الخارجي لأمر الشحن ويحدِّث المسار وتحديد التكلفة.",
         expectedOutputEN: "External carrier assigned to freight order.",
         expectedOutputAR: "تم تعيين الناقل الخارجي لأمر الشحن.",
+        screenshotUrl: "/process-charts/tm-transfer-so-wataniyah-p01.png",
       },
       {
         id: "tm-wataniyah-03",
@@ -3169,6 +3174,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يحفظ SAP أمر الشحن ويُنشئ مستندات المخرجات للناقل الخارجي.",
         expectedOutputEN: "Freight order saved; documents issued to external carrier.",
         expectedOutputAR: "تم حفظ أمر الشحن؛ تم إصدار المستندات للناقل الخارجي.",
+        screenshotUrl: "/process-charts/tm-transfer-so-wataniyah-p02.png",
       },
     ],
   },
@@ -3195,6 +3201,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "ينقل SAP FO إلى حالة قيد التنفيذ ويسجِّل طابع زمني الوصول.",
         expectedOutputEN: "FO set to In Execution and Arrived.",
         expectedOutputAR: "تم تعيين FO إلى قيد التنفيذ ووصل.",
+        screenshotUrl: "/process-charts/tm-waiting-fees-p02.png",
       },
       {
         id: "tm-waiting-02",
@@ -3208,6 +3215,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسجِّل SAP الطوابع الزمنية الفعلية للتحميل ويحسب وقت الانتظار عند نقطة التحميل.",
         expectedOutputEN: "Loading begin and end times recorded.",
         expectedOutputAR: "تم تسجيل وقتَي بداية التحميل ونهايته.",
+        screenshotUrl: "/process-charts/tm-waiting-fees-p03.png",
       },
       {
         id: "tm-waiting-03",
@@ -3221,6 +3229,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسجِّل SAP الطوابع الزمنية الفعلية للتفريغ في كل محطة ويحسب إجمالي وقت الانتظار عبر جميع المحطات.",
         expectedOutputEN: "All unloading begin and end times recorded for each stop.",
         expectedOutputAR: "تم تسجيل جميع أوقات بداية التفريغ ونهايته لكل محطة.",
+        screenshotUrl: "/process-charts/tm-waiting-fees-p04.png",
       },
       {
         id: "tm-waiting-04",
@@ -3234,6 +3243,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يحسب SAP رسوم الانتظار بناءً على التعريفات المتفق عليها والفوارق الزمنية ويدرجها في مستند تسوية الشحن.",
         expectedOutputEN: "Waiting fees calculated and visible in freight settlement.",
         expectedOutputAR: "تم احتساب رسوم الانتظار وهي مرئية في تسوية الشحن.",
+        screenshotUrl: "/process-charts/tm-waiting-fees-p05.png",
       },
     ],
   },
@@ -3260,6 +3270,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يفتح SAP أمر الشحن مع جميع وحدات الشحن المعيَّنة وتفاصيل الناقل.",
         expectedOutputEN: "Freight order opened for external client.",
         expectedOutputAR: "تم فتح أمر الشحن للعميل الخارجي.",
+        screenshotUrl: "/process-charts/tm-create-waybill-external-p01.png",
       },
       {
         id: "tm-waybill-ext-02",
@@ -3273,6 +3284,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يُنشئ SAP مستند بوليصة الشحن مع تفاصيل الشحنة والكميات وبيانات الناقل والعميل.",
         expectedOutputEN: "Waybill (Bayan) created for external client.",
         expectedOutputAR: "تم إنشاء بوليصة الشحن (البيان) للعميل الخارجي.",
+        screenshotUrl: "/process-charts/tm-create-waybill-external-p02.png",
       },
       {
         id: "tm-waybill-ext-03",
@@ -3286,6 +3298,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يُخرج SAP بوليصة الشحن عبر قناة المخرجات المُهيَّأة ويسجِّل المخرجات في أمر الشحن.",
         expectedOutputEN: "Waybill printed/sent; record retained.",
         expectedOutputAR: "تمت طباعة/إرسال بوليصة الشحن؛ تم الاحتفاظ بالسجل.",
+        screenshotUrl: "/process-charts/tm-create-waybill-external-p03.png",
       },
     ],
   },
@@ -3312,6 +3325,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسجِّل SAP سعر الشحن مقابل بند التسليم.",
         expectedOutputEN: "Price entered in delivery.",
         expectedOutputAR: "تم إدخال السعر في التسليم.",
+        screenshotUrl: "/process-charts/tm-waybill-prices-p01.png",
       },
       {
         id: "tm-prices-02",
@@ -3325,6 +3339,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يعرض SAP تدفق المستندات وDTR مع تفاصيل التسعير الحالية.",
         expectedOutputEN: "DTR (freight order) opened with pricing visible.",
         expectedOutputAR: "تم فتح DTR (أمر الشحن) مع ظهور التسعير.",
+        screenshotUrl: "/process-charts/tm-waybill-prices-p01.png",
       },
       {
         id: "tm-prices-03",
@@ -3338,6 +3353,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يحدِّث SAP التسعير على كلا التسليمَين ويؤكد تطابق الإجمالي مع سعر الرحلة.",
         expectedOutputEN: "Both delivery prices updated; total matches route price.",
         expectedOutputAR: "تم تحديث أسعار كلا التسليمَين؛ يتطابق الإجمالي مع سعر الرحلة.",
+        screenshotUrl: "/process-charts/tm-waybill-prices-p02.png",
       },
       {
         id: "tm-prices-04",
@@ -3351,6 +3367,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يُنهي SAP التسوية بالأسعار المتحقق منها ويُنشئ فاتورة التسوية.",
         expectedOutputEN: "Settlement invoice submitted with verified prices.",
         expectedOutputAR: "تم تقديم فاتورة التسوية بالأسعار المتحقق منها.",
+        screenshotUrl: "/process-charts/tm-waybill-prices-p02.png",
       },
     ],
   },
@@ -3377,6 +3394,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يفتح SAP لوحة تحكم النقل مُصفَّاةً لقطاع تخطيط AWT_COOLER (المجمَّد).",
         expectedOutputEN: "Transportation Cockpit open with Frozen freight orders visible.",
         expectedOutputAR: "لوحة تحكم النقل مفتوحة مع ظهور أوامر الشحن المجمَّدة.",
+        screenshotUrl: "/process-charts/tm-create-fo-p01.png",
       },
       {
         id: "tm-group-02",
@@ -3390,6 +3408,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يفتح SAP أمر الشحن في وضع التعديل مع ظهور جميع التعيينات.",
         expectedOutputEN: "Freight order opened in edit mode.",
         expectedOutputAR: "تم فتح أمر الشحن في وضع التعديل.",
+        screenshotUrl: "/process-charts/tm-create-fo-p02.png",
       },
       {
         id: "tm-group-03",
@@ -3403,6 +3422,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يسرد SAP جميع أوامر الشحن المؤهلة للتسوية الداخلية.",
         expectedOutputEN: "Internal Settlement Worklist displayed with eligible freight orders.",
         expectedOutputAR: "تم عرض قائمة عمل التسوية الداخلية مع أوامر الشحن المؤهلة.",
+        screenshotUrl: "/process-charts/tm-create-isd-p01.png",
       },
       {
         id: "tm-group-04",
@@ -3416,6 +3436,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يُنشئ SAP مستند التسوية الداخلية يربط جميع أوامر الشحن المحددة.",
         expectedOutputEN: "ISD created and saved.",
         expectedOutputAR: "تم إنشاء مستند ISD وحفظه.",
+        screenshotUrl: "/process-charts/tm-create-isd-p06.png",
       },
       {
         id: "tm-group-05",
@@ -3429,6 +3450,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يعرض SAP مستند ISD مع تدفق المستندات الكامل.",
         expectedOutputEN: "ISD verified; document flow complete.",
         expectedOutputAR: "تم التحقق من مستند ISD؛ تدفق المستندات مكتمل.",
+        screenshotUrl: "/process-charts/tm-create-isd-p19.png",
       },
     ],
   },
@@ -3454,6 +3476,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يفتح SAP مستند التسليم مع جميع بيانات الرأس والبند.",
         expectedOutputEN: "Delivery document opened.",
         expectedOutputAR: "تم فتح مستند التسليم.",
+        screenshotUrl: "/process-charts/tm-verify-delivery-transport-p01.png",
       },
       {
         id: "tm-verify-transport-02",
@@ -3467,6 +3490,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يعرض SAP شرط الشحن ووضع النقل الحالي المُهيَّأ في التسليم.",
         expectedOutputEN: "Transport mode and shipping condition verified on delivery.",
         expectedOutputAR: "تم التحقق من طريقة النقل وشرط الشحن في التسليم.",
+        screenshotUrl: "/process-charts/tm-verify-delivery-transport-p01.png",
       },
       {
         id: "tm-verify-transport-03",
@@ -3480,6 +3504,7 @@ export const processes: Process[] = [
         whatSAPDoesAR: "يحفظ SAP التسليم المُصحَّح بطريقة النقل الصحيحة مما يضمن إنشاء TM لنوع أمر الشحن الصحيح.",
         expectedOutputEN: "Delivery saved with correct transport mode.",
         expectedOutputAR: "تم حفظ التسليم بطريقة النقل الصحيحة.",
+        screenshotUrl: "/process-charts/tm-verify-delivery-transport-p02.png",
       },
     ],
   },
