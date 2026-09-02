@@ -1805,6 +1805,273 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: Returns to Supplier (Return Order) ───────────────────────────────
+  {
+    id: "mm-returns-supplier",
+    icon: "↩️",
+    duration: "30 min",
+    titleEN: "Returns to Supplier (Return Order)",
+    titleAR: "الإرجاع إلى المورِّد (أمر الإرجاع)",
+    descriptionEN:
+      "Return rejected or defective goods back to the supplier using a return purchase order. A credit memo is generated to adjust the supplier balance. Covers quality rejections, short expiry, wrong delivery, and damaged goods. ~4 returns/week.",
+    descriptionAR:
+      "إرجاع البضائع المرفوضة أو المعيبة إلى المورِّد باستخدام أمر شراء للإرجاع. يُنشأ قيد دائن لتسوية رصيد المورِّد. يشمل رفض الجودة وقِصَر الصلاحية والتسليم الخاطئ والبضائع التالفة. نحو 4 إرجاعات أسبوعيًّا.",
+    module: "MM",
+    roles: ["Stock Keeper", "Purchaser", "AP Accountant"],
+    steps: [
+      {
+        id: "mm-returns-supplier-step-1",
+        stepNumber: 1,
+        titleEN: "Inform Purchasing Department of Return Requirement",
+        titleAR: "إبلاغ قسم المشتريات بمتطلبات الإرجاع",
+        tCode: "Manual / Email",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "Quality inspector or stock keeper identifies rejected goods and notifies the purchasing department by email or phone. Provide: material description, quantity, PO reference, reason for return (poor quality, short expiry, wrong delivery, damaged), and the original material document number.",
+        whatToDoAR:
+          "يُحدِّد مفتش الجودة أو أمين المخزون البضائع المرفوضة ويُبلِّغ قسم المشتريات بالبريد الإلكتروني أو الهاتف. يُزوَّد بـ: وصف المادة والكمية ومرجع أمر الشراء وسبب الإرجاع (ضعف الجودة أو قِصَر الصلاحية أو التسليم الخاطئ أو التلف) ورقم مستند المادة الأصلي.",
+        whatSAPDoesEN: "No SAP action at this step. Purchasing receives the return request outside the system.",
+        whatSAPDoesAR: "لا يوجد إجراء في SAP في هذه الخطوة. تتلقى المشتريات طلب الإرجاع خارج النظام.",
+        expectedOutputEN: "Purchasing department notified. Return request acknowledged.",
+        expectedOutputAR: "تم إبلاغ قسم المشتريات. تم تأكيد طلب الإرجاع.",
+      },
+      {
+        id: "mm-returns-supplier-step-2",
+        stepNumber: 2,
+        titleEN: "Create Return Purchase Order",
+        titleAR: "إنشاء أمر الشراء للإرجاع",
+        tCode: "ME21N",
+        role: "Purchaser",
+        whatToDoEN:
+          "Create a new purchase order in ME21N and check the 'Returns' checkbox for the relevant line item(s). This flags the PO as a return order. Enter the material, quantity to return, and reference the original supplier. Select the appropriate return reason code: 1600 – Poor Quality, 1601 – Short Expiry, 1602 – Wrong Delivery, 1603 – Damaged.",
+        whatToDoAR:
+          "أنشئ أمر شراء جديدًا في ME21N وضع علامة الاختيار 'إرجاع' على البند/البنود المعنية. يُعلِّم ذلك أمر الشراء بوصفه أمر إرجاع. أدخل المادة والكمية المراد إرجاعها مع الإشارة إلى المورِّد الأصلي. اختر كود سبب الإرجاع المناسب: 1600 – ضعف الجودة، 1601 – قِصَر الصلاحية، 1602 – تسليم خاطئ، 1603 – تلف.",
+        whatSAPDoesEN:
+          "Creates a return PO document. Movement type 161 will be used for the return goods issue (reversal of GR). The system sets up the relevant account determination for the credit posting.",
+        whatSAPDoesAR:
+          "يُنشئ مستند أمر الشراء للإرجاع. يُستخدم نوع الحركة 161 لإصدار بضاعة الإرجاع (عكس إيصال البضاعة). يُعِدُّ النظام تحديد الحساب المعني لقيد الدائن.",
+        expectedOutputEN: "Return purchase order created with PO number and return flag.",
+        expectedOutputAR: "تم إنشاء أمر الشراء للإرجاع مع رقم أمر الشراء وعلامة الإرجاع.",
+      },
+      {
+        id: "mm-returns-supplier-step-3",
+        stepNumber: 3,
+        titleEN: "Issue Return Delivery to Supplier",
+        titleAR: "إصدار تسليم الإرجاع إلى المورِّد",
+        tCode: "MIGO_GR",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "In MIGO, post a return delivery referencing the return purchase order (or the original GR material document if returning against the same PO). Movement type 161 issues the goods back to the supplier, reducing AWP stock. Ensure returned goods are in the same condition as originally received. Print the return document as proof of return.",
+        whatToDoAR:
+          "في MIGO، رحِّل تسليم إرجاع مستندًا إلى أمر الشراء للإرجاع (أو مستند مادة إيصال البضاعة الأصلي في حالة الإرجاع مقابل نفس أمر الشراء). نوع الحركة 161 يُصدر البضاعة إلى المورِّد مخفِّضًا مخزون الوطنية. تأكَّد من أن البضائع المُرجَعة بالحالة نفسها عند استلامها أصلًا. اطبع مستند الإرجاع إثباتًا للإرجاع.",
+        whatSAPDoesEN:
+          "Posts MT 161 (return delivery to supplier). Reduces unrestricted stock at AWP. Creates a material document and accounting entry reversing the original GR cost.",
+        whatSAPDoesAR:
+          "يرحِّل نوع الحركة 161 (تسليم إرجاع إلى المورِّد). يخفض المخزون غير المقيَّد في الوطنية. يُنشئ مستند مادة وقيد محاسبة يعكس تكلفة إيصال البضاعة الأصلية.",
+        expectedOutputEN: "Return goods issued to supplier. Stock reduced. Material document created.",
+        expectedOutputAR: "تم إصدار بضاعة الإرجاع إلى المورِّد. تم تخفيض المخزون. تم إنشاء مستند المادة.",
+      },
+      {
+        id: "mm-returns-supplier-step-4",
+        stepNumber: 4,
+        titleEN: "Create Credit Memo (MIRO)",
+        titleAR: "إنشاء قيد دائن (MIRO)",
+        tCode: "MIRO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "Enter the credit memo in MIRO referencing the return purchase order. The credit memo adjusts the supplier's payable balance for the returned goods value. Verify the amounts match the return quantity × original purchase price.",
+        whatToDoAR:
+          "أدخل القيد الدائن في MIRO مستندًا إلى أمر الشراء للإرجاع. يُسوِّي القيد الدائن رصيد الحسابات الدائنة للمورِّد بقيمة البضائع المُرجَعة. تحقَّق من تطابق المبالغ مع كمية الإرجاع × سعر الشراء الأصلي.",
+        whatSAPDoesEN:
+          "Posts the credit memo against the supplier. Reduces the accounts payable balance. Creates an FI document crediting the vendor account and debiting the inventory/purchase account.",
+        whatSAPDoesAR:
+          "يرحِّل القيد الدائن بمواجهة المورِّد. يخفض رصيد الحسابات الدائنة. يُنشئ مستند FI دائنًا لحساب المورِّد ومدينًا لحساب المخزون/الشراء.",
+        expectedOutputEN: "Credit memo posted. Supplier balance adjusted for returned goods.",
+        expectedOutputAR: "تم ترحيل القيد الدائن. تم تسوية رصيد المورِّد بقيمة البضائع المُرجَعة.",
+      },
+    ],
+  },
+
+  // ─── MM: Supplier Consignment ──────────────────────────────────────────────
+  {
+    id: "mm-supplier-consignment",
+    icon: "🏪",
+    duration: "20 min",
+    titleEN: "Supplier Consignment",
+    titleAR: "أمانة المورِّد (البضاعة الأمانة)",
+    descriptionEN:
+      "Manage vendor-owned stock stored at AWP premises. Liability arises only when consignment stock is withdrawn for use. Settlement (MRKO) pays the supplier for consumed quantities. Item category K in the purchase order. ~1 per year.",
+    descriptionAR:
+      "إدارة المخزون المملوك للمورِّد والمخزَّن في مستودعات الوطنية. تنشأ المديونية فقط عند سحب مخزون الأمانة للاستخدام. التسوية (MRKO) تسدِّد للمورِّد الكميات المستهلَكة. فئة البند K في أمر الشراء. نحو مرة في السنة.",
+    module: "MM",
+    roles: ["Purchaser", "Division Head", "Department Manager", "Stock Keeper", "AP Accountant"],
+    steps: [
+      {
+        id: "mm-supplier-consignment-step-1",
+        stepNumber: 1,
+        titleEN: "Create Purchasing Info Record (Consignment)",
+        titleAR: "إنشاء سجل معلومات الشراء (أمانة)",
+        tCode: "ME11",
+        role: "Purchaser",
+        whatToDoEN:
+          "Create a purchasing info record for the consignment material with category 'Consignment'. This stores the agreed consignment price and conditions for the material-vendor combination.",
+        whatToDoAR:
+          "أنشئ سجل معلومات شراء للمادة الأمانة بفئة 'أمانة'. يُخزِّن ذلك السعر المتفق عليه للأمانة والشروط المعتمدة لتركيبة المادة والمورِّد.",
+        whatSAPDoesEN:
+          "Creates a purchasing info record (PIR) of category Consignment, storing the consignment price used for settlement.",
+        whatSAPDoesAR:
+          "يُنشئ سجل معلومات الشراء (PIR) بفئة الأمانة، مخزِّنًا سعر الأمانة المستخدَم في التسوية.",
+        expectedOutputEN: "Consignment purchasing info record created.",
+        expectedOutputAR: "تم إنشاء سجل معلومات الشراء للأمانة.",
+      },
+      {
+        id: "mm-supplier-consignment-step-2",
+        stepNumber: 2,
+        titleEN: "Create Consignment Purchase Order (Item Category K)",
+        titleAR: "إنشاء أمر شراء الأمانة (فئة البند K)",
+        tCode: "ME21N",
+        role: "Purchaser",
+        whatToDoEN:
+          "Create a purchase order in ME21N with item category K (Consignment). Enter material and quantity. The PO price is informational — no financial posting occurs at GR. Goods receipt will place material into consignment stock (not AWP-owned inventory).",
+        whatToDoAR:
+          "أنشئ أمر شراء في ME21N بفئة البند K (أمانة). أدخل المادة والكمية. سعر أمر الشراء استرشادي فقط — لا يوجد ترحيل مالي عند إيصال البضاعة. يضع إيصال البضاعة المادة في مخزون الأمانة (وليس في مخزون الوطنية المملوك لها).",
+        whatSAPDoesEN:
+          "Creates a consignment PO (item cat K). No invoice liability is created at order time. Stock will be received into special consignment stock type.",
+        whatSAPDoesAR:
+          "يُنشئ أمر شراء الأمانة (فئة البند K). لا تُنشأ مديونية فاتورة عند إنشاء الأمر. يُستقبل المخزون في نوع المخزون الخاص بالأمانة.",
+        expectedOutputEN: "Consignment PO created (item cat K).",
+        expectedOutputAR: "تم إنشاء أمر الشراء للأمانة (فئة البند K).",
+      },
+      {
+        id: "mm-supplier-consignment-step-3",
+        stepNumber: 3,
+        titleEN: "Approve Purchase Order",
+        titleAR: "اعتماد أمر الشراء",
+        tCode: "ME29N",
+        role: "Division Head / Department Manager",
+        whatToDoEN:
+          "Release (approve) the consignment PO through the standard multi-level approval workflow: Division Head release first, then Department Manager. Both approvals required before supplier can deliver.",
+        whatToDoAR:
+          "أطلق سراح (اعتمد) أمر شراء الأمانة عبر سير عمل الاعتماد متعدد المستويات القياسي: رئيس القسم أولًا ثم مدير الإدارة. كلا الاعتمادين مطلوبان قبل أن يتمكن المورِّد من التسليم.",
+        whatSAPDoesEN:
+          "Releases the PO through the release strategy. Status changes to 'Released'. PO can now be transmitted to the supplier.",
+        whatSAPDoesAR:
+          "يُطلق سراح أمر الشراء عبر استراتيجية الإطلاق. يتغير الحالة إلى 'مُطلق'. يمكن الآن إرسال أمر الشراء إلى المورِّد.",
+        expectedOutputEN: "Consignment PO fully approved and released.",
+        expectedOutputAR: "تم اعتماد وإطلاق أمر شراء الأمانة بالكامل.",
+      },
+      {
+        id: "mm-supplier-consignment-step-4",
+        stepNumber: 4,
+        titleEN: "Post Goods Receipt (Consignment Stock)",
+        titleAR: "ترحيل إيصال البضاعة (مخزون الأمانة)",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "Receive the vendor's goods against the consignment PO in MIGO. The stock is posted to the vendor's consignment stock (not AWP unrestricted stock). No financial posting occurs — the vendor still owns the goods.",
+        whatToDoAR:
+          "استلم بضائع المورِّد مقابل أمر شراء الأمانة في MIGO. يُرحَّل المخزون إلى مخزون الأمانة الخاص بالمورِّد (وليس في المخزون غير المقيَّد للوطنية). لا يوجد ترحيل مالي — لا يزال المورِّد يملك البضائع.",
+        whatSAPDoesEN:
+          "Posts GR into vendor consignment stock (special stock indicator K). No accounting document created. Stock visible in MB52 and MMBE under consignment stock type.",
+        whatSAPDoesAR:
+          "يرحِّل إيصال البضاعة إلى مخزون الأمانة الخاص بالمورِّد (مؤشر المخزون الخاص K). لا يُنشأ مستند محاسبة. المخزون مرئي في MB52 وMMBE تحت نوع مخزون الأمانة.",
+        expectedOutputEN: "Consignment stock received. Vendor still owns the goods. No liability posted.",
+        expectedOutputAR: "تم استلام مخزون الأمانة. لا يزال المورِّد يملك البضائع. لم تُرحَّل أي مديونية.",
+      },
+      {
+        id: "mm-supplier-consignment-step-5",
+        stepNumber: 5,
+        titleEN: "Transfer Consignment Stock to AWP Own Stock",
+        titleAR: "تحويل مخزون الأمانة إلى مخزون الوطنية الخاص",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "When goods are needed for production or use, transfer the required quantity from vendor consignment stock to AWP unrestricted own stock using movement type 411 K. This creates the liability to the vendor.",
+        whatToDoAR:
+          "عند الحاجة إلى البضائع للإنتاج أو الاستخدام، حوِّل الكمية المطلوبة من مخزون الأمانة الخاص بالمورِّد إلى المخزون غير المقيَّد المملوك للوطنية باستخدام نوع الحركة 411 K. يُنشئ ذلك المديونية تجاه المورِّد.",
+        whatSAPDoesEN:
+          "Posts MT 411 K. Transfers stock from vendor consignment to AWP own stock. Creates an accounting document recording the liability to the vendor at the consignment info record price.",
+        whatSAPDoesAR:
+          "يرحِّل نوع الحركة 411 K. ينقل المخزون من أمانة المورِّد إلى مخزون الوطنية الخاص. يُنشئ مستند محاسبة يسجِّل المديونية تجاه المورِّد بسعر سجل معلومات الأمانة.",
+        expectedOutputEN: "Stock transferred to AWP. Liability to vendor created.",
+        expectedOutputAR: "تم نقل المخزون إلى الوطنية. تم إنشاء المديونية تجاه المورِّد.",
+      },
+      {
+        id: "mm-supplier-consignment-step-6",
+        stepNumber: 6,
+        titleEN: "Create Settlement Document (MRKO)",
+        titleAR: "إنشاء مستند التسوية (MRKO)",
+        tCode: "MRKO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "Run MRKO to create the consignment settlement document. MRKO calculates the amounts owed to the vendor based on all 411 K withdrawals since the last settlement. Post the settlement to generate the vendor invoice and clear the consignment liability.",
+        whatToDoAR:
+          "شغِّل MRKO لإنشاء مستند تسوية الأمانة. تحسب MRKO المبالغ المستحقة للمورِّد بناءً على جميع عمليات السحب من نوع الحركة 411 K منذ آخر تسوية. رحِّل التسوية لإنشاء فاتورة المورِّد وتصفية مديونية الأمانة.",
+        whatSAPDoesEN:
+          "Creates a consignment settlement document (vendor invoice). Posts accounts payable entry for the total quantity withdrawn × consignment price. Clears the consignment liability.",
+        whatSAPDoesAR:
+          "يُنشئ مستند تسوية الأمانة (فاتورة المورِّد). يرحِّل قيد الحسابات الدائنة بإجمالي الكمية المسحوبة × سعر الأمانة. يُصفِّي مديونية الأمانة.",
+        expectedOutputEN: "Settlement document posted. Vendor payable created for consumed consignment quantities.",
+        expectedOutputAR: "تم ترحيل مستند التسوية. تم إنشاء مديونية المورِّد للكميات المستهلَكة من الأمانة.",
+      },
+    ],
+  },
+
+  // ─── MM: Transfer to Production WIP ───────────────────────────────────────
+  {
+    id: "mm-transfer-to-production-wip",
+    icon: "🔁",
+    duration: "15 min",
+    titleEN: "Transfer to Production – WIP",
+    titleAR: "تحويل إلى الإنتاج – تحت التشغيل (WIP)",
+    descriptionEN:
+      "Replenish WIP production storage locations from central warehouses. Stage materials using ZMF60/MB21 and then transfer via MIGO_TR (MT 311) from raw material storage to the production area. ~80 transfers/day across all plants.",
+    descriptionAR:
+      "تجديد مواقع تخزين الإنتاج تحت التشغيل من المستودعات المركزية. تجهيز المواد باستخدام ZMF60/MB21 ثم التحويل عبر MIGO_TR (نوع الحركة 311) من مستودع المواد الخام إلى منطقة الإنتاج. نحو 80 تحويل يوميًّا في جميع المصانع.",
+    module: "MM",
+    roles: ["SFC Responsible", "Stock Keeper"],
+    steps: [
+      {
+        id: "mm-transfer-production-wip-step-1",
+        stepNumber: 1,
+        titleEN: "Material Staging",
+        titleAR: "تجهيز المواد",
+        tCode: "ZMF60 / MB21",
+        role: "SFC Responsible",
+        whatToDoEN:
+          "Run material staging for the production order to request materials from the raw material warehouse to the production area storage location. ZMF60 (Fiori: Stage Materials for Production) automatically creates reservations. MB21 can be used to create manual reservations if needed.",
+        whatToDoAR:
+          "شغِّل تجهيز المواد لأمر الإنتاج لطلب المواد من مستودع المواد الخام إلى موقع تخزين منطقة الإنتاج. تُنشئ ZMF60 (Fiori: تجهيز مواد للإنتاج) الحجوزات تلقائيًّا. يمكن استخدام MB21 لإنشاء الحجوزات اليدوية عند الحاجة.",
+        whatSAPDoesEN:
+          "Creates material reservations for the production order components, visible to the stock keeper for transfer.",
+        whatSAPDoesAR:
+          "يُنشئ حجوزات المواد لمكونات أمر الإنتاج، مرئية لأمين المخزون للتحويل.",
+        expectedOutputEN: "Material reservations created. Stock keeper alerted to transfer materials.",
+        expectedOutputAR: "تم إنشاء حجوزات المواد. تم تنبيه أمين المخزون لتحويل المواد.",
+      },
+      {
+        id: "mm-transfer-production-wip-step-2",
+        stepNumber: 2,
+        titleEN: "Transfer Materials to Production WIP Storage",
+        titleAR: "تحويل المواد إلى موقع تخزين الإنتاج WIP",
+        tCode: "MIGO_TR",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "In MIGO (Post Goods Movement), select movement type 311 to transfer materials from the raw material central storage location to the WIP production storage location. Reference the reservation created in the previous step. Confirm the transferred quantities and save.",
+        whatToDoAR:
+          "في MIGO (ترحيل حركة البضائع)، اختر نوع الحركة 311 لتحويل المواد من موقع التخزين المركزي للمواد الخام إلى موقع تخزين WIP للإنتاج. استند إلى الحجز المُنشأ في الخطوة السابقة. أكِّد الكميات المحوَّلة واحفظ.",
+        whatSAPDoesEN:
+          "Posts MT 311 transfer. Reduces stock in the raw material storage location and increases stock in the WIP production storage location. Creates a material document and accounting entry (debit WIP location, credit RM location — both within the same plant, so no P&L impact).",
+        whatSAPDoesAR:
+          "يرحِّل تحويل نوع الحركة 311. يخفض المخزون في موقع تخزين المواد الخام ويزيده في موقع تخزين WIP للإنتاج. يُنشئ مستند مادة وقيد محاسبة (مدين موقع WIP، دائن موقع المواد الخام — كلاهما في نفس المصنع فلا تأثير على الأرباح والخسائر).",
+        expectedOutputEN:
+          "Materials transferred to WIP production storage. Production team can now issue materials to the order.",
+        expectedOutputAR:
+          "تم تحويل المواد إلى موقع تخزين WIP للإنتاج. يمكن لفريق الإنتاج الآن إصدار المواد على الأمر.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
@@ -1930,6 +2197,319 @@ export const processes: Process[] = [
           "تُغلق حالة TECO الأمر لمزيد من الترحيل. تُسوَّى التكاليف المخططة المتبقية. يظهر الأمر في سجل صيانة المعدة. تُنفَّذ تسوية التكاليف الفعلية على مركز التكلفة في نهاية الفترة.",
         expectedOutputEN: "Maintenance order technically complete. Equipment back in service. Full cost history recorded.",
         expectedOutputAR: "اكتمل أمر الصيانة فنياً. عادت المعدة للعمل. تم تسجيل السجل الكامل للتكاليف.",
+      },
+    ],
+  },
+
+  // ─── PM: Equipment Phase-In ────────────────────────────────────────────────
+  {
+    id: "pm-equipment-phase-in",
+    icon: "🆕",
+    duration: "30 min",
+    titleEN: "Equipment Phase-In",
+    titleAR: "إدراج المعدة (تشغيل المعدة الجديدة)",
+    descriptionEN:
+      "Onboard new fleet equipment or assets into SAP PM after procurement. Create the equipment master, assign class/characteristics, and set up measuring points/counters to enable preventive maintenance scheduling. Managed by the Fleet Central Workshop (FCW) Master Data Admin. ~50–100 per requirement.",
+    descriptionAR:
+      "إدراج معدات الأسطول أو الأصول الجديدة في SAP PM بعد الشراء. إنشاء سجل بيانات المعدة الرئيسية، وتعيين الفئة والخصائص، وإعداد نقاط القياس/العدادات لتمكين جدولة الصيانة الوقائية. يديرها مسؤول البيانات الرئيسية في ورشة الأسطول المركزية (FCW). 50–100 حسب المتطلبات.",
+    module: "PM",
+    roles: ["Master Data Admin"],
+    steps: [
+      {
+        id: "pm-equipment-phase-in-step-1",
+        stepNumber: 1,
+        titleEN: "Create Equipment Master",
+        titleAR: "إنشاء سجل البيانات الرئيسية للمعدة",
+        tCode: "IE01 / IE25 / IE31",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Create the equipment master for the new fleet object. Enter the equipment category, description, technical identification number, manufacturer data, and assign it to the maintenance planning plant 1310 (Fleet Central Workshop – FCW). Link to the FI asset number for seamless integration with Finance.",
+        whatToDoAR:
+          "أنشئ سجل البيانات الرئيسية للمعدة لمركبة الأسطول الجديدة. أدخل فئة المعدة والوصف ورقم التعريف الفني وبيانات الشركة المصنِّعة، وعيِّنها إلى مصنع تخطيط الصيانة 1310 (ورشة الأسطول المركزية – FCW). ارتبط برقم الأصل في FI لضمان التكامل السلس مع الإدارة المالية.",
+        whatSAPDoesEN:
+          "Creates the equipment master record. Equipment number assigned. Asset-equipment link established in FI-PM integration.",
+        whatSAPDoesAR:
+          "يُنشئ سجل البيانات الرئيسية للمعدة. تُعيَّن رقم المعدة. يُؤسَّس الربط بين الأصل والمعدة في تكامل FI-PM.",
+        expectedOutputEN: "Equipment master created with equipment number.",
+        expectedOutputAR: "تم إنشاء سجل البيانات الرئيسية للمعدة مع رقم المعدة.",
+      },
+      {
+        id: "pm-equipment-phase-in-step-2",
+        stepNumber: 2,
+        titleEN: "Maintain Class and Characteristics",
+        titleAR: "الاحتفاظ بالفئة والخصائص",
+        tCode: "CL02 / CT04 / IE02",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Assign the equipment to the relevant class and maintain its characteristics (e.g., engine type, fuel type, load capacity). This enables classification-based reporting and maintenance planning logic.",
+        whatToDoAR:
+          "عيِّن المعدة إلى الفئة المعنية واحتفظ بخصائصها (مثل نوع المحرك ونوع الوقود وسعة الحمولة). يُمكِّن ذلك إعداد التقارير القائمة على التصنيف ومنطق تخطيط الصيانة.",
+        whatSAPDoesEN:
+          "Links the equipment to a classification class and stores characteristic values for use in maintenance plans and reporting.",
+        whatSAPDoesAR:
+          "يربط المعدة بفئة تصنيفية ويحفظ قيم الخصائص للاستخدام في خطط الصيانة وإعداد التقارير.",
+        expectedOutputEN: "Equipment classified with relevant characteristics maintained.",
+        expectedOutputAR: "تم تصنيف المعدة مع الاحتفاظ بالخصائص المعنية.",
+      },
+      {
+        id: "pm-equipment-phase-in-step-3",
+        stepNumber: 3,
+        titleEN: "Maintain Measuring Points and Counters",
+        titleAR: "الاحتفاظ بنقاط القياس والعدادات",
+        tCode: "IK01 / IE02",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Create measuring points and counters for the equipment. Key counters for fleet objects: FUEL (liters consumed), DISTANCE (km traveled). These enable the IFCU transaction for fuel recording and support counter-based preventive maintenance scheduling.",
+        whatToDoAR:
+          "أنشئ نقاط قياس وعدادات للمعدة. العدادات الرئيسية لمركبات الأسطول: FUEL (اللترات المستهلَكة)، DISTANCE (الكيلومترات المقطوعة). يُمكِّن ذلك معاملة IFCU لتسجيل الوقود ويدعم جدولة الصيانة الوقائية القائمة على العدادات.",
+        whatSAPDoesEN:
+          "Creates measuring points (category M) with counter flag enabled. Assigns class characteristics Y_FUEL_CONSUMPTION (L) and Y_DISTANCE_KM (KM) to the equipment for IFCU and maintenance plan use.",
+        whatSAPDoesAR:
+          "يُنشئ نقاط القياس (الفئة M) مع تفعيل علامة العداد. يُسنِد خصائص الفئة Y_FUEL_CONSUMPTION (لتر) وY_DISTANCE_KM (كم) إلى المعدة لاستخدام IFCU وخطط الصيانة.",
+        expectedOutputEN: "Fuel and distance counters created on equipment. Ready for IFCU fuel recording.",
+        expectedOutputAR: "تم إنشاء عدادات الوقود والمسافة على المعدة. جاهزة لتسجيل الوقود عبر IFCU.",
+      },
+      {
+        id: "pm-equipment-phase-in-step-4",
+        stepNumber: 4,
+        titleEN: "Update Equipment Master (Final Data)",
+        titleAR: "تحديث سجل البيانات الرئيسية للمعدة (البيانات النهائية)",
+        tCode: "IE02",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Update the equipment master with any additional data: maintenance planner group (100 – FCW Planner Group), location (Z1 – Watania1), responsible cost center, and serial number. Verify all required fields are complete before activating the equipment.",
+        whatToDoAR:
+          "حدِّث سجل البيانات الرئيسية للمعدة بأي بيانات إضافية: مجموعة مخطط الصيانة (100 – مجموعة مخططي FCW)، والموقع (Z1 – واتانيا 1)، ومركز التكلفة المسؤول، والرقم التسلسلي. تحقَّق من اكتمال جميع الحقول المطلوبة قبل تفعيل المعدة.",
+        whatSAPDoesEN:
+          "Updates the equipment master with planner group, location, cost center, and serial data. Equipment is now fully configured for maintenance execution.",
+        whatSAPDoesAR:
+          "يُحدِّث سجل البيانات الرئيسية للمعدة بمجموعة المخطط والموقع ومركز التكلفة والبيانات التسلسلية. المعدة الآن مُهيَّأة بالكامل لتنفيذ الصيانة.",
+        expectedOutputEN: "Equipment master fully updated. Equipment active in SAP PM.",
+        expectedOutputAR: "تم تحديث سجل البيانات الرئيسية للمعدة بالكامل. المعدة نشطة في SAP PM.",
+      },
+      {
+        id: "pm-equipment-phase-in-step-5",
+        stepNumber: 5,
+        titleEN: "Verify Equipment in List",
+        titleAR: "التحقق من المعدة في القائمة",
+        tCode: "IE06 / IH08",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Run the equipment list (IE06 or IH08) to verify the new equipment appears correctly with all attributes. Confirm it is linked to the correct functional location and maintenance plant. This serves as the final quality check before the equipment goes live.",
+        whatToDoAR:
+          "شغِّل قائمة المعدات (IE06 أو IH08) للتحقق من ظهور المعدة الجديدة بشكل صحيح مع جميع صفاتها. تأكَّد من ارتباطها بالموقع الوظيفي الصحيح ومصنع الصيانة. يُمثِّل ذلك فحص الجودة النهائي قبل بدء تشغيل المعدة.",
+        whatSAPDoesEN:
+          "Displays the full equipment list with filter options. Confirms the new equipment record is active and correctly configured in the system.",
+        whatSAPDoesAR:
+          "يعرض قائمة المعدات الكاملة مع خيارات التصفية. يؤكد أن سجل المعدة الجديد نشط ومُهيَّأ بشكل صحيح في النظام.",
+        expectedOutputEN: "Equipment verified in list. Phase-in complete.",
+        expectedOutputAR: "تم التحقق من المعدة في القائمة. اكتمل إدراج المعدة.",
+      },
+    ],
+  },
+
+  // ─── PM: Equipment Phase-Out ───────────────────────────────────────────────
+  {
+    id: "pm-equipment-phase-out",
+    icon: "🗑️",
+    duration: "30 min",
+    titleEN: "Equipment Phase-Out",
+    titleAR: "سحب المعدة من الخدمة (إيقاف التشغيل)",
+    descriptionEN:
+      "Decommission fleet equipment or assets that are no longer economically or technically viable. Close all open orders and notifications, set the deletion flag, and coordinate with Finance for asset retirement. Fleet Central Workshop (FCW). ~5–6 per requirement.",
+    descriptionAR:
+      "إيقاف تشغيل معدات الأسطول أو الأصول التي لم تعد مجدية اقتصاديًّا أو تقنيًّا. إغلاق جميع أوامر الإشعارات المفتوحة، ووضع علامة الحذف، والتنسيق مع الإدارة المالية لإيقاف الأصل. ورشة الأسطول المركزية (FCW). 5–6 حسب المتطلبات.",
+    module: "PM",
+    roles: ["Maintenance Planner", "Master Data Admin"],
+    steps: [
+      {
+        id: "pm-equipment-phase-out-step-1",
+        stepNumber: 1,
+        titleEN: "Deactivate Equipment",
+        titleAR: "إلغاء تنشيط المعدة",
+        tCode: "IE02",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Open the equipment master in IE02 and set it to an inactive status. This prevents new maintenance notifications or orders from being created for this equipment while the phase-out process is completed.",
+        whatToDoAR:
+          "افتح سجل البيانات الرئيسية للمعدة في IE02 واضبطه على حالة غير نشطة. يمنع ذلك إنشاء إشعارات أو أوامر صيانة جديدة لهذه المعدة أثناء اكتمال عملية سحبها من الخدمة.",
+        whatSAPDoesEN:
+          "Updates equipment system status to inactive. New maintenance documents cannot be created against this equipment.",
+        whatSAPDoesAR:
+          "يُحدِّث حالة النظام للمعدة إلى غير نشطة. لا يمكن إنشاء مستندات صيانة جديدة لهذه المعدة.",
+        expectedOutputEN: "Equipment deactivated. No new orders or notifications can be created.",
+        expectedOutputAR: "تم إلغاء تنشيط المعدة. لا يمكن إنشاء أوامر أو إشعارات جديدة.",
+      },
+      {
+        id: "pm-equipment-phase-out-step-2",
+        stepNumber: 2,
+        titleEN: "Review All Open Orders and Notifications",
+        titleAR: "مراجعة جميع الأوامر والإشعارات المفتوحة",
+        tCode: "IW33 / IW39",
+        role: "Maintenance Planner",
+        whatToDoEN:
+          "Display all open maintenance orders (IW39) and notifications (IW29) for the equipment. Identify which can be closed as-is and which require completion before closing. All completed orders must be settled within the same financial year.",
+        whatToDoAR:
+          "اعرض جميع أوامر الصيانة المفتوحة (IW39) والإشعارات (IW29) للمعدة. حدِّد ما يمكن إغلاقه كما هو وما يتطلب الإكمال قبل الإغلاق. يجب تسوية جميع الأوامر المكتملة في نفس السنة المالية.",
+        whatSAPDoesEN:
+          "Displays lists of open orders and notifications for the equipment. Allows the planner to review status and take action.",
+        whatSAPDoesAR:
+          "يعرض قوائم الأوامر والإشعارات المفتوحة للمعدة. يسمح للمخطط بمراجعة الحالة واتخاذ الإجراءات.",
+        expectedOutputEN: "List of open items reviewed. Plan for closure established.",
+        expectedOutputAR: "تمت مراجعة قائمة البنود المفتوحة. تم وضع خطة الإغلاق.",
+      },
+      {
+        id: "pm-equipment-phase-out-step-3",
+        stepNumber: 3,
+        titleEN: "Close All Open Orders and Notifications",
+        titleAR: "إغلاق جميع الأوامر والإشعارات المفتوحة",
+        tCode: "IW32 / IW38",
+        role: "Maintenance Planner",
+        whatToDoEN:
+          "Technically complete (TECO) all open maintenance orders via IW32. Close notifications via IW38. Verify depreciation is checked in Finance. Ensure no open reservations, purchase requisitions, or goods movements remain against the equipment orders.",
+        whatToDoAR:
+          "أنجز فنيًّا (TECO) جميع أوامر الصيانة المفتوحة عبر IW32. أغلق الإشعارات عبر IW38. تحقَّق من مراجعة الإهلاك في الإدارة المالية. تأكَّد من عدم وجود حجوزات مفتوحة أو طلبات شراء أو حركات بضائع معلَّقة على أوامر المعدة.",
+        whatSAPDoesEN:
+          "Sets TECO status on all orders. Closes notifications. Remaining costs are settled to cost centers at period end.",
+        whatSAPDoesAR:
+          "يضبط حالة TECO على جميع الأوامر. يغلق الإشعارات. تُسوَّى التكاليف المتبقية على مراكز التكلفة في نهاية الفترة.",
+        expectedOutputEN: "All open orders technically completed. All notifications closed.",
+        expectedOutputAR: "تم الإنجاز الفني لجميع الأوامر المفتوحة. تم إغلاق جميع الإشعارات.",
+      },
+      {
+        id: "pm-equipment-phase-out-step-4",
+        stepNumber: 4,
+        titleEN: "Set Deletion Flag for Equipment",
+        titleAR: "وضع علامة الحذف للمعدة",
+        tCode: "IE02",
+        role: "Master Data Admin",
+        whatToDoEN:
+          "Open the equipment master in IE02 and set the deletion flag. Also flag the Equipment BOM, task list, and related master data for deletion. Coordinate with Finance to retire the linked FI asset. The equipment will no longer appear in active lists and no new documents can be created.",
+        whatToDoAR:
+          "افتح سجل البيانات الرئيسية للمعدة في IE02 وضع علامة الحذف. ضع أيضًا علامة الحذف على قائمة مكونات المعدة وقائمة المهام وبيانات الرئيسية المرتبطة. نسِّق مع الإدارة المالية لإيقاف الأصل المرتبط في FI. لن تظهر المعدة في القوائم النشطة ولن يمكن إنشاء مستندات جديدة.",
+        whatSAPDoesEN:
+          "Sets the deletion flag on the equipment master. Equipment excluded from active reporting. Asset retirement posting in FI removes it from the asset register.",
+        whatSAPDoesAR:
+          "يضع علامة الحذف على سجل البيانات الرئيسية للمعدة. يُستثنى من التقارير النشطة. يُزيله ترحيل إيقاف الأصل في FI من سجل الأصول.",
+        expectedOutputEN: "Equipment flagged for deletion. Phase-out complete. Asset retired in Finance.",
+        expectedOutputAR: "تم وضع علامة الحذف على المعدة. اكتمل سحبها من الخدمة. تم إيقاف الأصل في الإدارة المالية.",
+      },
+    ],
+  },
+
+  // ─── PM: Vehicle Fuel Consumption ─────────────────────────────────────────
+  {
+    id: "pm-vehicle-fuel-consumption",
+    icon: "⛽",
+    duration: "5 min",
+    titleEN: "Vehicle Fuel Consumption Recording",
+    titleAR: "تسجيل استهلاك وقود المركبات",
+    descriptionEN:
+      "Record vehicle fuel consumption and travel distance at AWP gas stations using the IFCU Fiori app. Each refueling creates a goods issue from the gas station storage location and an FI cost document posted to the vehicle's cost center. ~200–250 transactions/day across Watania1/2/3 gas stations.",
+    descriptionAR:
+      "تسجيل استهلاك وقود المركبات ومسافات السفر في محطات بنزين الوطنية باستخدام تطبيق Fiori IFCU. يُنشئ كل تزويد بالوقود إصدار بضاعة من موقع تخزين المحطة ومستند تكلفة في FI مُرحَّل على مركز تكلفة المركبة. نحو 200–250 معاملة يوميًّا في محطات واتانيا 1/2/3.",
+    module: "PM",
+    roles: ["Fuel Station Store Keeper"],
+    steps: [
+      {
+        id: "pm-vehicle-fuel-step-1",
+        stepNumber: 1,
+        titleEN: "Open IFCU – Enter Usage for Vehicle",
+        titleAR: "فتح IFCU – إدخال الاستخدام للمركبة",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Open the IFCU Fiori app (tile: 'Consumption-Relevant Measurement Document Recording / Enter Usage for Vehicle') or use T-code IFCU in SAP GUI. This is the single transaction for recording all fuel consumption data.",
+        whatToDoAR:
+          "افتح تطبيق Fiori IFCU (القطعة: 'تسجيل مستند القياس المتعلق بالاستهلاك / إدخال الاستخدام للمركبة') أو استخدم كود المعاملة IFCU في واجهة SAP GUI. هذه هي المعاملة الوحيدة لتسجيل جميع بيانات استهلاك الوقود.",
+        whatSAPDoesEN: "Opens the fuel consumption recording screen. Ready for vehicle and fuel data entry.",
+        whatSAPDoesAR: "يفتح شاشة تسجيل استهلاك الوقود. جاهز لإدخال بيانات المركبة والوقود.",
+        expectedOutputEN: "IFCU recording screen open.",
+        expectedOutputAR: "شاشة تسجيل IFCU مفتوحة.",
+      },
+      {
+        id: "pm-vehicle-fuel-step-2",
+        stepNumber: 2,
+        titleEN: "Enter Equipment (Fleet Object) Number",
+        titleAR: "إدخال رقم المعدة (مركبة الأسطول)",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Search for the vehicle's equipment number using the technical identification number (license plate or fleet ID). Select the correct fleet equipment to link the fuel record to the vehicle's cost center and measuring points.",
+        whatToDoAR:
+          "ابحث عن رقم معدة المركبة باستخدام رقم التعريف الفني (رقم اللوحة أو معرِّف الأسطول). اختر معدة الأسطول الصحيحة لربط سجل الوقود بمركز تكلفة المركبة ونقاط القياس.",
+        whatSAPDoesEN: "Identifies the fleet equipment object and loads its measuring points (FUEL counter, DISTANCE counter) for data entry.",
+        whatSAPDoesAR: "يُحدِّد كائن معدة الأسطول ويُحمِّل نقاط قياسه (عداد الوقود، عداد المسافة) لإدخال البيانات.",
+        expectedOutputEN: "Fleet equipment identified. Measuring points loaded.",
+        expectedOutputAR: "تم تحديد معدة الأسطول. تم تحميل نقاط القياس.",
+      },
+      {
+        id: "pm-vehicle-fuel-step-3",
+        stepNumber: 3,
+        titleEN: "Select Gas Station",
+        titleAR: "اختيار محطة البنزين",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Select the gas station from which fuel is being issued. AWP gas stations: W011 (Fuel S. Wat1 / plant 1010 / SLoc Q011), W012 (Fuel S. Wat2 / SLoc Q012), W013 (Fuel S. Wat3 / SLoc Q013). This determines which storage location's stock is reduced.",
+        whatToDoAR:
+          "اختر محطة البنزين التي يُصدَر منها الوقود. محطات بنزين الوطنية: W011 (واتانيا1 / مصنع 1010 / موقع Q011)، W012 (واتانيا2 / موقع Q012)، W013 (واتانيا3 / موقع Q013). يُحدِّد ذلك موقع التخزين الذي يُخفَّض مخزونه.",
+        whatSAPDoesEN: "Links the fuel transaction to the selected gas station storage location (Q011/Q012/Q013).",
+        whatSAPDoesAR: "يربط معاملة الوقود بموقع تخزين محطة البنزين المختارة (Q011/Q012/Q013).",
+        expectedOutputEN: "Gas station selected. Storage location determined.",
+        expectedOutputAR: "تم اختيار محطة البنزين. تم تحديد موقع التخزين.",
+      },
+      {
+        id: "pm-vehicle-fuel-step-4",
+        stepNumber: 4,
+        titleEN: "Select Fluid Type and Record Consumed Fuel Quantity",
+        titleAR: "اختيار نوع السائل وتسجيل كمية الوقود المستهلَكة",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Select the fuel type (Fluid Type field) and enter the quantity dispensed in liters (UOM: L). The quantity entered will be issued from the gas station stock as a goods issue (MT 201 – GI for cost center).",
+        whatToDoAR:
+          "اختر نوع الوقود (حقل نوع السائل) وأدخل الكمية الموزَّعة باللترات (وحدة القياس: L). ستُصدَر الكمية المدخلة من مخزون محطة البنزين كإصدار بضاعة (نوع الحركة 201 – إصدار بضاعة لمركز التكلفة).",
+        whatSAPDoesEN: "Prepares a goods issue of the entered fuel quantity (L) from the gas station storage location against the vehicle's cost center.",
+        whatSAPDoesAR: "يُعِدُّ إصدار بضاعة للكمية المدخلة من الوقود (لتر) من موقع تخزين محطة البنزين مقابل مركز تكلفة المركبة.",
+        expectedOutputEN: "Fuel type and quantity entered.",
+        expectedOutputAR: "تم إدخال نوع الوقود والكمية.",
+      },
+      {
+        id: "pm-vehicle-fuel-step-5",
+        stepNumber: 5,
+        titleEN: "Record Distance Counter Reading",
+        titleAR: "تسجيل قراءة عداد المسافة",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Enter the current odometer/mileage reading (in KM) into the DISTANCE measuring point counter field. This records the vehicle's accumulated travel distance in SAP and is required before saving.",
+        whatToDoAR:
+          "أدخل قراءة العداد/عداد المسافة الحالية (بالكيلومترات) في حقل عداد نقطة قياس المسافة. يسجِّل ذلك المسافة المتراكمة للمركبة في SAP وهو مطلوب قبل الحفظ.",
+        whatSAPDoesEN: "Records the current distance counter reading (KM) as a measurement document on the vehicle's DISTANCE measuring point.",
+        whatSAPDoesAR: "يسجِّل قراءة عداد المسافة الحالية (كم) كمستند قياس على نقطة قياس DISTANCE للمركبة.",
+        expectedOutputEN: "Distance counter reading entered.",
+        expectedOutputAR: "تم إدخال قراءة عداد المسافة.",
+      },
+      {
+        id: "pm-vehicle-fuel-step-6",
+        stepNumber: 6,
+        titleEN: "Confirm and Save – Post Fuel Consumption",
+        titleAR: "التأكيد والحفظ – ترحيل استهلاك الوقود",
+        tCode: "IFCU",
+        role: "Fuel Station Store Keeper",
+        whatToDoEN:
+          "Verify that BOTH measuring points (FUEL quantity and DISTANCE reading) have been recorded. Then save. Both entries are mandatory before saving — the system will not post if either is missing.",
+        whatToDoAR:
+          "تحقَّق من تسجيل نقطتَي القياس كلتيهما (كمية الوقود وقراءة المسافة). ثم احفظ. كلا الإدخالَين إلزامي قبل الحفظ — لن يرحِّل النظام إذا كان أيٌّ منهما مفقودًا.",
+        whatSAPDoesEN:
+          "Posts MT 201 (GI for cost center) from gas station storage location. Creates a material document reducing fuel stock. Creates an FI document posting the fuel cost to the vehicle's cost center. Creates a measurement document updating the DISTANCE counter on the equipment.",
+        whatSAPDoesAR:
+          "يرحِّل نوع الحركة 201 (إصدار بضاعة لمركز التكلفة) من موقع تخزين محطة البنزين. يُنشئ مستند مادة يخفض مخزون الوقود. يُنشئ مستند FI يرحِّل تكلفة الوقود على مركز تكلفة المركبة. يُنشئ مستند قياس يُحدِّث عداد DISTANCE على المعدة.",
+        expectedOutputEN:
+          "Fuel consumption posted. Material document, FI cost document, and distance measurement document all created.",
+        expectedOutputAR:
+          "تم ترحيل استهلاك الوقود. تم إنشاء مستند المادة ومستند تكلفة FI ومستند قياس المسافة.",
       },
     ],
   },
