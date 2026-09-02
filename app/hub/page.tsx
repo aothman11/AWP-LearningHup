@@ -152,7 +152,7 @@ export default function HubPage() {
   }
 
   function toggleCompleted(entryId: string) {
-    setProgress((prev) => {
+    setProgress((prev: ProgressState) => {
       const next = {
         ...prev,
         visited: { ...prev.visited, [entryId]: true },

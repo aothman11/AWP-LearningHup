@@ -26,6 +26,34 @@ export interface ProcessStep {
   noNextStep?: number;    // step number to jump to on "No"
 }
 
+/** All SAP modules represented in the Processes tab */
+export type ProcessModule =
+  | "PP"
+  | "QM"
+  | "MM"
+  | "PM"
+  | "HCM"
+  | "FICO"
+  | "TM"
+  | "EHS";
+
+/** Human-readable label for each module, used as accordion group heading */
+export const MODULE_LABELS: Record<ProcessModule, string> = {
+  PP:   "Production Planning",
+  QM:   "Quality Management",
+  MM:   "Materials Management",
+  PM:   "Plant Maintenance",
+  HCM:  "Human Capital Management",
+  FICO: "Finance & Controlling",
+  TM:   "Transportation Management",
+  EHS:  "Environment, Health & Safety",
+};
+
+/** Display order for module groups in the Processes tab */
+export const MODULE_ORDER: ProcessModule[] = [
+  "PP", "QM", "MM", "PM", "HCM", "FICO", "TM", "EHS",
+];
+
 export interface Process {
   id: string;
   icon: string;
@@ -34,7 +62,7 @@ export interface Process {
   titleAR: string;
   descriptionEN: string;
   descriptionAR: string;
-  module: "PP" | "QM";
+  module: ProcessModule;
   roles: string[];
   steps: ProcessStep[];
   /** Paths relative to /public — shown in the chart lightbox */
@@ -240,7 +268,7 @@ export const processes: Process[] = [
       "Post goods movements against production orders and purchase orders using MIGO.",
     descriptionAR:
       "ترحيل حركات البضائع مقابل أوامر الإنتاج وأوامر الشراء باستخدام MIGO.",
-    module: "PP",
+    module: "MM",
     roles: ["Warehouse", "PP Planner"],
     chartImages: ["/process-charts/processing-workflow.png"],
     steps: [
@@ -477,7 +505,7 @@ export const processes: Process[] = [
       "Maintain quota arrangements for broiler farm placements feeding SAP planning.",
     descriptionAR:
       "صيانة ترتيبات الحصص لإيداعات مزارع الدجاج اللاحم لتغذية تخطيط SAP.",
-    module: "PP",
+    module: "MM",
     roles: ["PP Planner", "Farm Coordinator"],
     chartImages: ["/process-charts/gp-to-processing.png"],
     steps: [
