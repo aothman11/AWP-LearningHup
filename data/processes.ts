@@ -34,6 +34,7 @@ export type ProcessModule =
   | "QM"
   | "MM"
   | "PM"
+  | "SD"
   | "HCM"
   | "FICO"
   | "TM"
@@ -45,6 +46,7 @@ export const MODULE_LABELS: Record<ProcessModule, string> = {
   QM:   "Quality Management",
   MM:   "Materials Management",
   PM:   "Plant Maintenance",
+  SD:   "Sales & Distribution",
   HCM:  "Human Capital Management",
   FICO: "Finance & Controlling",
   TM:   "Transportation Management",
@@ -53,7 +55,7 @@ export const MODULE_LABELS: Record<ProcessModule, string> = {
 
 /** Display order for module groups in the Processes tab */
 export const MODULE_ORDER: ProcessModule[] = [
-  "PP", "QM", "MM", "PM", "HCM", "FICO", "TM", "EHS",
+  "PP", "QM", "MM", "PM", "SD", "HCM", "FICO", "TM", "EHS",
 ];
 
 export interface Process {
@@ -1677,6 +1679,483 @@ export const processes: Process[] = [
           "PR document number displayed. PR submitted for approval. DOC procurement process initiated for Commercial Layer plant 1260.",
         expectedOutputAR:
           "رقم مستند طلب الشراء معروض. طلب الشراء مقدَّم للموافقة. بدأت عملية شراء الكتاكيت لمصنع الدجاج البياض التجاري 1260.",
+      },
+    ],
+  },
+
+  // ─── SD: Sell from Stock ──────────────────────────────────────────────────
+  {
+    id: "sd-sell-from-stock",
+    icon: "🛒",
+    duration: "45 min",
+    titleEN: "Sell from Stock (Standard Sales Order)",
+    titleAR: "البيع من المخزون (أمر مبيعات قياسي)",
+    descriptionEN:
+      "End-to-end standard sales order process: create order in VA01, trigger outbound delivery via VL10C, post goods issue in VL06G, and generate customer invoice in VF04. Covers ~700 daily orders across 19 Saudi branches for Sales Orgs 1000 (Poultry), 3000 (GP), and 4000 (Agriculture).",
+    descriptionAR:
+      "عملية أمر المبيعات القياسية من البداية إلى النهاية: إنشاء الأمر في VA01، تشغيل التسليم الصادر عبر VL10C، ترحيل إصدار البضائع في VL06G، وإنشاء فاتورة العميل في VF04. تغطي حوالي 700 أمر يومي عبر 19 فرعاً في المملكة العربية السعودية.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Shipping Specialist",
+      "Billing Clerk",
+      "Driver",
+      "A/R Accountant",
+    ],
+    steps: [
+      {
+        id: "sd-sfs-1",
+        stepNumber: 1,
+        titleEN: "Receive Customer Order",
+        titleAR: "استلام طلب العميل",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Receive customer order via email, fax, or phone call. Confirm product availability and pricing before proceeding.",
+        whatToDoAR:
+          "استلام طلب العميل عبر البريد الإلكتروني أو الفاكس أو الهاتف. تأكيد توافر المنتج والتسعير قبل المتابعة.",
+        whatSAPDoesEN: "No SAP action at this step — order is received externally.",
+        whatSAPDoesAR: "لا يوجد إجراء في SAP في هذه الخطوة — يُستلم الطلب خارجياً.",
+        expectedOutputEN: "Confirmed customer order details ready for entry.",
+        expectedOutputAR: "تفاصيل طلب العميل المؤكدة جاهزة للإدخال.",
+      },
+      {
+        id: "sd-sfs-2",
+        stepNumber: 2,
+        titleEN: "Create Sales Order (VA01)",
+        titleAR: "إنشاء أمر المبيعات (VA01)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Open VA01. Enter order type YOR, Sales Organization (1000/3000/4000), Distribution Channel (10/20/30), and Division. Enter sold-to party, ship-to party, purchase order number, and requested delivery date. Add line items with material numbers and quantities. Save the order.",
+        whatToDoAR:
+          "افتح VA01. أدخل نوع الأمر YOR ومؤسسة المبيعات (1000/3000/4000) وقناة التوزيع (10/20/30) والقسم. أدخل الطرف البائع والطرف المستلم ورقم أمر الشراء وتاريخ التسليم المطلوب. أضف بنود البضائع بأرقام المواد والكميات. احفظ الأمر.",
+        whatSAPDoesEN:
+          "Creates a confirmed sales order with document type YOR and delivery type YLF. Checks available stock via ATP and assigns a sales order number.",
+        whatSAPDoesAR:
+          "ينشئ أمر مبيعات مؤكداً بنوع المستند YOR ونوع التسليم YLF. يتحقق من المخزون المتاح عبر ATP ويعيّن رقم أمر المبيعات.",
+        expectedOutputEN: "Sales order number generated and confirmed.",
+        expectedOutputAR: "تم إنشاء رقم أمر المبيعات وتأكيده.",
+      },
+      {
+        id: "sd-sfs-3",
+        stepNumber: 3,
+        titleEN: "Trigger Outbound Delivery (VL10C)",
+        titleAR: "تشغيل التسليم الصادر (VL10C)",
+        tCode: "VL10C",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Open VL10C. Filter by shipping point and delivery date. Select the relevant sales orders and click 'Background' to create outbound deliveries in batch. Confirm delivery documents are created.",
+        whatToDoAR:
+          "افتح VL10C. قم بالتصفية حسب نقطة الشحن وتاريخ التسليم. حدد أوامر المبيعات ذات الصلة وانقر 'خلفية' لإنشاء تسليمات صادرة دفعية. تأكد من إنشاء مستندات التسليم.",
+        whatSAPDoesEN:
+          "Creates outbound delivery documents (delivery type YLF) linked to the sales orders, scheduling picking and goods issue activities.",
+        whatSAPDoesAR:
+          "ينشئ مستندات التسليم الصادرة (نوع التسليم YLF) المرتبطة بأوامر المبيعات، ويجدول أنشطة الانتقاء وإصدار البضائع.",
+        expectedOutputEN: "Outbound delivery document(s) created.",
+        expectedOutputAR: "تم إنشاء مستند(ات) التسليم الصادرة.",
+      },
+      {
+        id: "sd-sfs-4",
+        stepNumber: 4,
+        titleEN: "Pick Goods and Update Delivery",
+        titleAR: "انتقاء البضائع وتحديث التسليم",
+        tCode: "VL02N",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Open VL02N with the delivery number. Navigate to the picking tab and enter the actual picked quantity for each line item. Confirm the picked quantity matches the ordered quantity. Save the delivery.",
+        whatToDoAR:
+          "افتح VL02N برقم التسليم. انتقل إلى تبويب الانتقاء وأدخل الكمية المنتقاة الفعلية لكل بند. تأكد من تطابق الكمية المنتقاة مع الكمية المطلوبة. احفظ التسليم.",
+        whatSAPDoesEN:
+          "Updates the delivery with the confirmed picked quantities, making the delivery ready for goods issue posting.",
+        whatSAPDoesAR:
+          "يحدث التسليم بالكميات المنتقاة المؤكدة، مما يجعل التسليم جاهزاً لترحيل إصدار البضائع.",
+        expectedOutputEN: "Delivery updated with picked quantities — ready for goods issue.",
+        expectedOutputAR: "تم تحديث التسليم بالكميات المنتقاة — جاهز لإصدار البضائع.",
+      },
+      {
+        id: "sd-sfs-5",
+        stepNumber: 5,
+        titleEN: "Post Goods Issue (VL06G)",
+        titleAR: "ترحيل إصدار البضائع (VL06G)",
+        tCode: "VL06G",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Open VL06G. Select deliveries ready for goods issue and execute the posting. Confirm goods issue is posted for all selected deliveries.",
+        whatToDoAR:
+          "افتح VL06G. حدد التسليمات الجاهزة لإصدار البضائع ونفّذ الترحيل. تأكد من ترحيل إصدار البضائع لجميع التسليمات المحددة.",
+        whatSAPDoesEN:
+          "Posts the goods issue, reducing inventory and creating a financial accounting document (debit COGS, credit inventory). The delivery date becomes the goods issue date.",
+        whatSAPDoesAR:
+          "يرحّل إصدار البضائع، ويخفض المخزون، وينشئ مستند محاسبة مالية (مدين تكلفة البضائع المباعة، دائن المخزون). يصبح تاريخ التسليم تاريخ إصدار البضائع.",
+        expectedOutputEN: "Goods issue posted — inventory reduced and accounting document created.",
+        expectedOutputAR: "تم ترحيل إصدار البضائع — خُفِّض المخزون وأُنشئ مستند المحاسبة.",
+      },
+      {
+        id: "sd-sfs-6",
+        stepNumber: 6,
+        titleEN: "Create Customer Invoice (VF04)",
+        titleAR: "إنشاء فاتورة العميل (VF04)",
+        tCode: "VF04",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Open VF04. Select deliveries due for billing and click 'Execute'. Review the billing due list and select items to invoice. Run billing to create invoices (billing type YF2). Print 4 copies of the invoice for customer signature.",
+        whatToDoAR:
+          "افتح VF04. حدد التسليمات المستحقة للفوترة وانقر 'تنفيذ'. راجع قائمة الفوترة المستحقة وحدد البنود للفواتير. شغّل الفوترة لإنشاء الفواتير (نوع الفوترة YF2). اطبع 4 نسخ من الفاتورة لتوقيع العميل.",
+        whatSAPDoesEN:
+          "Creates customer invoice (billing document type YF2) with accounting entries (debit A/R, credit revenue). Transfers billing data to FI.",
+        whatSAPDoesAR:
+          "ينشئ فاتورة العميل (نوع مستند الفوترة YF2) بقيود المحاسبة (مدين حسابات القبض، دائن الإيراد). ينقل بيانات الفوترة إلى المالية.",
+        expectedOutputEN: "Customer invoice created and printed. 4 signed copies collected from customer.",
+        expectedOutputAR: "تم إنشاء فاتورة العميل وطباعتها. تم جمع 4 نسخ موقعة من العميل.",
+      },
+      {
+        id: "sd-sfs-7",
+        stepNumber: 7,
+        titleEN: "Deliver and Collect Payment",
+        titleAR: "التسليم وتحصيل الدفع",
+        role: "Driver / A/R Accountant",
+        whatToDoEN:
+          "Driver delivers goods to customer with the 4 invoice copies. Customer signs all copies; driver retains one copy as proof of delivery. A/R Accountant posts the incoming payment in SAP against the open invoice.",
+        whatToDoAR:
+          "يسلّم السائق البضائع إلى العميل مع 4 نسخ من الفاتورة. يوقّع العميل على جميع النسخ؛ يحتفظ السائق بنسخة واحدة كإثبات تسليم. يرحّل محاسب الحسابات المستحقة الدفعة الواردة في SAP مقابل الفاتورة المفتوحة.",
+        whatSAPDoesEN:
+          "Incoming payment clears the open A/R item, completing the order-to-cash cycle.",
+        whatSAPDoesAR:
+          "تصفّي الدفعة الواردة البند المفتوح في حسابات القبض، مما يكمل دورة الطلب إلى النقد.",
+        expectedOutputEN: "Goods delivered, invoice signed, payment collected and posted in SAP.",
+        expectedOutputAR: "تم تسليم البضائع وتوقيع الفاتورة وتحصيل الدفعة وترحيلها في SAP.",
+      },
+    ],
+  },
+
+  // ─── SD: Van Sales (Loading & Unloading) ──────────────────────────────────
+  {
+    id: "sd-van-sales",
+    icon: "🚐",
+    duration: "60 min",
+    titleEN: "Van Sales — Loading, Unloading & Inventory Count",
+    titleAR: "مبيعات الفان — التحميل والتفريغ وجرد المخزون",
+    descriptionEN:
+      "Van sales process covering van loading (YVLO), route sales using Spirit Smart Sales app, van unloading of unsold stock (YVUL), and periodic inventory reconciliation (YRPC) with billing of any shortfall.",
+    descriptionAR:
+      "عملية مبيعات الفان تشمل تحميل الفان (YVLO)، والمبيعات على الطريق باستخدام تطبيق Spirit Smart Sales، وتفريغ الفان من المخزون غير المباع (YVUL)، ومصالحة المخزون الدورية (YRPC) مع فوترة أي عجز.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Van Salesman",
+      "Shipping Specialist",
+      "Billing Clerk",
+    ],
+    steps: [
+      {
+        id: "sd-van-1",
+        stepNumber: 1,
+        titleEN: "Create Van Loading Order (VA01 / YVLO)",
+        titleAR: "إنشاء أمر تحميل الفان (VA01 / YVLO)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Create a van loading order using order type YVLO in VA01. Enter the van salesman as the sold-to party, the van route, and the planned quantities to load. Save the loading order.",
+        whatToDoAR:
+          "أنشئ أمر تحميل فان باستخدام نوع الأمر YVLO في VA01. أدخل مندوب مبيعات الفان كطرف بائع ومسار الفان والكميات المخططة للتحميل. احفظ أمر التحميل.",
+        whatSAPDoesEN:
+          "Creates a van loading order that will move stock from the warehouse to the van's consignment stock.",
+        whatSAPDoesAR:
+          "ينشئ أمر تحميل فان يقوم بنقل المخزون من المستودع إلى مخزون أمانة الفان.",
+        expectedOutputEN: "Van loading order created.",
+        expectedOutputAR: "تم إنشاء أمر تحميل الفان.",
+      },
+      {
+        id: "sd-van-2",
+        stepNumber: 2,
+        titleEN: "Create Delivery and Post Goods Issue (VL10C → VL06G)",
+        titleAR: "إنشاء التسليم وترحيل إصدار البضائع (VL10C ← VL06G)",
+        tCode: "VL10C",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Run VL10C for the van loading order to create the outbound delivery. Then run VL06G to post goods issue, physically transferring stock to the van's consignment location.",
+        whatToDoAR:
+          "شغّل VL10C لأمر تحميل الفان لإنشاء التسليم الصادر. ثم شغّل VL06G لترحيل إصدار البضائع، مما يؤدي إلى نقل المخزون فعلياً إلى موقع أمانة الفان.",
+        whatSAPDoesEN:
+          "Creates delivery and posts goods issue from warehouse to van consignment stock. Inventory moves from plant storage to van consignment.",
+        whatSAPDoesAR:
+          "ينشئ التسليم ويرحّل إصدار البضائع من المستودع إلى مخزون أمانة الفان. ينتقل المخزون من تخزين المصنع إلى أمانة الفان.",
+        expectedOutputEN: "Stock transferred to van consignment. Van is loaded and ready for the route.",
+        expectedOutputAR: "تم نقل المخزون إلى أمانة الفان. الفان محمّل وجاهز للمسار.",
+      },
+      {
+        id: "sd-van-3",
+        stepNumber: 3,
+        titleEN: "Conduct Route Sales (Spirit Smart Sales App)",
+        titleAR: "إجراء مبيعات المسار (تطبيق Spirit Smart Sales)",
+        role: "Van Salesman",
+        whatToDoEN:
+          "Use the Spirit Smart Sales Android app to record sales at each customer stop. The app is integrated with SAP back-office and records customer orders, quantities sold, and cash or credit collections.",
+        whatToDoAR:
+          "استخدم تطبيق Spirit Smart Sales على Android لتسجيل المبيعات في كل نقطة توقف للعميل. التطبيق متكامل مع الخلفية في SAP ويسجّل طلبات العملاء والكميات المباعة وتحصيلات النقد أو الائتمان.",
+        whatSAPDoesEN:
+          "Spirit Smart Sales app syncs transactions to SAP back-office in real-time or at end-of-day batch.",
+        whatSAPDoesAR:
+          "يزامن تطبيق Spirit Smart Sales المعاملات مع الخلفية في SAP في الوقت الفعلي أو في دُفعة نهاية اليوم.",
+        expectedOutputEN: "Route sales completed and recorded. Cash and invoices collected from customers.",
+        expectedOutputAR: "اكتملت مبيعات المسار وتم تسجيلها. تم تحصيل النقد والفواتير من العملاء.",
+      },
+      {
+        id: "sd-van-4",
+        stepNumber: 4,
+        titleEN: "Create Van Unloading Order (VA01 / YVUL)",
+        titleAR: "إنشاء أمر تفريغ الفان (VA01 / YVUL)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "At end of day, create a van unloading order (YVUL) to return any unsold stock from the van back to the warehouse. Enter the van salesman as sold-to party and the unsold quantities.",
+        whatToDoAR:
+          "في نهاية اليوم، أنشئ أمر تفريغ فان (YVUL) لإعادة أي مخزون غير مباع من الفان إلى المستودع. أدخل مندوب مبيعات الفان كطرف بائع والكميات غير المباعة.",
+        whatSAPDoesEN:
+          "Creates a van unloading return order to move unsold stock back from consignment to warehouse.",
+        whatSAPDoesAR:
+          "ينشئ أمر إعادة تفريغ الفان لنقل المخزون غير المباع من الأمانة إلى المستودع.",
+        expectedOutputEN: "Van unloading order created.",
+        expectedOutputAR: "تم إنشاء أمر تفريغ الفان.",
+      },
+      {
+        id: "sd-van-5",
+        stepNumber: 5,
+        titleEN: "Process Unloading Delivery and Post GR (VL10C → VL06G)",
+        titleAR: "معالجة تسليم التفريغ وترحيل إيصال البضائع (VL10C ← VL06G)",
+        tCode: "VL10C",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Run VL10C for the YVUL order to create the return delivery. Then run VL06G to post goods receipt, returning stock from van consignment back to the warehouse.",
+        whatToDoAR:
+          "شغّل VL10C لأمر YVUL لإنشاء تسليم الإرجاع. ثم شغّل VL06G لترحيل إيصال البضائع، مما يُعيد المخزون من أمانة الفان إلى المستودع.",
+        whatSAPDoesEN:
+          "Returns unsold stock from van consignment back to warehouse inventory.",
+        whatSAPDoesAR:
+          "يُعيد المخزون غير المباع من أمانة الفان إلى مخزون المستودع.",
+        expectedOutputEN: "Unsold stock returned to warehouse. Van consignment stock is reconciled.",
+        expectedOutputAR: "تم إعادة المخزون غير المباع إلى المستودع. تمت مصالحة مخزون أمانة الفان.",
+      },
+      {
+        id: "sd-van-6",
+        stepNumber: 6,
+        titleEN: "Van Inventory Count & Shortfall Billing (YRPC → VF04)",
+        titleAR: "جرد مخزون الفان وفوترة العجز (YRPC ← VF04)",
+        tCode: "YRPC",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Run YRPC to reconcile van inventory. If a shortfall is found (loaded quantity minus returned quantity minus sales), run VL10C and VL06G to create a delivery for the shortfall, then VF04 to bill the van salesman for the missing quantity.",
+        whatToDoAR:
+          "شغّل YRPC لمصالحة مخزون الفان. إذا وُجد عجز (الكمية المحملة ناقص الكمية المُعادة ناقص المبيعات)، شغّل VL10C وVL06G لإنشاء تسليم للعجز، ثم VF04 لفوترة مندوب الفان عن الكمية المفقودة.",
+        whatSAPDoesEN:
+          "YRPC identifies inventory discrepancies. Billing in VF04 charges the van salesman for any unaccounted stock.",
+        whatSAPDoesAR:
+          "يحدد YRPC التناقضات في المخزون. تُحمّل الفوترة في VF04 مندوب الفان تكلفة أي مخزون غير محسوب.",
+        expectedOutputEN: "Van inventory reconciled. Any shortfall billed and recorded.",
+        expectedOutputAR: "تمت مصالحة مخزون الفان. تم تسجيل وفوترة أي عجز.",
+      },
+    ],
+  },
+
+  // ─── SD: Customer Returns ──────────────────────────────────────────────────
+  {
+    id: "sd-customer-returns",
+    icon: "↩️",
+    duration: "30 min",
+    titleEN: "Customer Returns Processing",
+    titleAR: "معالجة مرتجعات العملاء",
+    descriptionEN:
+      "Process for handling customer returns of goods — with reference to original invoice (YRE1), without reference (YRE2), and expired goods (YRE3). All returns require a mandatory order reason (Y01–Y06) and result in a credit memo to the customer.",
+    descriptionAR:
+      "عملية معالجة مرتجعات العملاء — مع الإشارة إلى الفاتورة الأصلية (YRE1)، بدون إشارة (YRE2)، والبضائع المنتهية الصلاحية (YRE3). تتطلب جميع المرتجعات سبب أمر إلزامياً (Y01–Y06) وتؤدي إلى إشعار دائن للعميل.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Shipping Specialist",
+      "Billing Clerk",
+      "A/R Accountant",
+    ],
+    steps: [
+      {
+        id: "sd-ret-1",
+        stepNumber: 1,
+        titleEN: "Identify Return Type and Reason",
+        titleAR: "تحديد نوع الإرجاع وسببه",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Determine which return type applies: YRE1 (return with reference to original billing document), YRE2 (return without reference), or YRE3 (expired goods — batch must be labelled 'EXPIRED'). Select the appropriate order reason: Y01 Customer complaint, Y02 Expired goods, Y03 Wrong product, Y04 Damaged goods, Y05 Customer cancelled order, Y06 Other.",
+        whatToDoAR:
+          "حدد نوع الإرجاع المناسب: YRE1 (إرجاع مع الإشارة إلى مستند الفوترة الأصلي)، YRE2 (إرجاع بدون إشارة)، YRE3 (بضائع منتهية الصلاحية — يجب وضع ملصق 'EXPIRED' على الدفعة). اختر سبب الأمر المناسب: Y01 شكوى عميل، Y02 بضائع منتهية الصلاحية، Y03 منتج خاطئ، Y04 بضائع تالفة، Y05 إلغاء العميل للطلب، Y06 أخرى.",
+        whatSAPDoesEN: "No SAP action — determination is done prior to system entry.",
+        whatSAPDoesAR: "لا يوجد إجراء SAP — يتم التحديد قبل الإدخال في النظام.",
+        expectedOutputEN: "Return type and order reason identified.",
+        expectedOutputAR: "تم تحديد نوع الإرجاع وسبب الأمر.",
+      },
+      {
+        id: "sd-ret-2",
+        stepNumber: 2,
+        titleEN: "Create Return Order (VA01 / YRE1, YRE2, or YRE3)",
+        titleAR: "إنشاء أمر الإرجاع (VA01 / YRE1 أو YRE2 أو YRE3)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Open VA01 and enter the appropriate order type (YRE1, YRE2, or YRE3). For YRE1, reference the original billing document number. Enter the customer, materials, quantities to return, and the mandatory order reason. Save the return order.",
+        whatToDoAR:
+          "افتح VA01 وأدخل نوع الأمر المناسب (YRE1 أو YRE2 أو YRE3). بالنسبة لـ YRE1، أشر إلى رقم مستند الفوترة الأصلي. أدخل العميل والمواد والكميات المُرجعة وسبب الأمر الإلزامي. احفظ أمر الإرجاع.",
+        whatSAPDoesEN:
+          "Creates a return sales order with a billing block. Delivery type YLR is assigned. For expired goods (YRE3), SAP creates a return batch tagged 'EXPIRED'.",
+        whatSAPDoesAR:
+          "ينشئ أمر مبيعات إرجاع مع حجب الفوترة. يُعيَّن نوع التسليم YLR. بالنسبة للبضائع المنتهية الصلاحية (YRE3)، ينشئ SAP دفعة إرجاع مُعلَّمة بـ 'EXPIRED'.",
+        expectedOutputEN: "Return sales order created with billing block.",
+        expectedOutputAR: "تم إنشاء أمر مبيعات الإرجاع مع حجب الفوترة.",
+      },
+      {
+        id: "sd-ret-3",
+        stepNumber: 3,
+        titleEN: "Create Return Delivery (VL10C)",
+        titleAR: "إنشاء تسليم الإرجاع (VL10C)",
+        tCode: "VL10C",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Run VL10C for the return order. This creates a return delivery document. The driver physically picks up the goods from the customer site.",
+        whatToDoAR:
+          "شغّل VL10C لأمر الإرجاع. ينشئ هذا مستند تسليم الإرجاع. يقوم السائق باستلام البضائع فعلياً من موقع العميل.",
+        whatSAPDoesEN:
+          "Creates return delivery (delivery type YLR) linked to the return order.",
+        whatSAPDoesAR:
+          "ينشئ تسليم الإرجاع (نوع التسليم YLR) المرتبط بأمر الإرجاع.",
+        expectedOutputEN: "Return delivery document created. Driver collects goods from customer.",
+        expectedOutputAR: "تم إنشاء مستند تسليم الإرجاع. السائق يستلم البضائع من العميل.",
+      },
+      {
+        id: "sd-ret-4",
+        stepNumber: 4,
+        titleEN: "Post Goods Receipt for Return (VL06G)",
+        titleAR: "ترحيل إيصال البضائع للإرجاع (VL06G)",
+        tCode: "VL06G",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Open VL06G and post goods receipt for the return delivery. This physically receives the returned goods back into the warehouse (or a returns location).",
+        whatToDoAR:
+          "افتح VL06G وارحّل إيصال البضائع لتسليم الإرجاع. يستلم هذا البضائع المُرجعة فعلياً في المستودع (أو موقع المرتجعات).",
+        whatSAPDoesEN:
+          "Posts goods receipt, increasing inventory. Creates a financial document reversing the original goods issue. For expired goods, stock is placed in a restricted-use batch.",
+        whatSAPDoesAR:
+          "يرحّل إيصال البضائع ويزيد المخزون. ينشئ مستنداً مالياً يعكس إصدار البضائع الأصلي. بالنسبة للبضائع المنتهية الصلاحية، يُودَع المخزون في دفعة محدودة الاستخدام.",
+        expectedOutputEN: "Goods received back into warehouse. Financial reversal document created.",
+        expectedOutputAR: "تم استلام البضائع في المستودع. تم إنشاء مستند عكس مالي.",
+      },
+      {
+        id: "sd-ret-5",
+        stepNumber: 5,
+        titleEN: "Create Credit Memo for Customer (VF04)",
+        titleAR: "إنشاء إشعار دائن للعميل (VF04)",
+        tCode: "VF04",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Open VF04. The return order appears in the billing due list. Select it and run billing to create a credit memo (billing types YR1 for YRE1, YR2 for YRE2, YR3 for YRE3). The credit memo offsets the original invoice or is applied to the customer's next order.",
+        whatToDoAR:
+          "افتح VF04. يظهر أمر الإرجاع في قائمة الفوترة المستحقة. حدده وشغّل الفوترة لإنشاء إشعار دائن (أنواع الفوترة YR1 لـ YRE1، YR2 لـ YRE2، YR3 لـ YRE3). يعوّض الإشعار الدائن الفاتورة الأصلية أو يُطبَّق على الطلب التالي للعميل.",
+        whatSAPDoesEN:
+          "Creates customer credit memo with accounting entry (debit revenue reversal, credit A/R). Reduces the customer's open balance.",
+        whatSAPDoesAR:
+          "ينشئ إشعار دائن للعميل بقيد محاسبي (مدين عكس الإيراد، دائن حسابات القبض). يخفض الرصيد المفتوح للعميل.",
+        expectedOutputEN: "Credit memo created and applied to customer account.",
+        expectedOutputAR: "تم إنشاء الإشعار الدائن وتطبيقه على حساب العميل.",
+      },
+    ],
+  },
+
+  // ─── SD: Credit Memo Processing ───────────────────────────────────────────
+  {
+    id: "sd-credit-memo",
+    icon: "💳",
+    duration: "20 min",
+    titleEN: "Credit Memo Processing",
+    titleAR: "معالجة الإشعار الدائن",
+    descriptionEN:
+      "Process for issuing credit memos to customers for commercial reasons (monthly incentive, promotions, discounts, compensation, near-expire, shortage, quarterly/annual incentives). Credit memo requests (YCR types) require ISR creation and dual-approval before billing.",
+    descriptionAR:
+      "عملية إصدار الإشعارات الدائنة للعملاء لأسباب تجارية (حافز شهري، عروض ترويجية، خصومات، تعويض، قرب انتهاء الصلاحية، عجز، حوافز ربع سنوية/سنوية). تتطلب طلبات الإشعار الدائن (أنواع YCR) إنشاء ISR وموافقة مزدوجة قبل الفوترة.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Area Sales Manager",
+      "A/R Manager",
+      "Billing Clerk",
+    ],
+    steps: [
+      {
+        id: "sd-cm-1",
+        stepNumber: 1,
+        titleEN: "Create Credit Memo Request (VA01 / YCR type)",
+        titleAR: "إنشاء طلب الإشعار الدائن (VA01 / نوع YCR)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Open VA01 and enter the appropriate credit memo request type: YCR1 (monthly incentive), YCR2 (customer compensation), YCR3 (promotions discount), YCR4 (commercial discount), YCR5 (near expire discount), YCR6 (shortage quantity), YCR7 (quarterly incentive), YCR8 (annual incentive), YCR9 (other). Reference the original billing document if applicable. Enter the customer, material, and credit amount. Save — the document is automatically created with billing block Y1.",
+        whatToDoAR:
+          "افتح VA01 وأدخل نوع طلب الإشعار الدائن المناسب: YCR1 (حافز شهري)، YCR2 (تعويض عميل)، YCR3 (خصم عروض)، YCR4 (خصم تجاري)، YCR5 (خصم قرب انتهاء الصلاحية)، YCR6 (عجز في الكمية)، YCR7 (حافز ربعي)، YCR8 (حافز سنوي)، YCR9 (أخرى). أشر إلى مستند الفوترة الأصلي إن أمكن. أدخل العميل والمادة ومبلغ الائتمان. احفظ — يُنشأ المستند تلقائياً بحجب الفوترة Y1.",
+        whatSAPDoesEN:
+          "Creates a credit memo request with billing block Y1 to prevent premature billing. Document is held for approval.",
+        whatSAPDoesAR:
+          "ينشئ طلب إشعار دائن بحجب الفوترة Y1 لمنع الفوترة المبكرة. يُحتجز المستند للموافقة.",
+        expectedOutputEN: "Credit memo request created with billing block Y1.",
+        expectedOutputAR: "تم إنشاء طلب الإشعار الدائن بحجب الفوترة Y1.",
+      },
+      {
+        id: "sd-cm-2",
+        stepNumber: 2,
+        titleEN: "First Approval — Remove Billing Block (VA02)",
+        titleAR: "الموافقة الأولى — رفع حجب الفوترة (VA02)",
+        tCode: "VA02",
+        role: "Area Sales Manager",
+        whatToDoEN:
+          "Open VA02 with the credit memo request number. Review the request details and verify the credit reason and amount are correct. If approved, remove the billing block Y1. Save.",
+        whatToDoAR:
+          "افتح VA02 برقم طلب الإشعار الدائن. راجع تفاصيل الطلب وتحقق من صحة سبب الائتمان والمبلغ. إذا تمت الموافقة، ارفع حجب الفوترة Y1. احفظ.",
+        whatSAPDoesEN:
+          "Updates the credit memo request by removing the billing block, enabling second-level review.",
+        whatSAPDoesAR:
+          "يحدّث طلب الإشعار الدائن برفع حجب الفوترة، مما يتيح المراجعة على المستوى الثاني.",
+        expectedOutputEN: "Billing block removed by Area Sales Manager — awaiting A/R Manager approval.",
+        expectedOutputAR: "تم رفع حجب الفوترة من قِبل مدير منطقة المبيعات — في انتظار موافقة مدير حسابات القبض.",
+      },
+      {
+        id: "sd-cm-3",
+        stepNumber: 3,
+        titleEN: "Second Approval — A/R Manager Review (VA02)",
+        titleAR: "الموافقة الثانية — مراجعة مدير الحسابات (VA02)",
+        tCode: "VA02",
+        role: "A/R Manager",
+        whatToDoEN:
+          "Open VA02 with the credit memo request number. Verify the credit request against supporting documentation and confirm the amount is authorized. If approved, no further block needs to be set — the document is now ready for billing. If rejected, re-add a billing block and notify the ISR.",
+        whatToDoAR:
+          "افتح VA02 برقم طلب الإشعار الدائن. تحقق من طلب الائتمان مقابل الوثائق الداعمة وأكد أن المبلغ مصرَّح به. إذا تمت الموافقة، لا حاجة لتعيين حجب إضافي — المستند جاهز الآن للفوترة. إذا رُفض، أعد تعيين حجب الفوترة وأخطر ISR.",
+        whatSAPDoesEN:
+          "Credit memo request is now fully approved and released to billing queue.",
+        whatSAPDoesAR:
+          "طلب الإشعار الدائن معتمد بالكامل الآن ومُفرَج عنه إلى قائمة انتظار الفوترة.",
+        expectedOutputEN: "Credit memo request fully approved and ready for billing.",
+        expectedOutputAR: "تمت الموافقة الكاملة على طلب الإشعار الدائن وهو جاهز للفوترة.",
+      },
+      {
+        id: "sd-cm-4",
+        stepNumber: 4,
+        titleEN: "Create Credit Memo (VF04)",
+        titleAR: "إنشاء الإشعار الدائن (VF04)",
+        tCode: "VF04",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Open VF04. The approved credit memo request appears in the billing due list. Select it and run billing to create the credit memo. Confirm the credit memo is posted.",
+        whatToDoAR:
+          "افتح VF04. يظهر طلب الإشعار الدائن المعتمد في قائمة الفوترة المستحقة. حدده وشغّل الفوترة لإنشاء الإشعار الدائن. تأكد من ترحيل الإشعار الدائن.",
+        whatSAPDoesEN:
+          "Creates the credit memo billing document with accounting entry (debit revenue/expense, credit A/R). Reduces the customer's open balance or triggers a refund.",
+        whatSAPDoesAR:
+          "ينشئ مستند فوترة الإشعار الدائن بقيد محاسبي (مدين الإيراد/المصروف، دائن حسابات القبض). يخفض الرصيد المفتوح للعميل أو يُشغّل استرداداً.",
+        expectedOutputEN: "Credit memo created, customer account credited.",
+        expectedOutputAR: "تم إنشاء الإشعار الدائن وإضافة ائتمان لحساب العميل.",
       },
     ],
   },
