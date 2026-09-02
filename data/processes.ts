@@ -1527,7 +1527,6 @@ export const processes: Process[] = [
         titleAR: "إنشاء تقرير الحادثة",
         tCode: "F1992",
         role: "Incident Reporter",
-        screenshotUrl: "/process-charts/ehs-inc-p05.png",
         whatToDoEN:
           "Open the Report Incident app (F1992). Select the event type: Incident, Near Miss, or Safety Observation. Fill in the single-entry screen with the date, time, location, description, and people involved. Click Send to submit the report.",
         whatToDoAR:
@@ -1546,7 +1545,6 @@ export const processes: Process[] = [
         titleAR: "الموافقة على الحادثة",
         tCode: "F7992",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p06.png",
         whatToDoEN:
           "Open My Inbox (F7992). Review the submitted incident report. Confirm it is valid and approve it to move the record to the detailed management stage.",
         whatToDoAR:
@@ -1565,7 +1563,6 @@ export const processes: Process[] = [
         titleAR: "مراجعة سجل الحادثة وإكماله",
         tCode: "F4759",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p07.png",
         whatToDoEN:
           "Open Manage Incidents (F4759). Complete all sections: add all involved persons, damaged assets, release data, and conduct a risk matrix assessment. Send inquiries for more information if needed. Track any financial impact of the incident.",
         whatToDoAR:
@@ -1584,7 +1581,6 @@ export const processes: Process[] = [
         titleAR: "إرفاق التحقيق (خارجي)",
         tCode: "F4759",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p08.png",
         whatToDoEN:
           "Note: In AWP the investigation and root-cause analysis is conducted externally using an Excel file. Open Manage Incidents (F4759), go to the Attachments section, and upload the completed investigation Excel file.",
         whatToDoAR:
@@ -1603,7 +1599,6 @@ export const processes: Process[] = [
         titleAR: "الإبلاغ لفريق الموارد البشرية",
         tCode: "F4759",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p09.png",
         whatToDoEN:
           "From Manage Incidents (F4759) generate an incident report and send it to the HR team so they can coordinate with the insurance provider if there are injured employees.",
         whatToDoAR:
@@ -1622,7 +1617,6 @@ export const processes: Process[] = [
         titleAR: "طباعة / إنشاء التقارير التحليلية",
         tCode: "F4759 / F2628 / F5240",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p10.png",
         whatToDoEN:
           "Use the reporting apps to generate required reports: Incident Detailed Analysis (F2628), DART Rate (F4759), Incident Rate (F5240), and Number of Recordable Cases (F2103). Select the location/sub-locations and output format (PDF or CSV).",
         whatToDoAR:
@@ -1641,7 +1635,6 @@ export const processes: Process[] = [
         titleAR: "تحديد الإجراءات التصحيحية وإدارتها",
         tCode: "F4759",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p11.png",
         whatToDoEN:
           "In Manage Incidents (F4759) create corrective and preventive tasks. Assign each task to the responsible person with a due date. Task types include: Change Request, Maintenance Notification, Reporting Task, or Task with Approval.",
         whatToDoAR:
@@ -1660,7 +1653,6 @@ export const processes: Process[] = [
         titleAR: "تنفيذ الإجراءات التصحيحية",
         tCode: "F7992",
         role: "Responsible Personnel",
-        screenshotUrl: "/process-charts/ehs-inc-p12.png",
         whatToDoEN:
           "The assigned person opens My Inbox (F7992) and finds the corrective task. Complete the required action — fix the unsafe condition, create the maintenance notification, or submit the report — then mark the task as complete.",
         whatToDoAR:
@@ -1679,7 +1671,6 @@ export const processes: Process[] = [
         titleAR: "إغلاق الحادثة",
         tCode: "F4759",
         role: "Incident Manager",
-        screenshotUrl: "/process-charts/ehs-inc-p13.png",
         whatToDoEN:
           "Once all corrective tasks are complete and the record is fully documented, open the incident in Manage Incidents (F4759) and initiate closure. Review all sections, then click Close Incident. If further details are needed later, the incident can be re-opened.",
         whatToDoAR:
