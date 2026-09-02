@@ -1219,6 +1219,8 @@ export const processes: Process[] = [
   // ─── HCM: SuccessFactors ESS ────────────────────────────────────────────────
   {
     id: "sf-ess",
+    icon: "👤",
+    duration: "5–15 min",
     module: "HCM",
     titleEN: "SuccessFactors Employee Self-Service (ESS)",
     titleAR: "خدمة الموظف الذاتية - SuccessFactors",
@@ -1227,7 +1229,6 @@ export const processes: Process[] = [
     descriptionAR:
       "دليل للموظفين للوصول إلى خدمات الموظف الذاتية على ess.al-watania.com — يغطي طلبات الإجازة، كشوف الراتب، العمل الإضافي، القروض، رحلات العمل، التخليص، وخطابات الموارد البشرية.",
     roles: ["Employee"],
-    lastUpdated: "2025-09-01",
     steps: [
       {
         id: "sf-ess-1",
@@ -1411,6 +1412,8 @@ export const processes: Process[] = [
   // ─── HCM: SuccessFactors MSS ────────────────────────────────────────────────
   {
     id: "sf-mss",
+    icon: "👔",
+    duration: "5–10 min",
     module: "HCM",
     titleEN: "SuccessFactors Manager Self-Service (MSS)",
     titleAR: "خدمة المدير الذاتية - SuccessFactors",
@@ -1419,7 +1422,6 @@ export const processes: Process[] = [
     descriptionAR:
       "دليل للمديرين لاستخدام خدمة المدير الذاتية على ess.al-watania.com — يغطي الصفحة الرئيسية، الموافقة على الطلبات عبر الإشعارات، إدارة صندوق الموافقات، وعرض ملفات الفريق.",
     roles: ["Manager", "Supervisor"],
-    lastUpdated: "2025-09-01",
     steps: [
       {
         id: "sf-mss-1",
@@ -1500,6 +1502,194 @@ export const processes: Process[] = [
           "Manager has a complete view of team attendance, leave balances, and pending requests.",
         expectedOutputAR:
           "يمتلك المدير رؤية كاملة لحضور الفريق وأرصدة الإجازات والطلبات المعلقة.",
+      },
+    ],
+  },
+
+  // ─── EHS: Incident Management ───────────────────────────────────────────────
+  {
+    id: "ehs-incident",
+    icon: "⚠️",
+    duration: "1–2 days",
+    module: "EHS",
+    titleEN: "EHS Incident Management",
+    titleAR: "إدارة حوادث البيئة والصحة والسلامة",
+    descriptionEN:
+      "End-to-end process for reporting, reviewing, investigating, and closing workplace incidents, near misses, and safety observations in SAP EHS (S/4HANA 2022).",
+    descriptionAR:
+      "عملية شاملة للإبلاغ عن حوادث مكان العمل والأحداث الوشيكة ومشاهدات السلامة ومراجعتها والتحقيق فيها وإغلاقها في SAP EHS (S/4HANA 2022).",
+    roles: ["Incident Reporter", "Incident Manager", "Responsible Personnel"],
+    steps: [
+      {
+        id: "ehs-inc-1",
+        stepNumber: 1,
+        titleEN: "Create Incident Report",
+        titleAR: "إنشاء تقرير الحادثة",
+        tCode: "F1992",
+        role: "Incident Reporter",
+        screenshotUrl: "/process-charts/ehs-inc-p05.png",
+        whatToDoEN:
+          "Open the Report Incident app (F1992). Select the event type: Incident, Near Miss, or Safety Observation. Fill in the single-entry screen with the date, time, location, description, and people involved. Click Send to submit the report.",
+        whatToDoAR:
+          "افتح تطبيق الإبلاغ عن الحادثة (F1992). حدد نوع الحدث: حادثة، أو حادثة وشيكة، أو مشاهدة سلامة. أكمل شاشة الإدخال الواحدة بالتاريخ والوقت والموقع والوصف والأشخاص المعنيين. انقر إرسال لتقديم التقرير.",
+        whatSAPDoesEN:
+          "Creates the incident record and routes an approval task to the responsible Incident Manager's My Inbox (F7992).",
+        whatSAPDoesAR:
+          "ينشئ سجل الحادثة ويوجّه مهمة موافقة إلى صندوق وارد مدير الحوادث المسؤول (F7992).",
+        expectedOutputEN: "Incident record created in SAP; Incident Manager notified via My Inbox.",
+        expectedOutputAR: "تم إنشاء سجل الحادثة في SAP؛ تم إبلاغ مدير الحوادث عبر صندوق الوارد.",
+      },
+      {
+        id: "ehs-inc-2",
+        stepNumber: 2,
+        titleEN: "Approve Incident",
+        titleAR: "الموافقة على الحادثة",
+        tCode: "F7992",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p06.png",
+        whatToDoEN:
+          "Open My Inbox (F7992). Review the submitted incident report. Confirm it is valid and approve it to move the record to the detailed management stage.",
+        whatToDoAR:
+          "افتح صندوق الوارد (F7992). راجع تقرير الحادثة المقدَّم. تأكد من صحته وافقه للانتقال بالسجل إلى مرحلة الإدارة التفصيلية.",
+        whatSAPDoesEN:
+          "Changes the incident status from 'New' to 'In Process' and routes it to the Manage Incidents app for further action.",
+        whatSAPDoesAR:
+          "يغيّر حالة الحادثة من 'جديدة' إلى 'قيد التنفيذ' ويحوّلها إلى تطبيق إدارة الحوادث لاتخاذ إجراءات إضافية.",
+        expectedOutputEN: "Incident approved and available in Manage Incidents (F4759).",
+        expectedOutputAR: "تمت الموافقة على الحادثة وهي متاحة في تطبيق إدارة الحوادث (F4759).",
+      },
+      {
+        id: "ehs-inc-3",
+        stepNumber: 3,
+        titleEN: "Review and Complete Incident Record",
+        titleAR: "مراجعة سجل الحادثة وإكماله",
+        tCode: "F4759",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p07.png",
+        whatToDoEN:
+          "Open Manage Incidents (F4759). Complete all sections: add all involved persons, damaged assets, release data, and conduct a risk matrix assessment. Send inquiries for more information if needed. Track any financial impact of the incident.",
+        whatToDoAR:
+          "افتح إدارة الحوادث (F4759). أكمل جميع الأقسام: أضف جميع الأشخاص المعنيين والأصول التالفة وبيانات الإطلاق، وأجرِ تقييم مصفوفة المخاطر. أرسل استفسارات للحصول على مزيد من المعلومات إذا لزم. تتبّع أي تأثير مالي للحادثة.",
+        whatSAPDoesEN:
+          "Updates the incident record with full details. Integrates with PM to read asset master data and with HCM to record injured employee data.",
+        whatSAPDoesAR:
+          "يحدّث سجل الحادثة بالتفاصيل الكاملة. يتكامل مع PM لقراءة بيانات الأصول ومع HCM لتسجيل بيانات الموظف المصاب.",
+        expectedOutputEN: "Incident record fully populated; risk assessment complete.",
+        expectedOutputAR: "سجل الحادثة مكتمل بالكامل؛ تقييم المخاطر مكتمل.",
+      },
+      {
+        id: "ehs-inc-4",
+        stepNumber: 4,
+        titleEN: "Attach Investigation (External)",
+        titleAR: "إرفاق التحقيق (خارجي)",
+        tCode: "F4759",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p08.png",
+        whatToDoEN:
+          "Note: In AWP the investigation and root-cause analysis is conducted externally using an Excel file. Open Manage Incidents (F4759), go to the Attachments section, and upload the completed investigation Excel file.",
+        whatToDoAR:
+          "ملاحظة: في AWP يُجرَى التحقيق وتحليل السبب الجذري خارجياً باستخدام ملف Excel. افتح إدارة الحوادث (F4759)، انتقل إلى قسم المرفقات، وارفع ملف Excel المكتمل للتحقيق.",
+        whatSAPDoesEN:
+          "Stores the investigation attachment against the incident record for audit and reporting purposes.",
+        whatSAPDoesAR:
+          "يخزّن مرفق التحقيق في سجل الحادثة لأغراض التدقيق وإعداد التقارير.",
+        expectedOutputEN: "Investigation file attached to the incident record in SAP.",
+        expectedOutputAR: "ملف التحقيق مرفق بسجل الحادثة في SAP.",
+      },
+      {
+        id: "ehs-inc-5",
+        stepNumber: 5,
+        titleEN: "Report to HR Team",
+        titleAR: "الإبلاغ لفريق الموارد البشرية",
+        tCode: "F4759",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p09.png",
+        whatToDoEN:
+          "From Manage Incidents (F4759) generate an incident report and send it to the HR team so they can coordinate with the insurance provider if there are injured employees.",
+        whatToDoAR:
+          "من إدارة الحوادث (F4759) أنشئ تقرير الحادثة وأرسله إلى فريق الموارد البشرية حتى يتمكنوا من التنسيق مع شركة التأمين في حالة وجود موظفين مصابين.",
+        whatSAPDoesEN:
+          "Generates a formatted incident report and sends it via the system notification to the designated HR contact.",
+        whatSAPDoesAR:
+          "يُنشئ تقرير حادثة منسقاً ويرسله عبر إشعار النظام إلى جهة الاتصال المحددة في الموارد البشرية.",
+        expectedOutputEN: "HR team notified; incident report shared for insurance coordination.",
+        expectedOutputAR: "تم إبلاغ فريق الموارد البشرية؛ تقرير الحادثة مشارك للتنسيق مع التأمين.",
+      },
+      {
+        id: "ehs-inc-6",
+        stepNumber: 6,
+        titleEN: "Print / Generate Analytical Reports",
+        titleAR: "طباعة / إنشاء التقارير التحليلية",
+        tCode: "F4759 / F2628 / F5240",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p10.png",
+        whatToDoEN:
+          "Use the reporting apps to generate required reports: Incident Detailed Analysis (F2628), DART Rate (F4759), Incident Rate (F5240), and Number of Recordable Cases (F2103). Select the location/sub-locations and output format (PDF or CSV).",
+        whatToDoAR:
+          "استخدم تطبيقات التقارير لإنشاء التقارير المطلوبة: التحليل التفصيلي للحوادث (F2628)، معدل DART (F4759)، معدل الحوادث (F5240)، وعدد الحالات القابلة للتسجيل (F2103). اختر الموقع/المواقع الفرعية وتنسيق الإخراج (PDF أو CSV).",
+        whatSAPDoesEN:
+          "Generates legal and summary reports for regulatory compliance and management review. Covers all incidents across selected locations.",
+        whatSAPDoesAR:
+          "يُنشئ تقارير قانونية وملخصة للامتثال التنظيمي ومراجعة الإدارة. يغطي جميع الحوادث في المواقع المحددة.",
+        expectedOutputEN: "Incident reports generated in PDF or CSV for legal and internal use.",
+        expectedOutputAR: "تقارير الحوادث منشأة بصيغة PDF أو CSV للاستخدام القانوني والداخلي.",
+      },
+      {
+        id: "ehs-inc-7",
+        stepNumber: 7,
+        titleEN: "Define and Manage Corrective Tasks",
+        titleAR: "تحديد الإجراءات التصحيحية وإدارتها",
+        tCode: "F4759",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p11.png",
+        whatToDoEN:
+          "In Manage Incidents (F4759) create corrective and preventive tasks. Assign each task to the responsible person with a due date. Task types include: Change Request, Maintenance Notification, Reporting Task, or Task with Approval.",
+        whatToDoAR:
+          "في إدارة الحوادث (F4759) أنشئ مهام تصحيحية ووقائية. عيّن كل مهمة للشخص المسؤول مع تاريخ استحقاق. تشمل أنواع المهام: طلب تغيير، إشعار صيانة، مهمة إبلاغ، أو مهمة بموافقة.",
+        whatSAPDoesEN:
+          "Creates tasks in the SAP system and routes them to each assigned person's My Inbox. Integrates with PM to create maintenance notifications for damaged assets.",
+        whatSAPDoesAR:
+          "ينشئ مهاماً في نظام SAP ويوجّهها إلى صندوق وارد كل شخص مُعيَّن. يتكامل مع PM لإنشاء إشعارات الصيانة للأصول التالفة.",
+        expectedOutputEN: "Corrective tasks created and assigned; responsible persons notified via My Inbox.",
+        expectedOutputAR: "تم إنشاء الإجراءات التصحيحية وتعيينها؛ الأشخاص المسؤولون مُبلَّغون عبر صندوق الوارد.",
+      },
+      {
+        id: "ehs-inc-8",
+        stepNumber: 8,
+        titleEN: "Perform Corrective Tasks",
+        titleAR: "تنفيذ الإجراءات التصحيحية",
+        tCode: "F7992",
+        role: "Responsible Personnel",
+        screenshotUrl: "/process-charts/ehs-inc-p12.png",
+        whatToDoEN:
+          "The assigned person opens My Inbox (F7992) and finds the corrective task. Complete the required action — fix the unsafe condition, create the maintenance notification, or submit the report — then mark the task as complete.",
+        whatToDoAR:
+          "يفتح الشخص المُعيَّن صندوق الوارد (F7992) ويجد الإجراء التصحيحي. أكمل الإجراء المطلوب — صحّح الحالة الخطرة، أنشئ إشعار الصيانة، أو قدّم التقرير — ثم ضع علامة اكتمال المهمة.",
+        whatSAPDoesEN:
+          "Updates the task status to completed and notifies the Incident Manager. If linked to PM, triggers the maintenance notification workflow.",
+        whatSAPDoesAR:
+          "يحدّث حالة المهمة إلى مكتملة ويُبلِّغ مدير الحوادث. إذا كانت مرتبطة بـ PM، يُطلِق سير عمل إشعار الصيانة.",
+        expectedOutputEN: "Corrective task completed; Incident Manager notified.",
+        expectedOutputAR: "الإجراء التصحيحي مكتمل؛ مدير الحوادث مُبلَّغ.",
+      },
+      {
+        id: "ehs-inc-9",
+        stepNumber: 9,
+        titleEN: "Close Incident",
+        titleAR: "إغلاق الحادثة",
+        tCode: "F4759",
+        role: "Incident Manager",
+        screenshotUrl: "/process-charts/ehs-inc-p13.png",
+        whatToDoEN:
+          "Once all corrective tasks are complete and the record is fully documented, open the incident in Manage Incidents (F4759) and initiate closure. Review all sections, then click Close Incident. If further details are needed later, the incident can be re-opened.",
+        whatToDoAR:
+          "بعد اكتمال جميع الإجراءات التصحيحية وتوثيق السجل بالكامل، افتح الحادثة في إدارة الحوادث (F4759) وابدأ الإغلاق. راجع جميع الأقسام، ثم انقر إغلاق الحادثة. إذا احتُيج لتفاصيل إضافية لاحقاً، يمكن إعادة فتح الحادثة.",
+        whatSAPDoesEN:
+          "Sets the incident status to 'Closed'. The record becomes read-only and is preserved for audit and reporting. Can be re-opened if needed.",
+        whatSAPDoesAR:
+          "يضبط حالة الحادثة على 'مغلقة'. يصبح السجل للقراءة فقط ويُحفَظ لأغراض التدقيق وإعداد التقارير. يمكن إعادة فتحه عند الحاجة.",
+        expectedOutputEN: "Incident closed; all data locked and available for compliance reporting.",
+        expectedOutputAR: "الحادثة مغلقة؛ جميع البيانات مقفلة ومتاحة لتقارير الامتثال.",
       },
     ],
   },
