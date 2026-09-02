@@ -1477,6 +1477,334 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: Intercompany Stock Transfer ──────────────────────────────────────
+  {
+    id: "mm-intercompany-sto",
+    icon: "🔄",
+    duration: "45 min",
+    titleEN: "Intercompany Stock Transfer",
+    titleAR: "نقل المخزون بين الشركات",
+    descriptionEN:
+      "Transfer materials between two company codes (e.g., Al-Watania Poultry and Al-Watania Transportation) within the same country. Includes outbound delivery, billing document, goods receipt, and inter-company invoice. ~10 STOs per week.",
+    descriptionAR:
+      "نقل المواد بين كودَي شركتين (مثل الوطنية للدواجن والوطنية للنقل) داخل المملكة. تشمل العملية التسليم الصادر ومستند الفوترة وإيصال البضاعة والفاتورة بين الشركتين. نحو 10 أوامر نقل أسبوعيًّا.",
+    module: "MM",
+    roles: ["Purchaser / Requester", "Stock Keeper", "Billing Clerk", "AP Accountant"],
+    steps: [
+      {
+        id: "mm-intercompany-sto-step-1",
+        stepNumber: 1,
+        titleEN: "Create Intercompany Purchase Order (STO with Delivery)",
+        titleAR: "إنشاء أمر شراء بين الشركات (أمر نقل مخزون بتسليم)",
+        tCode: "ME21N",
+        role: "Purchaser / Requester",
+        whatToDoEN:
+          "Create a stock transport order under the receiving plant referencing the supplying company code plant. Set purchase group YL1 (Live Operation Dep) if applicable. Enter material, quantity, and required delivery date.",
+        whatToDoAR:
+          "أنشئ أمر نقل مخزون تحت المصنع المستقبِل بإسناده إلى مصنع الشركة المورِّدة. حدِّد مجموعة الشراء YL1 (إدارة العمليات الحية) إن انطبق ذلك. أدخل المادة والكمية وتاريخ التسليم المطلوب.",
+        whatSAPDoesEN:
+          "Creates an intercompany STO document with a cross-company code reference. Generates a purchase order in MM linked to a sales order in the supplying plant's SD module for intercompany billing.",
+        whatSAPDoesAR:
+          "يُنشئ مستند أمر نقل مخزون بين الشركات مع مرجع عابر لكودَي الشركتين. يولِّد أمر شراء في MM مرتبطًا بأمر مبيعات في وحدة SD للمصنع المورِّد لأغراض الفوترة بين الشركتين.",
+        expectedOutputEN: "Intercompany STO created with PO number.",
+        expectedOutputAR: "تم إنشاء أمر نقل المخزون بين الشركات مع رقم أمر الشراء.",
+      },
+      {
+        id: "mm-intercompany-sto-step-2",
+        stepNumber: 2,
+        titleEN: "Create Outbound Delivery",
+        titleAR: "إنشاء التسليم الصادر",
+        tCode: "VL10D",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "Run the outbound delivery worklist for the STO. Select the relevant STO and create the outbound delivery document for the issuing plant.",
+        whatToDoAR:
+          "شغِّل قائمة أعمال التسليم الصادر لأمر النقل. اختر أمر النقل المعني وأنشئ مستند التسليم الصادر من المصنع المورِّد.",
+        whatSAPDoesEN:
+          "Creates an outbound delivery referencing the STO. Proposes picking quantities from the issuing plant's storage location.",
+        whatSAPDoesAR:
+          "يُنشئ تسليمًا صادرًا مرجعه أمر النقل. يقترح كميات الانتقاء من موقع التخزين في المصنع المورِّد.",
+        expectedOutputEN: "Outbound delivery document created.",
+        expectedOutputAR: "تم إنشاء مستند التسليم الصادر.",
+      },
+      {
+        id: "mm-intercompany-sto-step-3",
+        stepNumber: 3,
+        titleEN: "Pick and Post Goods Issue",
+        titleAR: "الانتقاء وترحيل إصدار البضاعة",
+        tCode: "VL02N",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "Open the outbound delivery, confirm picked quantities, then post goods issue. This triggers movement type 641 (GI for STO intercompany), reducing stock at the issuing plant.",
+        whatToDoAR:
+          "افتح التسليم الصادر وأكِّد الكميات المنتقاة، ثم رحِّل إصدار البضاعة. يُشغِّل ذلك نوع الحركة 641 (إصدار بضاعة لأمر نقل بين الشركات) مما يخفض المخزون في المصنع المورِّد.",
+        whatSAPDoesEN:
+          "Posts goods issue (MT 641) from the issuing plant. Stock moves to in-transit status at the receiving plant. Creates an accounting document.",
+        whatSAPDoesAR:
+          "يرحِّل إصدار البضاعة (نوع الحركة 641) من المصنع المورِّد. ينتقل المخزون إلى حالة العبور في المصنع المستقبِل. يُنشئ مستند محاسبة.",
+        expectedOutputEN: "Goods issue posted. Stock in transit at receiving plant.",
+        expectedOutputAR: "تم ترحيل إصدار البضاعة. المخزون في العبور لدى المصنع المستقبِل.",
+      },
+      {
+        id: "mm-intercompany-sto-step-4",
+        stepNumber: 4,
+        titleEN: "Monitor Stock in Transit",
+        titleAR: "مراقبة المخزون أثناء العبور",
+        tCode: "MB5T",
+        role: "Purchaser / Requester",
+        whatToDoEN:
+          "Monitor stock in transit between company codes. Verify that quantities match the STO and that goods are on their way to the receiving plant.",
+        whatToDoAR:
+          "راقب المخزون أثناء العبور بين كودَي الشركتين. تحقَّق من تطابق الكميات مع أمر النقل وأن البضائع في طريقها إلى المصنع المستقبِل.",
+        whatSAPDoesEN:
+          "Displays stock in transit between company codes with material, quantity, and STO reference details.",
+        whatSAPDoesAR:
+          "يعرض المخزون في العبور بين كودَي الشركتين مع تفاصيل المادة والكمية ومرجع أمر النقل.",
+        expectedOutputEN: "Stock in transit confirmed and quantities verified.",
+        expectedOutputAR: "تم تأكيد المخزون أثناء العبور والتحقق من الكميات.",
+      },
+      {
+        id: "mm-intercompany-sto-step-5",
+        stepNumber: 5,
+        titleEN: "Create Billing Document (Intercompany Invoice)",
+        titleAR: "إنشاء مستند الفوترة (الفاتورة بين الشركتين)",
+        tCode: "VF04",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Create a billing document (intercompany invoice) referencing the issued delivery. The supplying company codes charges the receiving company code for the transferred goods at the transfer price.",
+        whatToDoAR:
+          "أنشئ مستند فوترة (فاتورة بين الشركتين) مرجعه التسليم الصادر. تفوتر الشركة المورِّدة الشركةَ المستقبِلة بقيمة البضائع المحوَّلة وفق سعر التحويل المتفق عليه.",
+        whatSAPDoesEN:
+          "Creates an intercompany billing document (IV invoice type). Posts revenue in the supplying company code and generates an accounts receivable entry against the receiving company.",
+        whatSAPDoesAR:
+          "يُنشئ مستند فوترة بين الشركتين (نوع الفاتورة IV). يرحِّل الإيراد في الشركة المورِّدة وينشئ قيد حسابات مدينة بمواجهة الشركة المستقبِلة.",
+        expectedOutputEN: "Intercompany billing document created. Revenue posted in supplying company.",
+        expectedOutputAR: "تم إنشاء مستند الفوترة بين الشركتين. تم ترحيل الإيراد في الشركة المورِّدة.",
+      },
+      {
+        id: "mm-intercompany-sto-step-6",
+        stepNumber: 6,
+        titleEN: "Post Goods Receipt",
+        titleAR: "ترحيل إيصال البضاعة",
+        tCode: "MIGO",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "At the receiving plant, post the goods receipt referencing the STO or the inbound delivery. Enter batch and expiry date if applicable. Movement type 101 transfers stock from in-transit to unrestricted-use.",
+        whatToDoAR:
+          "في المصنع المستقبِل، رحِّل إيصال البضاعة مستندًا إلى أمر النقل أو التسليم الوارد. أدخل الدُّفعة وتاريخ الانتهاء عند الاقتضاء. نوع الحركة 101 ينقل المخزون من العبور إلى المخزون غير المقيَّد.",
+        whatSAPDoesEN:
+          "Posts GR (MT 101) at the receiving plant. Clears the in-transit quantity. Creates an accounting document crediting the GR/IR clearing account.",
+        whatSAPDoesAR:
+          "يرحِّل إيصال البضاعة (نوع الحركة 101) في المصنع المستقبِل. يصفِّر كمية العبور. يُنشئ مستند محاسبة دائنًا لحساب GR/IR الوسيط.",
+        expectedOutputEN: "Goods received. In-transit stock cleared. Inventory updated at receiving plant.",
+        expectedOutputAR: "تم استلام البضاعة. تم تصفير مخزون العبور. تم تحديث المخزون في المصنع المستقبِل.",
+      },
+      {
+        id: "mm-intercompany-sto-step-7",
+        stepNumber: 7,
+        titleEN: "Enter Intercompany Invoice (MIRO)",
+        titleAR: "إدخال الفاتورة بين الشركتين (MIRO)",
+        tCode: "MIRO",
+        role: "AP Accountant",
+        whatToDoEN:
+          "The receiving company's AP accountant enters the intercompany invoice in MIRO referencing the STO. Matches invoice amount to GR amount. Post to clear the GR/IR account.",
+        whatToDoAR:
+          "يُدخل محاسب الحسابات الدائنة في الشركة المستقبِلة الفاتورة بين الشركتين في MIRO مستندًا إلى أمر النقل. يطابق مبلغ الفاتورة مع مبلغ إيصال البضاعة. يرحِّل لتصفية حساب GR/IR.",
+        whatSAPDoesEN:
+          "Posts the vendor invoice (intercompany). Clears GR/IR clearing account. Creates an accounts payable entry in the receiving company code.",
+        whatSAPDoesAR:
+          "يرحِّل فاتورة المورِّد (بين الشركتين). يصفِّر حساب GR/IR الوسيط. يُنشئ قيد حسابات دائنة في كود الشركة المستقبِلة.",
+        expectedOutputEN: "Intercompany invoice posted. GR/IR cleared. AP entry created.",
+        expectedOutputAR: "تم ترحيل الفاتورة بين الشركتين. تم تصفية حساب GR/IR. تم إنشاء قيد الحسابات الدائنة.",
+      },
+      {
+        id: "mm-intercompany-sto-step-8",
+        stepNumber: 8,
+        titleEN: "Check Customer & Supplier Statement",
+        titleAR: "مراجعة كشف العميل والمورِّد",
+        tCode: "FBL5N / FBL1N",
+        role: "AP Accountant / Billing Clerk",
+        whatToDoEN:
+          "Run FBL5N (customer line items) in the supplying company and FBL1N (vendor line items) in the receiving company to confirm all intercompany entries are matched and cleared.",
+        whatToDoAR:
+          "شغِّل FBL5N (بنود العميل) في الشركة المورِّدة وFBL1N (بنود المورِّد) في الشركة المستقبِلة للتأكد من تطابق جميع القيود بين الشركتين وتصفيتها.",
+        whatSAPDoesEN:
+          "Displays open and cleared intercompany line items. Highlights any uncleared balances that need follow-up.",
+        whatSAPDoesAR:
+          "يعرض البنود المفتوحة والمصفَّاة بين الشركتين. يسلِّط الضوء على أي أرصدة غير مصفَّاة تستلزم متابعة.",
+        expectedOutputEN: "Intercompany balances confirmed and cleared.",
+        expectedOutputAR: "تم تأكيد الأرصدة بين الشركتين وتصفيتها.",
+      },
+    ],
+  },
+
+  // ─── MM: Feed Mill Transportation (Feed Bulker STO) ───────────────────────
+  {
+    id: "mm-feedmill-transportation",
+    icon: "🚛",
+    duration: "30 min",
+    titleEN: "Feed Mill Transportation (Feed Bulker STO)",
+    titleAR: "نقل الأعلاف من مصانع الأعلاف (شاحنات الأعلاف السائبة)",
+    descriptionEN:
+      "Execute daily feed transfers from feed mill plants to live operation farms via stock transport orders. Mandatory partner functions: driver (Z2) and truck (Z1) on every delivery. Monthly incentive report (YMM_TA) calculated by Finance. ~150 trips/day.",
+    descriptionAR:
+      "تنفيذ عمليات نقل الأعلاف اليومية من مصانع الأعلاف إلى مزارع العمليات الحية عبر أوامر نقل المخزون. وظائف الشريك الإلزامية: السائق (Z2) والشاحنة (Z1) على كل تسليم. تقرير الحوافز الشهري (YMM_TA) تحسبه الإدارة المالية. نحو 150 رحلة يوميًّا.",
+    module: "MM",
+    roles: [
+      "Live Operation Coordinator",
+      "Transportation Coordinator",
+      "Feed Mill Stock Keeper",
+      "Farm Responsible",
+      "Finance / Accountant",
+    ],
+    steps: [
+      {
+        id: "mm-feedmill-transportation-step-1",
+        stepNumber: 1,
+        titleEN: "Create Stock Transport Order",
+        titleAR: "إنشاء أمر نقل المخزون",
+        tCode: "ME21N",
+        role: "Live Operation Coordinator",
+        whatToDoEN:
+          "Create a stock transport order from the farm (receiving plant) to the feed mill plant (issuing plant). Enter feed material, required quantity, and planned delivery date to schedule the bulker trip.",
+        whatToDoAR:
+          "أنشئ أمر نقل مخزون من المزرعة (المصنع المستقبِل) إلى مصنع الأعلاف (المصنع المورِّد). أدخل مادة العلف والكمية المطلوبة وتاريخ التسليم المخطط لجدولة رحلة الشاحنة.",
+        whatSAPDoesEN:
+          "Creates the STO document in the system, generating demand at the feed mill and a purchase order visible to the transportation coordinator for scheduling.",
+        whatSAPDoesAR:
+          "يُنشئ مستند أمر النقل في النظام، مولِّدًا طلبًا في مصنع الأعلاف وأمر شراء مرئيًّا لمنسِّق النقل لأغراض الجدولة.",
+        expectedOutputEN: "STO created with PO number.",
+        expectedOutputAR: "تم إنشاء أمر النقل مع رقم أمر الشراء.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-2",
+        stepNumber: 2,
+        titleEN: "Create Outbound Delivery",
+        titleAR: "إنشاء التسليم الصادر",
+        tCode: "VL10D",
+        role: "Transportation Coordinator",
+        whatToDoEN:
+          "Run the outbound delivery worklist for STOs. Select the STO due for delivery and create the outbound delivery. This initiates the shipping process at the feed mill.",
+        whatToDoAR:
+          "شغِّل قائمة أعمال التسليم الصادر لأوامر النقل. اختر أمر النقل المستحق للتسليم وأنشئ التسليم الصادر. يبدأ ذلك عملية الشحن في مصنع الأعلاف.",
+        whatSAPDoesEN:
+          "Creates an outbound delivery document linked to the STO. Proposes delivery quantity from feed mill stock.",
+        whatSAPDoesAR:
+          "يُنشئ مستند تسليم صادر مرتبطًا بأمر النقل. يقترح كمية التسليم من مخزون مصنع الأعلاف.",
+        expectedOutputEN: "Outbound delivery created.",
+        expectedOutputAR: "تم إنشاء التسليم الصادر.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-3",
+        stepNumber: 3,
+        titleEN: "Assign Shipping Data – Driver (Z2) and Truck (Z1)",
+        titleAR: "تعيين بيانات الشحن – السائق (Z2) والشاحنة (Z1)",
+        tCode: "VL02N",
+        role: "Transportation Coordinator",
+        whatToDoEN:
+          "Open the delivery in VL02N and assign the mandatory partner functions: Driver employee number under partner function Z2, and truck number (assigned to the receiving farm plant customer) under partner function Z1. Every delivery MUST have both assigned before goods issue.",
+        whatToDoAR:
+          "افتح التسليم في VL02N وعيِّن وظائف الشريك الإلزامية: رقم موظف السائق تحت وظيفة الشريك Z2، ورقم الشاحنة (المعيَّنة لعميل مصنع المزرعة المستقبِلة) تحت وظيفة الشريك Z1. يجب تعيين كلتيهما على كل تسليم قبل إصدار البضاعة.",
+        whatSAPDoesEN:
+          "Updates the delivery with driver and truck partner assignments. These fields are used for the monthly incentive calculation in the YMM_TA report.",
+        whatSAPDoesAR:
+          "يُحدِّث التسليم بتعيينات الشريك للسائق والشاحنة. تُستخدم هذه الحقول في حساب الحوافز الشهرية في تقرير YMM_TA.",
+        expectedOutputEN: "Driver and truck assigned on delivery. Ready for printing and goods issue.",
+        expectedOutputAR: "تم تعيين السائق والشاحنة على التسليم. جاهز للطباعة وإصدار البضاعة.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-4",
+        stepNumber: 4,
+        titleEN: "Print Delivery Document",
+        titleAR: "طباعة مستند التسليم",
+        tCode: "VL71",
+        role: "Transportation Coordinator",
+        whatToDoEN:
+          "Print the delivery document. The printed copy must show the driver code, driver name, and truck number. The driver carries this document to the farm as proof of transfer.",
+        whatToDoAR:
+          "اطبع مستند التسليم. يجب أن تتضمَّن النسخة المطبوعة كود السائق واسمه ورقم الشاحنة. يحمل السائق هذه الوثيقة إلى المزرعة إثباتًا للنقل.",
+        whatSAPDoesEN:
+          "Outputs the delivery document as a printed slip including driver and truck details for the trip.",
+        whatSAPDoesAR:
+          "يُخرج مستند التسليم كقسيمة مطبوعة تشمل تفاصيل السائق والشاحنة للرحلة.",
+        expectedOutputEN: "Delivery slip printed with driver and truck information.",
+        expectedOutputAR: "تم طباعة قسيمة التسليم مع معلومات السائق والشاحنة.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-5",
+        stepNumber: 5,
+        titleEN: "Post Goods Issue (Feed Mill)",
+        titleAR: "ترحيل إصدار البضاعة (مصنع الأعلاف)",
+        tCode: "VL02N",
+        role: "Feed Mill Stock Keeper",
+        whatToDoEN:
+          "After loading the bulker truck, post goods issue for the delivery. The trip coordinator must ensure all deliveries are issued on the planned date. If a delivery is not issued on time, delete and recreate it for the new delivery date or update the existing date.",
+        whatToDoAR:
+          "بعد تحميل شاحنة الأعلاف السائبة، رحِّل إصدار البضاعة للتسليم. يجب أن يتأكد منسِّق الرحلات من إصدار جميع التسليمات في التاريخ المخطط. إن لم يُصدَر التسليم في الموعد، احذفه وأعِد إنشاءه بتاريخ التسليم الجديد أو حدِّث التاريخ الحالي.",
+        whatSAPDoesEN:
+          "Posts goods issue from the feed mill. Reduces feed stock at the issuing plant. Creates in-transit stock at the receiving farm plant.",
+        whatSAPDoesAR:
+          "يرحِّل إصدار البضاعة من مصنع الأعلاف. يخفض مخزون العلف في المصنع المورِّد. يُنشئ مخزون العبور في مصنع المزرعة المستقبِلة.",
+        expectedOutputEN: "Goods issued. Feed in transit to the farm.",
+        expectedOutputAR: "تم إصدار البضاعة. العلف في العبور إلى المزرعة.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-6",
+        stepNumber: 6,
+        titleEN: "Monitor Stock in Transit",
+        titleAR: "مراقبة المخزون أثناء العبور",
+        tCode: "MB5T",
+        role: "Farm Responsible / Accountant",
+        whatToDoEN:
+          "Monitor open in-transit quantities between the feed mill and farm plants. All issued quantities must be received at the farms — no quantity differences are allowed in the system.",
+        whatToDoAR:
+          "راقب الكميات المفتوحة أثناء العبور بين مصانع الأعلاف ومزارع المستقبِلة. يجب استلام جميع الكميات المُصدَرة في المزارع — لا يُسمح بأي فروقات في الكميات على النظام.",
+        whatSAPDoesEN:
+          "Displays all quantities currently in transit between plants, allowing the accountant to track unconfirmed deliveries.",
+        whatSAPDoesAR:
+          "يعرض جميع الكميات الموجودة حاليًّا في العبور بين المصانع، مما يتيح للمحاسب تتبُّع التسليمات غير المؤكَّدة.",
+        expectedOutputEN: "In-transit quantities monitored. Unresolved items identified for follow-up.",
+        expectedOutputAR: "تمت مراقبة الكميات أثناء العبور. تحديد البنود غير المحسومة للمتابعة.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-7",
+        stepNumber: 7,
+        titleEN: "Receive Delivery at Farm (Goods Receipt)",
+        titleAR: "استلام التسليم في المزرعة (إيصال البضاعة)",
+        tCode: "MIGO",
+        role: "Farm Responsible",
+        whatToDoEN:
+          "At the farm, post goods receipt referencing the STO or delivery. Confirm the received quantity matches the issued quantity. Enter batch information if applicable.",
+        whatToDoAR:
+          "في المزرعة، رحِّل إيصال البضاعة مستندًا إلى أمر النقل أو التسليم. تأكَّد من تطابق الكمية المستلَمة مع الكمية المُصدَرة. أدخل معلومات الدُّفعة عند الاقتضاء.",
+        whatSAPDoesEN:
+          "Posts GR (MT 101) at the farm. Clears in-transit stock. Updates unrestricted-use feed inventory at the farm.",
+        whatSAPDoesAR:
+          "يرحِّل إيصال البضاعة (نوع الحركة 101) في المزرعة. يصفِّر مخزون العبور. يُحدِّث مخزون العلف غير المقيَّد في المزرعة.",
+        expectedOutputEN: "Feed received at farm. In-transit cleared. Inventory updated.",
+        expectedOutputAR: "تم استلام العلف في المزرعة. تم تصفير العبور. تم تحديث المخزون.",
+      },
+      {
+        id: "mm-feedmill-transportation-step-8",
+        stepNumber: 8,
+        titleEN: "Run Monthly Driver Incentive Report",
+        titleAR: "تشغيل تقرير حوافز السائقين الشهري",
+        tCode: "YMM_TA",
+        role: "Finance / Accountant",
+        whatToDoEN:
+          "At month-end, Finance runs the incentive report (YMM_TA) to calculate driver incentives based on: delivery date, feed mill issuing area, receiving farm, and trip counter. Before running, ensure all deliveries are completed via report YMM_DLV. Exclude any trips with 'X' in the External Identification field (LIKP-LIFEX). Send confirmed results to the Trips Coordinator, then to HR for payment processing.",
+        whatToDoAR:
+          "في نهاية الشهر، تُشغِّل الإدارة المالية تقرير الحوافز (YMM_TA) لحساب حوافز السائقين بناءً على: تاريخ التسليم، ومنطقة الإصدار في مصنع الأعلاف، والمزرعة المستقبِلة، وعدَّاد الرحلات. قبل التشغيل، تأكَّد من اكتمال جميع التسليمات عبر تقرير YMM_DLV. استبعد أي رحلات تحمل 'X' في حقل المعرِّف الخارجي (LIKP-LIFEX). أرسل النتائج المؤكَّدة إلى منسِّق الرحلات ثم إلى الموارد البشرية لمعالجة الدفع.",
+        whatSAPDoesEN:
+          "Calculates incentive amounts per driver per trip based on ZTM1 rate table. Outputs a report showing each driver's total trips and incentive amount for payroll processing.",
+        whatSAPDoesAR:
+          "يحسب مبالغ الحوافز لكل سائق لكل رحلة بناءً على جدول الأسعار ZTM1. يُخرج تقريرًا يعرض إجمالي رحلات كل سائق ومبلغ حوافزه لمعالجة كشف الرواتب.",
+        expectedOutputEN: "Driver incentive report generated and sent to Trips Coordinator and HR.",
+        expectedOutputAR: "تم إنشاء تقرير حوافز السائقين وإرساله إلى منسِّق الرحلات والموارد البشرية.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
