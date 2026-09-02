@@ -1216,6 +1216,471 @@ export const processes: Process[] = [
     ],
   },
 
+  // ── PP-10. Collective Entry & Transfer (Processing / Manure Plant) ──────────
+  {
+    id: "pp-collective-entry",
+    icon: "🔄",
+    duration: "30 min",
+    titleEN: "Collective Entry & Transfer Posting",
+    titleAR: "الإدخال الجماعي وترحيل النقل",
+    descriptionEN:
+      "Receive finished product via GR on production order, run MF42N collective backflush, create reservation MB21, and execute transfer posting MIGO_TR. Used in processing and manure plants.",
+    descriptionAR:
+      "استلام المنتج النهائي عبر استلام البضاعة على أمر الإنتاج، تشغيل الإدخال الجماعي MF42N، إنشاء حجز MB21، وتنفيذ ترحيل النقل MIGO_TR. يُستخدم في مصانع التصنيع والأسمدة.",
+    module: "PP",
+    roles: ["Production Supervisor", "Shopfloor Control", "Stock Keeper"],
+    steps: [
+      {
+        id: "pce-1",
+        stepNumber: 1,
+        titleEN: "Post Goods Receipt on Production Order (MIGO)",
+        titleAR: "ترحيل استلام البضاعة على أمر الإنتاج (MIGO)",
+        tCode: "MIGO",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Navigate to MIGO. Select Goods Receipt → Order. Enter the production order number and click Enter. In Detail Data, add the storage location. Click on Batch View and enter Date of Manufacture. Add house information in Classification. Click the right arrow, then click Post to receive the product. SAP generates a material document (e.g. 5000000000).",
+        whatToDoAR:
+          "انتقل إلى MIGO. حدد استلام البضاعة → أمر. أدخل رقم أمر الإنتاج وانقر Enter. في بيانات التفصيل، أضف موقع التخزين. انقر على عرض الدفعة وأدخل تاريخ التصنيع. أضف معلومات المنزل في التصنيف. انقر السهم الأيمن، ثم انقر ترحيل لاستلام المنتج. يُنشئ SAP مستند مادة (مثل 5000000000).",
+        whatSAPDoesEN:
+          "Posts a Goods Receipt against the production order (movement type 101). Creates a material document and updates finished product stock in the specified storage location. Batch is created with classification data for house traceability.",
+        whatSAPDoesAR:
+          "يرحّل استلام بضاعة مقابل أمر الإنتاج (نوع الحركة 101). ينشئ مستند مادة ويحدّث مخزون المنتج النهائي في موقع التخزين المحدد. يُنشأ الدفعة ببيانات التصنيف لإمكانية تتبع المنزل.",
+        expectedOutputEN:
+          "Material document posted (mvt 101). Finished product stock increased. Batch created with house classification data. Use MB52 to verify stock.",
+        expectedOutputAR:
+          "تم ترحيل مستند المادة (الحركة 101). مخزون المنتج النهائي ازداد. الدفعة أُنشئت ببيانات تصنيف المنزل. استخدم MB52 للتحقق من المخزون.",
+      },
+      {
+        id: "pce-2",
+        stepNumber: 2,
+        titleEN: "Run Collective Backflush (MF42N)",
+        titleAR: "تشغيل الإدخال الجماعي العكسي (MF42N)",
+        tCode: "MF42N",
+        role: "Shopfloor Control",
+        whatToDoEN:
+          "Navigate to MF42N (New Collective Entry). Enter the Material number, the product Batch (ToBtc), Plant code, Backflush Qty (actual produced quantity), and Posting Date. Click Enter to validate. Click 'Post with Correction' to continue. Review the Production Version shown. Click the right arrow to see the Batch Overview. Check that BOM components are listed in the Components Overview. Click Save (Ctrl+S). SAP confirms 'Entry of actual data carried out for material XXXXXXXX'. Check WIP stock to verify.",
+        whatToDoAR:
+          "انتقل إلى MF42N (إدخال جماعي جديد). أدخل رقم المادة ودفعة المنتج (ToBtc) ورمز المصنع وكمية الترحيل العكسي (الكمية الفعلية المنتجة) وتاريخ الترحيل. انقر Enter للتحقق. انقر 'ترحيل بتصحيح' للمتابعة. راجع إصدار الإنتاج المعروض. انقر السهم الأيمن لرؤية نظرة عامة على الدفعة. تحقق من أن مكونات قائمة المواد مدرجة في نظرة عامة المكونات. انقر حفظ (Ctrl+S). يؤكد SAP 'تم إدخال البيانات الفعلية للمادة'. تحقق من مخزون WIP.",
+        whatSAPDoesEN:
+          "Executes Repetitive Manufacturing backflush. Automatically posts Goods Issue for all BOM components (movement type 261) and Goods Receipt for the finished product. Updates the production order with actual consumed quantities. Places product in WIP stock.",
+        whatSAPDoesAR:
+          "يُنفّذ الترحيل العكسي للتصنيع التكراري. يرحّل تلقائياً إصدار البضاعة لجميع مكونات قائمة المواد (نوع الحركة 261) واستلام البضاعة للمنتج النهائي. يحدّث أمر الإنتاج بالكميات المستهلكة الفعلية. يضع المنتج في مخزون WIP.",
+        expectedOutputEN:
+          "Material document created. Components consumed (mvt 261). Finished product in WIP stock. SAP confirms the actual data entry for the material.",
+        expectedOutputAR:
+          "تم إنشاء مستند المادة. المكونات مستهلكة (الحركة 261). المنتج النهائي في مخزون WIP. يؤكد SAP إدخال البيانات الفعلية للمادة.",
+      },
+      {
+        id: "pce-3",
+        stepNumber: 3,
+        titleEN: "Create Transfer Reservation (MB21)",
+        titleAR: "إنشاء حجز النقل (MB21)",
+        tCode: "MB21",
+        role: "Shopfloor Control",
+        whatToDoEN:
+          "Navigate to MB21. Enter the Plant code, Movement Type (311 for transfer between storage locations in same plant), and Base Date. Press Enter. In the reservation detail screen, enter Material number, Receiving Storage Location, Quantity, Issuing Storage Location, and Batch. Click Save. SAP generates a Reservation Number (e.g. 0001550000).",
+        whatToDoAR:
+          "انتقل إلى MB21. أدخل رمز المصنع ونوع الحركة (311 للنقل بين مواقع تخزين في نفس المصنع) وتاريخ الأساس. اضغط Enter. في شاشة تفاصيل الحجز، أدخل رقم المادة وموقع التخزين المستلم والكمية وموقع التخزين المصدر والدفعة. انقر حفظ. يُنشئ SAP رقم حجز (مثل 0001550000).",
+        whatSAPDoesEN:
+          "Creates a stock reservation document for an internal transfer. Reserves the quantity in the source storage location and flags it for transfer. The reservation number is used in the next MIGO_TR step.",
+        whatSAPDoesAR:
+          "ينشئ مستند حجز مخزون لنقل داخلي. يحجز الكمية في موقع التخزين المصدر ويُعلّمها للنقل. رقم الحجز يُستخدم في خطوة MIGO_TR التالية.",
+        expectedOutputEN:
+          "Reservation document created with a unique reservation number. Stock earmarked for transfer. Reservation visible in MB25.",
+        expectedOutputAR:
+          "تم إنشاء مستند الحجز برقم حجز فريد. المخزون محدَّد للنقل. الحجز مرئي في MB25.",
+      },
+      {
+        id: "pce-4",
+        stepNumber: 4,
+        titleEN: "Execute Transfer Posting (MIGO_TR)",
+        titleAR: "تنفيذ ترحيل النقل (MIGO_TR)",
+        tCode: "MIGO_TR",
+        role: "Stock Keeper",
+        whatToDoEN:
+          "Navigate to MIGO_TR. Enter the Reservation Number generated in the previous step and press Enter. Click the OK checkbox next to the reservation line to confirm acceptance. Verify item details (material, quantity, storage locations). Click Post. SAP generates a transfer material document (e.g. 4900000000).",
+        whatToDoAR:
+          "انتقل إلى MIGO_TR. أدخل رقم الحجز الذي تم إنشاؤه في الخطوة السابقة واضغط Enter. انقر مربع OK بجانب سطر الحجز لتأكيد القبول. تحقق من تفاصيل البند (المادة والكمية ومواقع التخزين). انقر ترحيل. يُنشئ SAP مستند مادة نقل (مثل 4900000000).",
+        whatSAPDoesEN:
+          "Executes the physical stock transfer between storage locations using the reservation. Posts movement type 311 (transfer posting same plant). Updates stock balances: reduces quantity in source location and increases it in receiving location.",
+        whatSAPDoesAR:
+          "يُنفّذ النقل المادي للمخزون بين مواقع التخزين باستخدام الحجز. يرحّل نوع الحركة 311 (ترحيل نقل نفس المصنع). يحدّث أرصدة المخزون: يخفض الكمية في الموقع المصدر ويزيدها في الموقع المستلم.",
+        expectedOutputEN:
+          "Transfer material document posted (mvt 311). Stock moved from WIP/production area to warehouse storage location. Use MB52 to confirm new stock balances.",
+        expectedOutputAR:
+          "تم ترحيل مستند مادة النقل (الحركة 311). المخزون انتقل من منطقة WIP/الإنتاج إلى موقع تخزين المستودع. استخدم MB52 لتأكيد أرصدة المخزون الجديدة.",
+      },
+    ],
+  },
+
+  // ── PP-11. House Data Entry & Feed Confirmation (ZPPH3 / CO11N) ─────────────
+  {
+    id: "pp-house-data-confirmation",
+    icon: "🏠",
+    duration: "20 min",
+    titleEN: "House Data Entry & Feed/Medicine Confirmation",
+    titleAR: "إدخال بيانات الريظحة وتأكيد العلف والدواء",
+    descriptionEN:
+      "Enter daily house production data using ZPPH3 and confirm actual feed, medicine, and vaccine consumption on production orders via CO11N.",
+    descriptionAR:
+      "إدخال بيانات إنتاج الريظحة اليومية باستخدام ZPPH3 وتأكيد الاستهلاك الفعلي للعلف والدواء والتطعيم على أوامر الإنتاج عبر CO11N.",
+    module: "PP",
+    roles: ["Farm Supervisor", "Production Supervisor"],
+    steps: [
+      {
+        id: "phd-1",
+        stepNumber: 1,
+        titleEN: "Open ZPPH3 and Select Farm/House",
+        titleAR: "فتح ZPPH3 واختيار المزرعة/الريظحة",
+        tCode: "ZPPH3",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "Navigate to ZPPH3. Select the Plant (e.g. 1250 for laying, 1260 for rearing). Enter the date you want to enter data for. Select the Farm and the House (first two digits = farm number, last two digits = house number). Click 'Calculate Open Balance', then click Execute.",
+        whatToDoAR:
+          "انتقل إلى ZPPH3. حدد المصنع (مثل 1250 للإنتاج، 1260 للتربية). أدخل التاريخ الذي تريد إدخال بياناته. حدد المزرعة والريظحة (الرقمان الأولان = رقم المزرعة، الرقمان الأخيران = رقم الريظحة). انقر 'احتساب الرصيد الافتتاحي'، ثم انقر تنفيذ.",
+        whatSAPDoesEN:
+          "Retrieves the open production order data for the selected farm and house. Calculates the current open balance (birds in house, feed remaining) as the baseline for data entry.",
+        whatSAPDoesAR:
+          "يسترجع بيانات أمر الإنتاج المفتوح للمزرعة والريظحة المحددة. يحسب الرصيد الافتتاحي الحالي (الطيور في الريظحة، العلف المتبقي) كخط أساس لإدخال البيانات.",
+        expectedOutputEN:
+          "ZPPH3 screen loaded with the house's production order data and open balance calculated.",
+        expectedOutputAR:
+          "تم تحميل شاشة ZPPH3 ببيانات أمر إنتاج الريظحة والرصيد الافتتاحي المحتسب.",
+      },
+      {
+        id: "phd-2",
+        stepNumber: 2,
+        titleEN: "Enter House Results Data",
+        titleAR: "إدخال بيانات نتائج الريظحة",
+        tCode: "ZPPH3",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "From the list, double-click the house you want to enter data for. The results entry screen opens. Enter data in the Results column (mortality counts, production figures, etc.). Click 'Select All' icon to select all result rows. Evaluate whether each result is 'Accepted' or 'Not Accepted'. Lock the results by clicking the Lock icon. Then click Save.",
+        whatToDoAR:
+          "من القائمة، انقر نقراً مزدوجاً على الريظحة التي تريد إدخال بياناتها. تفتح شاشة إدخال النتائج. أدخل البيانات في عمود النتائج (أعداد النفوق وأرقام الإنتاج وما إلى ذلك). انقر أيقونة 'تحديد الكل'. قيّم ما إذا كانت كل نتيجة 'مقبولة' أو 'غير مقبولة'. أغلق النتائج بالنقر على أيقونة القفل. ثم انقر حفظ.",
+        whatSAPDoesEN:
+          "Records and locks the daily house results against the production order. Locked results cannot be changed without authorization. Data feeds into production order actual costs and farm reporting.",
+        whatSAPDoesAR:
+          "يسجّل ويقفل نتائج الريظحة اليومية مقابل أمر الإنتاج. لا يمكن تغيير النتائج المقفلة دون تخويل. تغذّي البيانات تكاليف أمر الإنتاج الفعلية وتقارير المزرعة.",
+        expectedOutputEN:
+          "Daily house data saved and locked. Results visible in production order reporting. Message: 'Data entered successfully'.",
+        expectedOutputAR:
+          "تم حفظ وقفل بيانات الريظحة اليومية. النتائج مرئية في تقارير أمر الإنتاج. رسالة: 'تم إدخال البيانات بنجاح'.",
+      },
+      {
+        id: "phd-3",
+        stepNumber: 3,
+        titleEN: "Look Up Feed Consumption from ZPPH3",
+        titleAR: "استعراض استهلاك العلف من ZPPH3",
+        tCode: "ZPPH3",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "After entering house data, go to the Feed Consumption section in ZPPH3 to check the feed quantity that should be confirmed (in kg). Note the Production Order Number and the Activity Number for use in CO11N. Open a new SAP session window.",
+        whatToDoAR:
+          "بعد إدخال بيانات الريظحة، انتقل إلى قسم استهلاك العلف في ZPPH3 للاطلاع على كمية العلف الواجب تأكيدها (بالكيلوغرام). دوّن رقم أمر الإنتاج ورقم النشاط للاستخدام في CO11N. افتح نافذة جلسة SAP جديدة.",
+        whatSAPDoesEN:
+          "Displays the planned vs. actual feed consumption per house. The production order number and activity number visible here are needed to post the actual goods movement in CO11N.",
+        whatSAPDoesAR:
+          "يعرض استهلاك العلف المخطط مقابل الفعلي لكل ريظحة. رقم أمر الإنتاج ورقم النشاط المرئيان هنا مطلوبان لترحيل حركة البضائع الفعلية في CO11N.",
+        expectedOutputEN:
+          "Feed consumption qty confirmed from ZPPH3. Production order number and activity number noted for CO11N entry.",
+        expectedOutputAR:
+          "تم تأكيد كمية استهلاك العلف من ZPPH3. رقم أمر الإنتاج ورقم النشاط مدوّنان لإدخال CO11N.",
+      },
+      {
+        id: "phd-4",
+        stepNumber: 4,
+        titleEN: "Confirm Material Consumption on Production Order (CO11N)",
+        titleAR: "تأكيد استهلاك المواد على أمر الإنتاج (CO11N)",
+        tCode: "CO11N",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Navigate to CO11N. Enter the Production Order Number and Activity Number, then click Enter. Click the Goods Movement icon. The components screen appears — verify that the listed feed matches what was actually consumed. For medicines or vaccines, select the item and click Batch Determination to assign the correct batch. Enter actual consumed quantities (ensure unit of measure is correct). For vaccines/medicines, use Batch Determination and click Copy to distribute quantities across house batches. Click Post (Save).",
+        whatToDoAR:
+          "انتقل إلى CO11N. أدخل رقم أمر الإنتاج ورقم النشاط، ثم انقر Enter. انقر أيقونة حركة البضائع. تظهر شاشة المكونات — تحقق من أن العلف المدرج يطابق ما تم استهلاكه فعلياً. للأدوية أو اللقاحات، حدد البند وانقر تحديد الدفعة لتخصيص الدفعة الصحيحة. أدخل الكميات المستهلكة الفعلية (تأكد من صحة وحدة القياس). للقاحات/الأدوية، استخدم تحديد الدفعة وانقر نسخ لتوزيع الكميات على دفعات الريظحة. انقر ترحيل (حفظ).",
+        whatSAPDoesEN:
+          "Posts the actual goods issue (movement type 261) for all confirmed components against the production order. Updates the production order with actual feed, medicine, and vaccine costs. For batch-managed items, distributes consumption across relevant batches.",
+        whatSAPDoesAR:
+          "يرحّل إصدار البضاعة الفعلي (نوع الحركة 261) لجميع المكونات المؤكدة مقابل أمر الإنتاج. يحدّث أمر الإنتاج بتكاليف العلف والدواء والتطعيم الفعلية. للبنود المُدارة بالدفعات، يوزّع الاستهلاك على الدفعات ذات الصلة.",
+        expectedOutputEN:
+          "Goods movement posted. Production order updated with actual component consumption. Material document created. Confirmation is complete.",
+        expectedOutputAR:
+          "تم ترحيل حركة البضائع. أمر الإنتاج محدَّث باستهلاك المكونات الفعلية. مستند المادة تم إنشاؤه. اكتمل التأكيد.",
+      },
+    ],
+  },
+
+  // ── PP-12. Feed & Medicines Receiving via STO (YOPENSTO / MIGO) ─────────────
+  {
+    id: "pp-feed-medicines-receiving",
+    icon: "🌾",
+    duration: "20 min",
+    titleEN: "Feed & Medicines Receiving via STO",
+    titleAR: "استلام العلف والأدوية عبر أوامر النقل الداخلي",
+    descriptionEN:
+      "Receive feed and medicines/vaccines delivered via Stock Transfer Orders using YOPENSTO to locate the delivery and MIGO to post the Goods Receipt.",
+    descriptionAR:
+      "استلام العلف والأدوية/اللقاحات المسلّمة عبر أوامر النقل الداخلي باستخدام YOPENSTO لتحديد التسليم و MIGO لترحيل استلام البضاعة.",
+    module: "PP",
+    roles: ["Farm Supervisor", "Stock Keeper"],
+    steps: [
+      {
+        id: "pfmr-1",
+        stepNumber: 1,
+        titleEN: "Open YOPENSTO and Find Delivery",
+        titleAR: "فتح YOPENSTO والبحث عن التسليم",
+        tCode: "YOPENSTO",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "Navigate to YOPENSTO. Select the Plant. Click Execute. The list of open STOs for the plant appears. Click the 'Delivery Schedule' icon to organize the list by delivery date. Click the 'POH' (Purchase Order History) icon to open the delivery details. Find the Outbound Delivery Number (for feed) or the Material Document Number (for medicines from Central Qassim warehouse) — this number is used for receiving in MIGO.",
+        whatToDoAR:
+          "انتقل إلى YOPENSTO. حدد المصنع. انقر تنفيذ. تظهر قائمة أوامر النقل المفتوحة للمصنع. انقر أيقونة 'جدول التسليم' لتنظيم القائمة حسب تاريخ التسليم. انقر أيقونة 'POH' (تاريخ أمر الشراء) لفتح تفاصيل التسليم. ابحث عن رقم التسليم الصادر (للعلف) أو رقم مستند المادة (للأدوية من مستودع القصيم المركزي) — هذا الرقم يُستخدم للاستلام في MIGO.",
+        whatSAPDoesEN:
+          "Displays all open Stock Transfer Orders for the selected plant. The delivery schedule view organizes by planned delivery date. The POH icon shows the corresponding delivery documents linked to each STO.",
+        whatSAPDoesAR:
+          "يعرض جميع أوامر النقل المفتوحة للمصنع المحدد. يُنظّم عرض جدول التسليم حسب تاريخ التسليم المخطط. تُظهر أيقونة POH مستندات التسليم المقابلة المرتبطة بكل أمر نقل.",
+        expectedOutputEN:
+          "Outbound Delivery Number (or Material Document No.) identified for use in MIGO.",
+        expectedOutputAR:
+          "تم تحديد رقم التسليم الصادر (أو رقم مستند المادة) للاستخدام في MIGO.",
+      },
+      {
+        id: "pfmr-2",
+        stepNumber: 2,
+        titleEN: "Post Feed Goods Receipt (MIGO)",
+        titleAR: "ترحيل استلام بضاعة العلف (MIGO)",
+        tCode: "MIGO",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "Open a new SAP session. Navigate to MIGO. Select Goods Receipt → Outbound Delivery. Enter the Outbound Delivery Number from YOPENSTO. Verify the quantities received match the delivery. Click OK. Confirm that the Posting Date matches the actual physical delivery date (not system date). Click Post. SAP posts the feed receipt successfully.",
+        whatToDoAR:
+          "افتح جلسة SAP جديدة. انتقل إلى MIGO. حدد استلام البضاعة → التسليم الصادر. أدخل رقم التسليم الصادر من YOPENSTO. تحقق من مطابقة الكميات المستلمة للتسليم. انقر OK. تأكد من أن تاريخ الترحيل يطابق تاريخ التسليم الفعلي (وليس تاريخ النظام). انقر ترحيل. يرحّل SAP استلام العلف بنجاح.",
+        whatSAPDoesEN:
+          "Posts a Goods Receipt against the Outbound Delivery using movement type 101. Updates feed stock in the receiving plant's storage location. Links the receipt to the STO for reconciliation.",
+        whatSAPDoesAR:
+          "يرحّل استلام بضاعة مقابل التسليم الصادر باستخدام نوع الحركة 101. يحدّث مخزون العلف في موقع تخزين المصنع المستلم. يربط الاستلام بأمر النقل للمطابقة.",
+        expectedOutputEN:
+          "Feed GR posted. Material document created. Feed stock increased in receiving plant. STO line quantity updated.",
+        expectedOutputAR:
+          "تم ترحيل استلام العلف. مستند المادة تم إنشاؤه. مخزون العلف ازداد في المصنع المستلم. كمية سطر أمر النقل محدَّثة.",
+      },
+      {
+        id: "pfmr-3",
+        stepNumber: 3,
+        titleEN: "Post Medicines / Vaccines Goods Receipt (MIGO)",
+        titleAR: "ترحيل استلام بضاعة الأدوية / اللقاحات (MIGO)",
+        tCode: "MIGO",
+        role: "Farm Supervisor",
+        whatToDoEN:
+          "From YOPENSTO delivery details, copy the Batch Number of the medicine or vaccine to be received. Open MIGO. Select Goods Receipt → Purchase Order. Enter the Purchase Order number. Enter the Batch number. Verify quantities received and click OK. Confirm posting date equals the actual receiving date. Scroll right to verify Movement Type is 101. Click Post.",
+        whatToDoAR:
+          "من تفاصيل تسليم YOPENSTO، انسخ رقم الدفعة للدواء أو اللقاح المراد استلامه. افتح MIGO. حدد استلام البضاعة → أمر الشراء. أدخل رقم أمر الشراء. أدخل رقم الدفعة. تحقق من الكميات المستلمة وانقر OK. تأكد من مطابقة تاريخ الترحيل لتاريخ الاستلام الفعلي. مرّر لليمين للتحقق من أن نوع الحركة هو 101. انقر ترحيل.",
+        whatSAPDoesEN:
+          "Posts Goods Receipt for medicines/vaccines against the Purchase Order. Movement type 101 increases batch-managed medicine stock. The batch number links the received medicines to their quality documentation and expiry date.",
+        whatSAPDoesAR:
+          "يرحّل استلام البضاعة للأدوية/اللقاحات مقابل أمر الشراء. نوع الحركة 101 يزيد مخزون الأدوية المُدار بالدفعات. رقم الدفعة يربط الأدوية المستلمة بتوثيق الجودة وتاريخ انتهاء الصلاحية.",
+        expectedOutputEN:
+          "Medicines/vaccines GR posted. Batch-managed stock updated. Material document created. Medicines ready for consumption confirmation in CO11N.",
+        expectedOutputAR:
+          "تم ترحيل استلام الأدوية/اللقاحات. المخزون المُدار بالدفعات محدَّث. مستند المادة تم إنشاؤه. الأدوية جاهزة لتأكيد الاستهلاك في CO11N.",
+      },
+    ],
+  },
+
+  // ── PP-13. Table Egg Production Recording ────────────────────────────────────
+  {
+    id: "pp-table-egg-production",
+    icon: "🥚",
+    duration: "45 min",
+    titleEN: "Table Egg Production Recording",
+    titleAR: "تسجيل إنتاج بيض المائدة",
+    descriptionEN:
+      "Record daily table egg production on the system: GR eggs on production orders, create unpacked egg order (CO01), confirm via CO11N, pack via MF42N, and transfer to warehouse with MB21.",
+    descriptionAR:
+      "تسجيل إنتاج بيض المائدة اليومي على النظام: استلام البيض على أوامر الإنتاج، إنشاء أمر البيض غير المعبّأ (CO01)، التأكيد عبر CO11N، التعبئة عبر MF42N، والنقل إلى المستودع بـ MB21.",
+    module: "PP",
+    roles: ["C.Layer Responsible", "Production Supervisor"],
+    steps: [
+      {
+        id: "tep-1",
+        stepNumber: 1,
+        titleEN: "Post Egg Production GR on Laying Orders (MIGO)",
+        titleAR: "ترحيل استلام بضاعة إنتاج البيض على أوامر الإنتاج (MIGO)",
+        tCode: "MIGO",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Navigate to MIGO. Select Goods Receipt → Order. Click the Find icon and enter plant 1250 to search. A list of production orders appears at the bottom — select the orders for the houses whose eggs you want to record. Click the Adopt icon. For each house in the list, enter the number of eggs produced separately. Select the storage location (1254 for Grading Station 1, or 1255 for Grading Station 2). Flag the checkbox for the tick mark. Confirm the posting date equals the actual production date. Click Check, then Post.",
+        whatToDoAR:
+          "انتقل إلى MIGO. حدد استلام البضاعة → أمر. انقر أيقونة البحث وأدخل المصنع 1250 للبحث. تظهر قائمة أوامر الإنتاج في أسفل الصفحة — حدد الأوامر للريظحات التي تريد تسجيل بيضها. انقر أيقونة تبنّي. لكل ريظحة في القائمة، أدخل عدد البيض المنتج بشكل منفصل. حدد موقع التخزين (1254 لمحطة التدريج 1، أو 1255 لمحطة التدريج 2). ضع علامة في مربع الاختيار. تأكد من أن تاريخ الترحيل يطابق تاريخ الإنتاج الفعلي. انقر فحص، ثم ترحيل.",
+        whatSAPDoesEN:
+          "Posts GR for eggs against the production orders for each house. Updates egg stock per house batch at the grading station. Each posting creates a material document linking egg quantity to the specific house production order.",
+        whatSAPDoesAR:
+          "يرحّل استلام البضاعة للبيض مقابل أوامر الإنتاج لكل ريظحة. يحدّث مخزون البيض لكل دفعة ريظحة في محطة التدريج. كل ترحيل ينشئ مستند مادة يربط كمية البيض بأمر إنتاج الريظحة المحدد.",
+        expectedOutputEN:
+          "Egg GR posted for all selected houses. Stock updated in grading station. Material documents created per house batch.",
+        expectedOutputAR:
+          "تم ترحيل استلام البيض لجميع الريظحات المحددة. المخزون محدَّث في محطة التدريج. مستندات المادة أُنشئت لكل دفعة ريظحة.",
+      },
+      {
+        id: "tep-2",
+        stepNumber: 2,
+        titleEN: "Create Unpacked Egg Production Order (CO01)",
+        titleAR: "إنشاء أمر إنتاج البيض غير المعبّأ (CO01)",
+        tCode: "CO01",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Navigate to CO01. Enter Material 90001 (unpacked eggs), Plant 1250. This page opens the production order header. Enter the total quantity of Grade A eggs for the whole farm as the Target Qty. Enter the production date. Select the Production Version. Click Release Order. Then click the Components icon. The components list appears inside the order — it includes Unpacked Grade C eggs and Eggs per breed. Enter the Unpacked Grade C egg quantity as a negative number (to deduct it from the total order qty). Enter the egg quantity for each breed; if a breed is not present, delete that line. Save the production order.",
+        whatToDoAR:
+          "انتقل إلى CO01. أدخل المادة 90001 (بيض غير معبّأ) والمصنع 1250. تفتح هذه الصفحة رأس أمر الإنتاج. أدخل إجمالي عدد بيض الدرجة A للمزرعة بأكملها كالكمية المستهدفة. أدخل تاريخ الإنتاج. حدد إصدار الإنتاج. انقر إصدار الأمر. ثم انقر أيقونة المكونات. تظهر قائمة المكونات داخل الأمر — تشمل بيض الدرجة C غير المعبّأ وبيض كل سلالة. أدخل كمية بيض الدرجة C غير المعبّأ كرقم سالب (لخصمه من إجمالي كمية الأمر). أدخل كمية البيض لكل سلالة؛ إذا لم تكن سلالة موجودة، احذف ذلك السطر. احفظ أمر الإنتاج.",
+        whatSAPDoesEN:
+          "Creates and releases a production order for unpacked eggs. The negative Grade C quantity offsets total order qty to reflect net Grade A. Component list links each breed's eggs to the order for cost and traceability.",
+        whatSAPDoesAR:
+          "ينشئ ويُصدر أمر إنتاج للبيض غير المعبّأ. كمية الدرجة C السالبة تُعوّض إجمالي كمية الأمر لتعكس صافي الدرجة A. قائمة المكونات تربط بيض كل سلالة بالأمر للتكلفة والتتبع.",
+        expectedOutputEN:
+          "Unpacked egg production order created and released. Components assigned per breed. Order ready for CO11N confirmation.",
+        expectedOutputAR:
+          "تم إنشاء وإصدار أمر إنتاج البيض غير المعبّأ. المكونات مخصّصة لكل سلالة. الأمر جاهز لتأكيد CO11N.",
+      },
+      {
+        id: "tep-3",
+        stepNumber: 3,
+        titleEN: "Confirm Egg Production Order (CO11N)",
+        titleAR: "تأكيد أمر إنتاج البيض (CO11N)",
+        tCode: "CO11N",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Navigate to CO11N. Enter the Production Order number (from the unpacked egg order created in CO01). Click the Goods Movement icon. The components screen appears — select the producing breed including Grade C eggs. Click Batch Determination icon. The quantity will be distributed across each house's batch automatically. Click Copy. The quantity shows divided on each batch. Click Post (Save).",
+        whatToDoAR:
+          "انتقل إلى CO11N. أدخل رقم أمر الإنتاج (من أمر البيض غير المعبّأ الذي تم إنشاؤه في CO01). انقر أيقونة حركة البضائع. تظهر شاشة المكونات — حدد السلالة المنتجة بما في ذلك بيض الدرجة C. انقر أيقونة تحديد الدفعة. سيتم توزيع الكمية على دفعة كل ريظحة تلقائياً. انقر نسخ. تظهر الكمية موزّعة على كل دفعة. انقر ترحيل (حفظ).",
+        whatSAPDoesEN:
+          "Confirms the egg production order and distributes quantity consumption across house batches. Posts Goods Issue for Grade C eggs and Goods Receipt for the unpacked Grade A egg order. Ensures full traceability per house.",
+        whatSAPDoesAR:
+          "يؤكد أمر إنتاج البيض ويوزّع استهلاك الكمية على دفعات الريظحة. يرحّل إصدار البضاعة لبيض الدرجة C واستلام البضاعة لأمر بيض الدرجة A غير المعبّأ. يضمن التتبع الكامل لكل ريظحة.",
+        expectedOutputEN:
+          "Confirmation posted. Quantities distributed per house batch. Grade C eggs deducted. Grade A unpacked egg stock updated.",
+        expectedOutputAR:
+          "تم ترحيل التأكيد. الكميات موزّعة حسب دفعة الريظحة. بيض الدرجة C خُصم. مخزون بيض الدرجة A غير المعبّأ محدَّث.",
+      },
+      {
+        id: "tep-4",
+        stepNumber: 4,
+        titleEN: "Pack Eggs — Collective Entry (MF42N)",
+        titleAR: "تعبئة البيض — الإدخال الجماعي (MF42N)",
+        tCode: "MF42N",
+        role: "Production Supervisor",
+        whatToDoEN:
+          "Navigate to MF42N. Enter the Packing Size (box type, e.g. Type A). Select the Grading Station (production version). Enter the Batch number (which equals the production date). Enter the Qty of cartons produced. Verify that the Posting Date matches the actual production date. Click Save.",
+        whatToDoAR:
+          "انتقل إلى MF42N. أدخل حجم التعبئة (نوع الصندوق، مثل النوع A). حدد محطة التدريج (إصدار الإنتاج). أدخل رقم الدفعة (الذي يساوي تاريخ الإنتاج). أدخل كمية الكراتين المنتجة. تحقق من مطابقة تاريخ الترحيل لتاريخ الإنتاج الفعلي. انقر حفظ.",
+        whatSAPDoesEN:
+          "Runs the REM backflush for egg packing. Consumes unpacked eggs from grading station and produces packed egg cartons. Updates packed egg stock. Links packed carton batch to production date for shelf life tracking.",
+        whatSAPDoesAR:
+          "يُشغّل الترحيل العكسي للتصنيع التكراري لتعبئة البيض. يستهلك البيض غير المعبّأ من محطة التدريج وينتج كراتين البيض المعبّأ. يحدّث مخزون البيض المعبّأ. يربط دفعة الكراتين المعبّأة بتاريخ الإنتاج لتتبع العمر الافتراضي.",
+        expectedOutputEN:
+          "Packed egg cartons produced and stock updated. Batch linked to production date. Unpacked egg stock reduced correspondingly.",
+        expectedOutputAR:
+          "كراتين البيض المعبّأة أُنتجت والمخزون محدَّث. الدفعة مرتبطة بتاريخ الإنتاج. مخزون البيض غير المعبّأ خُفّض تبعاً لذلك.",
+      },
+      {
+        id: "tep-5",
+        stepNumber: 5,
+        titleEN: "Transfer Packed Eggs to Warehouse (MB21)",
+        titleAR: "نقل البيض المعبّأ إلى المستودع (MB21)",
+        tCode: "MB21",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Navigate to MB21 to create a transfer reservation. Select Movement Type 311. Enter: Receiving Storage Location (warehouse), Material number (packed eggs), Quantity of cartons, Issuing Storage Location (grading station 1254 or 1255), and Batch (production date). Save. Then open MIGO_TR, enter the reservation number, confirm, and Post to execute the physical transfer to the warehouse.",
+        whatToDoAR:
+          "انتقل إلى MB21 لإنشاء حجز نقل. حدد نوع الحركة 311. أدخل: موقع التخزين المستلم (المستودع) ورقم المادة (بيض معبّأ) وكمية الكراتين وموقع التخزين المصدر (محطة التدريج 1254 أو 1255) والدفعة (تاريخ الإنتاج). احفظ. ثم افتح MIGO_TR وأدخل رقم الحجز وأكّد وارحّل لتنفيذ النقل المادي إلى المستودع.",
+        whatSAPDoesEN:
+          "Creates the transfer reservation (MB21) then executes the stock transfer posting (MIGO_TR). Moves packed egg cartons from the grading station storage location to the main warehouse. Completes the egg production cycle in SAP.",
+        whatSAPDoesAR:
+          "ينشئ حجز النقل (MB21) ثم ينفّذ ترحيل نقل المخزون (MIGO_TR). ينقل كراتين البيض المعبّأة من موقع تخزين محطة التدريج إلى المستودع الرئيسي. يُكمل دورة إنتاج البيض في SAP.",
+        expectedOutputEN:
+          "Packed eggs transferred to warehouse. Stock visible in MB52 under warehouse storage location. Table egg production cycle in SAP complete.",
+        expectedOutputAR:
+          "تم نقل البيض المعبّأ إلى المستودع. المخزون مرئي في MB52 تحت موقع تخزين المستودع. دورة إنتاج بيض المائدة في SAP مكتملة.",
+      },
+    ],
+  },
+
+  // ── PP-14. DOC Purchase Requisition — Commercial Layer (ME51N) ───────────────
+  {
+    id: "pp-doc-pr-clayer",
+    icon: "🐣",
+    duration: "15 min",
+    titleEN: "DOC Purchase Requisition — Commercial Layer",
+    titleAR: "طلب شراء كتاكيت يوم التفريخ — الدجاج البياض التجاري",
+    descriptionEN:
+      "Create a Purchase Requisition in ME51N to procure day-old chicks (DOC) for commercial layer rearing, including both paid quantity and free-of-charge (FOC) quantity.",
+    descriptionAR:
+      "إنشاء طلب شراء في ME51N للحصول على كتاكيت يوم التفريخ للتربية التجارية، بما في ذلك الكمية المدفوعة والكمية المجانية (FOC).",
+    module: "PP",
+    roles: ["C.Layer Responsible"],
+    steps: [
+      {
+        id: "docpr-1",
+        stepNumber: 1,
+        titleEN: "Open ME51N and Set Document Type",
+        titleAR: "فتح ME51N وتعيين نوع المستند",
+        tCode: "ME51N",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Navigate to ME51N. Choose the Shopping Cart type 'Live Operation Requisition'. This document type ensures the PR is routed correctly for live animal procurement approval.",
+        whatToDoAR:
+          "انتقل إلى ME51N. اختر نوع سلة التسوق 'طلبات العمليات الحية'. يضمن نوع المستند هذا توجيه طلب الشراء بشكل صحيح للموافقة على شراء الحيوانات الحية.",
+        whatSAPDoesEN:
+          "Opens the Create Purchase Requisition screen with the correct document type for live operations, ensuring the correct approval workflow is triggered.",
+        whatSAPDoesAR:
+          "يفتح شاشة إنشاء طلب الشراء بنوع المستند الصحيح للعمليات الحية، مما يضمن تشغيل مسار الموافقة الصحيح.",
+        expectedOutputEN:
+          "ME51N open with Live Operation Requisition document type selected.",
+        expectedOutputAR:
+          "ME51N مفتوح مع تحديد نوع مستند طلبات العمليات الحية.",
+      },
+      {
+        id: "docpr-2",
+        stepNumber: 2,
+        titleEN: "Enter Paid & FOC DOC Quantities",
+        titleAR: "إدخال كميات الكتاكيت المدفوعة والمجانية (FOC)",
+        tCode: "ME51N",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Select the Material: Day-Old Chicks (DOC). On the first line, enter the paid quantity of DOC. On the second line, enter the Free-of-Charge (FOC) quantity — this is typically 7% of the paid quantity. Enter the required placement date (delivery date). Enter the receiving Plant: 1260 (Commercial Layer Rearing). Select the receiving Storage Location (the specific house/pen). Enter the Requester user ID.",
+        whatToDoAR:
+          "حدد المادة: كتاكيت يوم التفريخ (DOC). في السطر الأول، أدخل الكمية المدفوعة من الكتاكيت. في السطر الثاني، أدخل الكمية المجانية (FOC) — وهي عادةً 7% من الكمية المدفوعة. أدخل تاريخ التوزيع المطلوب (تاريخ التسليم). أدخل المصنع المستلم: 1260 (تربية الدجاج البياض التجاري). حدد موقع التخزين المستلم (الريظحة/الحظيرة المحددة). أدخل معرّف مستخدم الطالب.",
+        whatSAPDoesEN:
+          "Creates two PR line items for DOC: one for the paid quantity and one for the FOC quantity (zero-priced). Records the placement date, receiving plant 1260, storage location, and requester for approval routing.",
+        whatSAPDoesAR:
+          "ينشئ سطرين لطلب الشراء للكتاكيت: أحدهما للكمية المدفوعة والآخر للكمية المجانية (بسعر صفري). يسجّل تاريخ التوزيع والمصنع المستلم 1260 وموقع التخزين والطالب لتوجيه الموافقة.",
+        expectedOutputEN:
+          "Two PR lines entered: paid DOC quantity + FOC quantity (7%). Placement date, plant 1260, and storage location confirmed.",
+        expectedOutputAR:
+          "تم إدخال سطرين لطلب الشراء: كمية DOC المدفوعة + الكمية المجانية (7%). تاريخ التوزيع والمصنع 1260 وموقع التخزين مؤكّدة.",
+      },
+      {
+        id: "docpr-3",
+        stepNumber: 3,
+        titleEN: "Verify and Save the PR",
+        titleAR: "التحقق وحفظ طلب الشراء",
+        tCode: "ME51N",
+        role: "C.Layer Responsible",
+        whatToDoEN:
+          "Review all entries: material, quantities (paid and FOC), placement date, plant 1260, storage location, and requester. Click Save. The PR document number appears at the bottom of the screen.",
+        whatToDoAR:
+          "راجع جميع المدخلات: المادة والكميات (المدفوعة والمجانية) وتاريخ التوزيع والمصنع 1260 وموقع التخزين والطالب. انقر حفظ. يظهر رقم مستند طلب الشراء في أسفل الشاشة.",
+        whatSAPDoesEN:
+          "Creates the Purchase Requisition document and triggers the approval workflow for DOC procurement. The PR number can be monitored in ME53N or ME5A.",
+        whatSAPDoesAR:
+          "ينشئ مستند طلب الشراء ويُشغّل مسار الموافقة لشراء الكتاكيت. يمكن متابعة رقم طلب الشراء في ME53N أو ME5A.",
+        expectedOutputEN:
+          "PR document number displayed. PR submitted for approval. DOC procurement process initiated for Commercial Layer plant 1260.",
+        expectedOutputAR:
+          "رقم مستند طلب الشراء معروض. طلب الشراء مقدَّم للموافقة. بدأت عملية شراء الكتاكيت لمصنع الدجاج البياض التجاري 1260.",
+      },
+    ],
+  },
+
   // ─── HCM: SuccessFactors ESS ────────────────────────────────────────────────
   {
     id: "sf-ess",
