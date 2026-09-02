@@ -194,9 +194,10 @@ export default function HubPage() {
             className="text-4xl sm:text-5xl font-light leading-tight mb-4 max-w-2xl"
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
-            {lang === "AR"
-              ? "لا تحتار، كل اللي تحتاجه هنا."
-              : "Don't Guess. Everything You Need Is Here."}
+            Don&apos;t Guess. Everything You Need Is Here.
+            <span className="block text-3xl sm:text-4xl mt-1 text-[#A8C4A8]" dir="rtl">
+              لا تحتار، كل اللي تحتاجه هنا.
+            </span>
           </h2>
           <p className="text-[#A8C4A8] text-sm sm:text-base max-w-xl leading-relaxed mb-8">
             Role-based learning paths, curated SAP reference, and progress tracking —
