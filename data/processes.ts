@@ -494,7 +494,304 @@ export const processes: Process[] = [
     ],
   },
 
-  // ── 5. Quota Arrangement ─────────────────────────────────────────────────
+  // ── 5. Create Purchase Requisition for Projects ──────────────────────────
+  {
+    id: "purchase-requisition-projects",
+    icon: "🛒",
+    duration: "20 min",
+    titleEN: "Create Purchase Requisition for Projects (ME51N)",
+    titleAR: "إنشاء طلب شراء المشاريع (ME51N)",
+    descriptionEN:
+      "Create a service purchase requisition for project execution using T-code ME51N. Covers document type selection, item details, valuation, dates, and source of supply assignment.",
+    descriptionAR:
+      "إنشاء طلب شراء خدمة لتنفيذ مشروع باستخدام ME51N. يشمل اختيار نوع المستند وتفاصيل البند والتقييم والتواريخ وتعيين مصدر التوريد.",
+    module: "MM",
+    roles: ["Procurement Officer", "Project Manager"],
+    steps: [
+      {
+        id: "pr-1",
+        stepNumber: 1,
+        titleEN: "Navigate to ME51N and Set Document Type",
+        titleAR: "الانتقال إلى ME51N وتحديد نوع المستند",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Navigate to transaction ME51N (Create Purchase Requisition). In the header area, change the document type to 'YEXP Expansion' from the dropdown. This ensures the correct approval workflow and account assignment for expansion projects.",
+        whatToDoAR:
+          "انتقل إلى معاملة ME51N (إنشاء طلب الشراء). في منطقة الرأس، غيّر نوع المستند إلى 'YEXP Expansion' من القائمة المنسدلة. يضمن هذا سير عمل الموافقة الصحيح وتعيين الحساب لمشاريع التوسعة.",
+        whatSAPDoesEN:
+          "Opens the Create Purchase Requisition screen. Setting the document type to YEXP Expansion configures the PR with the correct number range, approval levels, and account assignment category for capital expansion projects.",
+        whatSAPDoesAR:
+          "يفتح شاشة إنشاء طلب الشراء. يُهيّئ ضبط نوع المستند على YEXP Expansion طلب الشراء بنطاق الأرقام الصحيح ومستويات الموافقة وفئة تعيين الحساب لمشاريع التوسعة الرأسمالية.",
+        expectedOutputEN:
+          "ME51N screen open with document type set to YEXP Expansion. Source Determination checkbox is enabled.",
+        expectedOutputAR:
+          "شاشة ME51N مفتوحة مع نوع المستند YEXP Expansion. مربع اختيار تحديد المصدر مفعّل.",
+      },
+      {
+        id: "pr-2",
+        stepNumber: 2,
+        titleEN: "Enter Item Category",
+        titleAR: "إدخال فئة البند",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "In the item line, set the Item Category field. For project services, leave the item category as 'U' (standard service/unknown). The item number defaults to 10.",
+        whatToDoAR:
+          "في صف البند، حدد حقل فئة البند. لخدمات المشاريع، اترك فئة البند كـ 'U' (خدمة قياسية/غير معروف). رقم البند يبدأ افتراضياً بـ 10.",
+        whatSAPDoesEN:
+          "Sets the procurement category for the line item. Category U (unknown/service) enables free-text description without requiring a material number, suitable for project-based service procurement.",
+        whatSAPDoesAR:
+          "يضبط فئة الشراء لبند الصف. الفئة U (غير معروف/خدمة) تتيح وصفاً نصياً حراً دون الحاجة لرقم مادة، وهو مناسب لشراء الخدمات القائمة على المشاريع.",
+        expectedOutputEN:
+          "Item line 10 created with category U. Free-text Short Text field is available for entry.",
+        expectedOutputAR:
+          "تم إنشاء بند الصف 10 بالفئة U. حقل النص القصير الحر متاح للإدخال.",
+      },
+      {
+        id: "pr-3",
+        stepNumber: 3,
+        titleEN: "Enter Short Text Description",
+        titleAR: "إدخال وصف النص القصير",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "In the Short Text column, type a clear description of the service being requested. For example: 'إنشاء وتنفيذ مشروع الأمهات' (Create and Execute Parent Project). This description will appear on the purchase order and supplier documents.",
+        whatToDoAR:
+          "في عمود النص القصير، اكتب وصفاً واضحاً للخدمة المطلوبة. على سبيل المثال: 'إنشاء وتنفيذ مشروع الأمهات'. سيظهر هذا الوصف على أمر الشراء ووثائق المورد.",
+        whatSAPDoesEN:
+          "Stores the free-text description of the service. This text carries through to the purchase order and appears on printouts sent to the vendor.",
+        whatSAPDoesAR:
+          "يحفظ الوصف النصي الحر للخدمة. يُنقل هذا النص إلى أمر الشراء ويظهر على المطبوعات المرسلة إلى المورد.",
+        expectedOutputEN:
+          "Short text description entered and visible in the item line.",
+        expectedOutputAR:
+          "تم إدخال وصف النص القصير وهو مرئي في صف البند.",
+      },
+      {
+        id: "pr-4",
+        stepNumber: 4,
+        titleEN: "Enter Quantity",
+        titleAR: "إدخال الكمية",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "In the Quantity field, enter the required quantity. For service-type PRs, this is typically '1' representing one service contract or engagement. Adjust based on the actual service scope.",
+        whatToDoAR:
+          "في حقل الكمية، أدخل الكمية المطلوبة. بالنسبة لطلبات الشراء من نوع الخدمة، عادةً ما تكون '1' تمثل عقد خدمة أو تعامل واحد. عدّل بناءً على نطاق الخدمة الفعلي.",
+        whatSAPDoesEN:
+          "Sets the order quantity for the requisition line. For services, quantity of 1 combined with the valuation price represents the total contract value.",
+        whatSAPDoesAR:
+          "يضبط كمية الطلب لبند طلب الشراء. بالنسبة للخدمات، تمثل الكمية 1 مع سعر التقييم إجمالي قيمة العقد.",
+        expectedOutputEN:
+          "Quantity field set to 1 (or appropriate service quantity).",
+        expectedOutputAR:
+          "حقل الكمية مضبوط على 1 (أو الكمية المناسبة للخدمة).",
+      },
+      {
+        id: "pr-5",
+        stepNumber: 5,
+        titleEN: "Set Unit of Measure",
+        titleAR: "تحديد وحدة القياس",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Set the Unit of Measure to '%' (percentage) for service-based requisitions. This is the standard unit used for project execution services in the AWP system.",
+        whatToDoAR:
+          "حدد وحدة القياس كـ '%' (نسبة مئوية) لطلبات الشراء القائمة على الخدمة. هذه هي الوحدة القياسية المستخدمة لخدمات تنفيذ المشاريع في نظام AWP.",
+        whatSAPDoesEN:
+          "Assigns the unit of measure to the PR line. Using '%' as the unit for service contracts aligns with AWP's configuration for project service procurement.",
+        whatSAPDoesAR:
+          "يُعيّن وحدة القياس لبند طلب الشراء. استخدام '%' كوحدة لعقود الخدمة يتوافق مع تهيئة AWP لشراء خدمات المشاريع.",
+        expectedOutputEN:
+          "Unit of Measure set to '%'. Quantity and unit combination is valid.",
+        expectedOutputAR:
+          "وحدة القياس مضبوطة على '%'. مجموعة الكمية والوحدة صالحة.",
+      },
+      {
+        id: "pr-6",
+        stepNumber: 6,
+        titleEN: "Set Delivery Date and Material Group",
+        titleAR: "تحديد تاريخ التسليم ومجموعة المواد",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Enter the Delivery Date (required date for the service). Set the Material Group to 'Services' initially (if needed) — this may auto-populate based on the system configuration. The correct material group for project services is 10100 (Project Material), which you will confirm in the Material Data tab.",
+        whatToDoAR:
+          "أدخل تاريخ التسليم (التاريخ المطلوب للخدمة). حدد مجموعة المواد كـ 'Services' مبدئياً إذا لزم — قد يُملأ هذا تلقائياً بناءً على تهيئة النظام. مجموعة المواد الصحيحة لخدمات المشاريع هي 10100 (مواد المشروع)، والتي ستؤكدها في تبويب بيانات المادة.",
+        whatSAPDoesEN:
+          "Sets the requirement date for procurement planning and the material group used for account determination and spend analytics.",
+        whatSAPDoesAR:
+          "يضبط تاريخ المتطلب لتخطيط المشتريات ومجموعة المواد المستخدمة لتحديد الحساب وتحليلات الإنفاق.",
+        expectedOutputEN:
+          "Delivery date entered. Material group set. Item is ready for plant and storage location assignment.",
+        expectedOutputAR:
+          "تم إدخال تاريخ التسليم. تم تحديد مجموعة المواد. البند جاهز لتعيين المصنع وموقع التخزين.",
+      },
+      {
+        id: "pr-7",
+        stepNumber: 7,
+        titleEN: "Enter Plant",
+        titleAR: "إدخال المصنع",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "In the Plant field, enter or select 'Qassim Central' (plant code as configured in AWP). This determines the receiving plant for the goods/services and the applicable approval hierarchy.",
+        whatToDoAR:
+          "في حقل المصنع، أدخل أو اختر 'Qassim Central' (رمز المصنع كما هو مُهيَّأ في AWP). يحدد هذا المصنع المستلِم للبضائع/الخدمات والتسلسل الهرمي للموافقة المطبّق.",
+        whatSAPDoesEN:
+          "Associates the PR line with the receiving plant. The plant determines the purchasing organization, the storage location defaults, and the approval workflow routing.",
+        whatSAPDoesAR:
+          "يربط بند طلب الشراء بالمصنع المستلِم. يحدد المصنع مؤسسة الشراء وقيم افتراضيات موقع التخزين وتوجيه سير عمل الموافقة.",
+        expectedOutputEN:
+          "Plant 'Qassim Central' assigned to the PR line.",
+        expectedOutputAR:
+          "تم تعيين مصنع 'Qassim Central' لبند طلب الشراء.",
+      },
+      {
+        id: "pr-8",
+        stepNumber: 8,
+        titleEN: "Enter Storage Location",
+        titleAR: "إدخال موقع التخزين",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Set the Storage Location to 'Expansion' for expansion project services, or to 'Central St.' (Central Stores) depending on the project type. This field may auto-fill based on the plant selection.",
+        whatToDoAR:
+          "حدد موقع التخزين كـ 'Expansion' لخدمات مشاريع التوسعة، أو 'Central St.' (المخازن المركزية) بناءً على نوع المشروع. قد يُملأ هذا الحقل تلقائياً بناءً على اختيار المصنع.",
+        whatSAPDoesEN:
+          "Assigns the storage location for goods receipt. For service PRs, the storage location indicates the cost center or project location where the service will be delivered.",
+        whatSAPDoesAR:
+          "يُعيّن موقع التخزين لاستلام البضاعة. بالنسبة لطلبات شراء الخدمات، يشير موقع التخزين إلى مركز التكلفة أو موقع المشروع الذي سيتم تقديم الخدمة فيه.",
+        expectedOutputEN:
+          "Storage Location set (Expansion or Central St.). Item line is now fully populated at the header level.",
+        expectedOutputAR:
+          "تم تحديد موقع التخزين (Expansion أو Central St.). بند الصف الآن مملوء بالكامل على مستوى الرأس.",
+      },
+      {
+        id: "pr-9",
+        stepNumber: 9,
+        titleEN: "Set Purchase Group and Requisitioner",
+        titleAR: "تحديد مجموعة الشراء وصاحب الطلب",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Set the Purchase Group to '006' (the AWP purchasing group responsible for this category). Enter your username in the Requisitioner field (e.g. 'sakhudhayri'). This field records who raised the PR for audit and workflow purposes.",
+        whatToDoAR:
+          "حدد مجموعة الشراء كـ '006' (مجموعة الشراء AWP المسؤولة عن هذه الفئة). أدخل اسم المستخدم في حقل صاحب الطلب (مثل 'sakhudhayri'). يسجّل هذا الحقل من رفع طلب الشراء لأغراض التدقيق وسير العمل.",
+        whatSAPDoesEN:
+          "Associates the PR with the correct buying group for routing to the right buyer. The requisitioner field appears on the PR output and is used for approval delegation.",
+        whatSAPDoesAR:
+          "يربط طلب الشراء بمجموعة الشراء الصحيحة للتوجيه إلى المشتري المناسب. يظهر حقل صاحب الطلب على مخرجات طلب الشراء ويُستخدم لتفويض الموافقة.",
+        expectedOutputEN:
+          "Purchase Group 006 assigned. Requisitioner name entered. Item line is complete at the overview level.",
+        expectedOutputAR:
+          "تم تعيين مجموعة الشراء 006. تم إدخال اسم صاحب الطلب. بند الصف مكتمل على مستوى النظرة العامة.",
+      },
+      {
+        id: "pr-10",
+        stepNumber: 10,
+        titleEN: "Enter Valuation Price",
+        titleAR: "إدخال سعر التقييم",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Click on the item and navigate to the 'Valuation' tab. Enter the Valuation Price in SAR. This is the estimated value of the service. The Total Value will calculate automatically based on quantity × price. Verify that the 'Inv. Receipt' (Invoice Receipt) checkbox is ticked.",
+        whatToDoAR:
+          "انقر على البند وانتقل إلى تبويب 'التقييم'. أدخل سعر التقييم بالريال السعودي. هذه هي القيمة المقدرة للخدمة. سيُحسب إجمالي القيمة تلقائياً بناءً على الكمية × السعر. تحقق من أن مربع اختيار 'استلام الفاتورة' محدد.",
+        whatSAPDoesEN:
+          "Records the estimated purchase value for budget checking and commitment accounting. The valuation price becomes the price basis for the purchase order.",
+        whatSAPDoesAR:
+          "يسجّل القيمة الشرائية المقدرة لفحص الميزانية ومحاسبة الالتزامات. يصبح سعر التقييم أساس السعر لأمر الشراء.",
+        expectedOutputEN:
+          "Valuation Price entered in SAR. Total Value calculated. Invoice Receipt indicator is active.",
+        expectedOutputAR:
+          "تم إدخال سعر التقييم بالريال السعودي. إجمالي القيمة محسوب. مؤشر استلام الفاتورة نشط.",
+      },
+      {
+        id: "pr-11",
+        stepNumber: 11,
+        titleEN: "Set Product Type Group (Material Data Tab)",
+        titleAR: "تحديد مجموعة نوع المنتج (تبويب بيانات المادة)",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Navigate to the 'Material Data' tab. In the Product Type Group field, enter '2'. This value indicates 'Service' and is mandatory for project service PRs in the AWP system. Verify Material Group shows 10100 (Project Material).",
+        whatToDoAR:
+          "انتقل إلى تبويب 'بيانات المادة'. في حقل مجموعة نوع المنتج، أدخل '2'. تشير هذه القيمة إلى 'خدمة' وهي إلزامية لطلبات شراء خدمات المشاريع في نظام AWP. تحقق من أن مجموعة المواد تُظهر 10100 (مواد المشروع).",
+        whatSAPDoesEN:
+          "Product Type Group '2' classifies this requisition as a service procurement. This classification drives the correct account determination, tax codes, and approval workflow for service purchases.",
+        whatSAPDoesAR:
+          "تُصنّف مجموعة نوع المنتج '2' طلب الشراء هذا كشراء خدمة. يقود هذا التصنيف تحديد الحساب الصحيح ورموز الضريبة وسير عمل الموافقة لعمليات شراء الخدمات.",
+        expectedOutputEN:
+          "Product Type Group = 2 (Service). Material Group = 10100. Material Data tab is correctly configured.",
+        expectedOutputAR:
+          "مجموعة نوع المنتج = 2 (خدمة). مجموعة المواد = 10100. تبويب بيانات المادة مُهيَّأ بشكل صحيح.",
+      },
+      {
+        id: "pr-12",
+        stepNumber: 12,
+        titleEN: "Enter Project Start and End Dates (Quantities/Dates Tab)",
+        titleAR: "إدخال تاريخي بداية ونهاية المشروع (تبويب الكميات/التواريخ)",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Navigate to the 'Quantities/Dates' tab. Enter the Start Date (project commencement date) and End Date (project completion date). These dates represent the expected project duration and are used for scheduling and reporting. The Request Date and Release Date fields will auto-populate.",
+        whatToDoAR:
+          "انتقل إلى تبويب 'الكميات/التواريخ'. أدخل تاريخ البداية (تاريخ بدء المشروع) وتاريخ الانتهاء (تاريخ اكتمال المشروع). تمثل هذه التواريخ المدة المتوقعة للمشروع وتُستخدم للجدولة والتقارير. ستُملأ حقول تاريخ الطلب وتاريخ الإصدار تلقائياً.",
+        whatSAPDoesEN:
+          "Records the project timeline in the PR. Start and End dates enable project managers to track service delivery schedules and are passed to the purchase order for milestone and payment planning.",
+        whatSAPDoesAR:
+          "يسجّل الجدول الزمني للمشروع في طلب الشراء. تتيح تواريخ البداية والانتهاء لمديري المشاريع تتبع جداول تسليم الخدمة وتُنقل إلى أمر الشراء لتخطيط المعالم والمدفوعات.",
+        expectedOutputEN:
+          "Start Date and End Date entered. Request Date and Release Date auto-populated. Project timeline is captured in the PR.",
+        expectedOutputAR:
+          "تم إدخال تاريخ البداية وتاريخ الانتهاء. تاريخ الطلب وتاريخ الإصدار مُملأَيْن تلقائياً. تم تسجيل الجدول الزمني للمشروع في طلب الشراء.",
+      },
+      {
+        id: "pr-13",
+        stepNumber: 13,
+        titleEN: "Assign Source of Supply (Source of Supply Tab)",
+        titleAR: "تعيين مصدر التوريد (تبويب مصدر التوريد)",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Navigate to the 'Source of Supply' tab. Enter the Agreement number (e.g. 4630000022) and line item 10. Set Purchasing Organization to 1000. Set Requirement Urgency to '3' (أهمية الطلب — Request Priority). The Fixed Vendor field will auto-populate (e.g. 10824 — Raeed Albaneeey) from the agreement.",
+        whatToDoAR:
+          "انتقل إلى تبويب 'مصدر التوريد'. أدخل رقم الاتفاقية (مثل 4630000022) والبند 10. حدد مؤسسة الشراء كـ 1000. حدد أولوية المتطلب كـ '3' (أهمية الطلب). سيُملأ حقل المورد الثابت تلقائياً (مثل 10824 - رائد البنيعي) من الاتفاقية.",
+        whatSAPDoesEN:
+          "Links the PR to an existing framework agreement or contract. The fixed vendor assignment ensures the purchase order is automatically generated against the approved supplier. Requirement urgency prioritizes the PR in the buyer's work queue.",
+        whatSAPDoesAR:
+          "يربط طلب الشراء باتفاقية إطارية أو عقد موجود. يضمن تعيين المورد الثابت إنشاء أمر الشراء تلقائياً مقابل المورد المعتمد. تُحدد أولوية المتطلب طلب الشراء في قائمة أعمال المشتري.",
+        expectedOutputEN:
+          "Agreement linked (e.g. 4630000022). Fixed Vendor auto-populated. Requirement Urgency = 3. Purchasing Org = 1000. Source of supply is confirmed.",
+        expectedOutputAR:
+          "تم ربط الاتفاقية (مثل 4630000022). تم ملء المورد الثابت تلقائياً. أولوية المتطلب = 3. مؤسسة الشراء = 1000. تم تأكيد مصدر التوريد.",
+      },
+      {
+        id: "pr-14",
+        stepNumber: 14,
+        titleEN: "Save the Purchase Requisition",
+        titleAR: "حفظ طلب الشراء",
+        tCode: "ME51N",
+        role: "Procurement Officer",
+        whatToDoEN:
+          "Review all entered data: document type YEXP, short text, quantity, unit %, material group 10100, plant, storage location, purchase group 006, valuation price, product type group 2, project dates, and source of supply. Click Save (floppy disk icon or Ctrl+S). Note the PR number generated.",
+        whatToDoAR:
+          "راجع جميع البيانات المدخلة: نوع المستند YEXP، النص القصير، الكمية، الوحدة %، مجموعة المواد 10100، المصنع، موقع التخزين، مجموعة الشراء 006، سعر التقييم، مجموعة نوع المنتج 2، تواريخ المشروع، ومصدر التوريد. انقر على حفظ (أيقونة القرص المرن أو Ctrl+S). دوّن رقم طلب الشراء المُولَّد.",
+        whatSAPDoesEN:
+          "Creates the purchase requisition in the system. Assigns a unique PR number. Triggers the approval workflow based on the YEXP document type configuration. The PR enters the buyer's work queue for conversion to a purchase order against the linked agreement.",
+        whatSAPDoesAR:
+          "ينشئ طلب الشراء في النظام. يُعيّن رقم طلب شراء فريد. يُشغّل سير عمل الموافقة بناءً على تهيئة نوع المستند YEXP. يدخل طلب الشراء قائمة أعمال المشتري للتحويل إلى أمر شراء مقابل الاتفاقية المرتبطة.",
+        expectedOutputEN:
+          "Purchase Requisition saved with a unique PR number. Approval workflow triggered. PR visible in ME53N (Display PR) and the buyer's worklist. Ready for conversion to PO via ME59N or manual PO creation in ME21N.",
+        expectedOutputAR:
+          "تم حفظ طلب الشراء برقم فريد. سير عمل الموافقة مُشغَّل. طلب الشراء مرئي في ME53N (عرض طلب الشراء) وقائمة أعمال المشتري. جاهز للتحويل إلى أمر شراء عبر ME59N أو إنشاء أمر شراء يدوي في ME21N.",
+      },
+    ],
+  },
+
+  // ── 6. Quota Arrangement ─────────────────────────────────────────────────
   {
     id: "quota-arrangement",
     icon: "📋",
