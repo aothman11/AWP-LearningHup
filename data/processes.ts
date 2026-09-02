@@ -2113,6 +2113,95 @@ export const processes: Process[] = [
       },
     ],
   },
+
+  // ── SAP TM — End-to-End Transportation Management ────────────────────────
+  {
+    id: "tm-end-to-end",
+    icon: "🚛",
+    duration: "2–4 hours",
+    titleEN: "End-to-End Transportation Management",
+    titleAR: "عملية النقل الشاملة من البداية إلى النهاية",
+    descriptionEN:
+      "The complete SAP TM flow: create a sales order, generate a delivery, trigger freight unit planning, build and execute a freight order, calculate charges, and settle with the carrier.",
+    descriptionAR:
+      "دورة SAP TM الكاملة: إنشاء أمر مبيعات، توليد التسليم، تخطيط وحدة الشحن، بناء أمر الشحن وتنفيذه، احتساب الرسوم، والتسوية مع الناقل.",
+    module: "TM",
+    roles: ["TM Planner", "Sales Representative", "Accounts Payable"],
+    steps: [
+      {
+        title: "Create Sales Order (VA01)",
+        titleAR: "إنشاء أمر مبيعات (VA01)",
+        description:
+          "Use T-Code VA01 to create a sales order with the correct order type, sold-to party, ship-to party, requested delivery date, material, and quantity. Save the order.",
+        descriptionAR:
+          "استخدم VA01 لإنشاء أمر مبيعات بنوع الأمر الصحيح، الطرف البائع والمستلم، تاريخ التسليم المطلوب، المادة والكمية. احفظ الأمر.",
+        screenshotUrl: "/process-charts/tm-e2e-p01.png",
+      },
+      {
+        title: "Create Outbound Delivery",
+        titleAR: "إنشاء تسليم صادر",
+        description:
+          "Navigate to 'Create Outbound Deliveries – From Sales Orders'. Filter by ship-to party and choose Go, then Create Deliveries. The delivery is created and automatically linked to TM.",
+        descriptionAR:
+          "انتقل إلى 'إنشاء تسليمات صادرة – من أوامر المبيعات'. صفِّ حسب الطرف المستلم واختر Go ثم إنشاء تسليمات. يُنشأ التسليم ويُربط تلقائياً بـ TM.",
+        screenshotUrl: "/process-charts/tm-e2e-p03.png",
+      },
+      {
+        title: "Monitor TM Status & Freight Units",
+        titleAR: "مراقبة حالة TM ووحدات الشحن",
+        description:
+          "Display the delivery to verify TM Status. The system creates Freight Units automatically based on transportation relevance rules. Review the freight unit list.",
+        descriptionAR:
+          "اعرض التسليم للتحقق من حالة TM. يُنشئ النظام وحدات شحن تلقائياً بناءً على قواعد الصلة بالنقل. راجع قائمة وحدات الشحن.",
+        screenshotUrl: "/process-charts/tm-e2e-p04.png",
+      },
+      {
+        title: "Create & Plan Freight Order",
+        titleAR: "إنشاء أمر الشحن وتخطيطه",
+        description:
+          "Run planning to create a Freight Order (FO). Select the freight unit and assign it to the FO. Confirm vehicle, driver, and route information in the freight order header.",
+        descriptionAR:
+          "نفِّذ التخطيط لإنشاء أمر شحن. حدد وحدة الشحن وعيِّنها للـ FO. أكِّد معلومات المركبة والسائق والمسار في رأس أمر الشحن.",
+        screenshotUrl: "/process-charts/tm-e2e-p05.png",
+      },
+      {
+        title: "Execute Transport (En Route)",
+        titleAR: "تنفيذ النقل (أثناء الطريق)",
+        description:
+          "Set the freight order status to 'In Execution'. Update actual pickup and delivery timestamps. The system tracks the freight unit status through each stage.",
+        descriptionAR:
+          "اضبط حالة أمر الشحن على 'قيد التنفيذ'. حدِّث تواريخ وأوقات الاستلام والتسليم الفعلية. يتتبع النظام حالة وحدة الشحن في كل مرحلة.",
+        screenshotUrl: "/process-charts/tm-e2e-p08.png",
+      },
+      {
+        title: "Calculate Charges & Settlement",
+        titleAR: "احتساب الرسوم والتسوية",
+        description:
+          "From the freight order, choose 'Calculate Charges'. The system applies tariffs and rate tables. Review the charge items and choose 'Create Settlement Document' to initiate billing.",
+        descriptionAR:
+          "من أمر الشحن، اختر 'احتساب الرسوم'. يطبِّق النظام تعريفات وجداول الأسعار. راجع بنود الرسوم واختر 'إنشاء مستند التسوية' لبدء الفوترة.",
+        screenshotUrl: "/process-charts/tm-e2e-p10.png",
+      },
+      {
+        title: "Post Freight Settlement Document",
+        titleAR: "ترحيل مستند تسوية الشحن",
+        description:
+          "The freight settlement document is created and posted in FI. The carrier invoice is matched and the accounting entry recorded. The freight order status moves to 'Settled'.",
+        descriptionAR:
+          "يُنشأ مستند تسوية الشحن ويُرحَّل في FI. تُطابَق فاتورة الناقل وتُسجَّل قيد المحاسبة. تنتقل حالة أمر الشحن إلى 'تمت التسوية'.",
+        screenshotUrl: "/process-charts/tm-e2e-p12.png",
+      },
+      {
+        title: "Review Document Flow",
+        titleAR: "مراجعة تدفق المستندات",
+        description:
+          "Open the Document Flow from the sales order or freight order to verify the complete chain: Sales Order → Delivery → Freight Unit → Freight Order → Settlement Document.",
+        descriptionAR:
+          "افتح تدفق المستندات من أمر المبيعات أو أمر الشحن للتحقق من السلسلة الكاملة: أمر المبيعات ← التسليم ← وحدة الشحن ← أمر الشحن ← مستند التسوية.",
+        screenshotUrl: "/process-charts/tm-e2e-p13.png",
+      },
+    ],
+  },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

@@ -8,73 +8,72 @@ interface BpDoc {
   title: string;
   module: string;
   slug?: string | null;
-  viewUrl?: string | null;
+  driveId?: string | null;
 }
 
-const MODULE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  PP:   { bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5" },
-  QM:   { bg: "#F8EBC5", text: "#7A5E0A", border: "#E8D585" },
-  MM:   { bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8" },
-  PM:   { bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8" },
-  HCM:  { bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4" },
-  FICO: { bg: "#E0F5EC", text: "#14532D", border: "#86EFAC" },
-  SD:   { bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A" },
-  TM:   { bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A" },
-  EHS:  { bg: "#F0E0E8", text: "#6B1F40", border: "#E8A4C0" },
-  General: { bg: "#EDE9E1", text: "#4A5568", border: "#D9D4C8" },
+const MODULE_META: Record<
+  string,
+  { label: string; bg: string; text: string; border: string; icon: string }
+> = {
+  PP:      { label: "Production Planning",    bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5", icon: "🏭" },
+  QM:      { label: "Quality Management",     bg: "#F8EBC5", text: "#7A5E0A", border: "#E8D585", icon: "✅" },
+  MM:      { label: "Materials Management",   bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8", icon: "📦" },
+  PM:      { label: "Plant Maintenance",      bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8", icon: "🔧" },
+  HCM:     { label: "Human Capital Mgmt",     bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4", icon: "👥" },
+  FICO:    { label: "Finance & Controlling",  bg: "#E0F5EC", text: "#14532D", border: "#86EFAC", icon: "💰" },
+  SD:      { label: "Sales & Distribution",   bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A", icon: "🛒" },
+  TM:      { label: "Transportation Mgmt",    bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A", icon: "🚛" },
+  EHS:     { label: "Environment, Health & Safety", bg: "#F0E0E8", text: "#6B1F40", border: "#E8A4C0", icon: "🦺" },
+  General: { label: "General",               bg: "#EDE9E1", text: "#4A5568", border: "#D9D4C8", icon: "📄" },
 };
 
-function moduleFromTitle(title: string): string {
-  const t = title.toUpperCase();
-  if (t.includes(" PP ") || t.startsWith("PP") || t.includes("PRODUCTION") || t.includes("MRP")) return "PP";
-  if (t.includes(" QM ") || t.startsWith("QM") || t.includes("QUALITY")) return "QM";
-  if (t.includes(" MM ") || t.startsWith("MM") || t.includes("MATERIAL") || t.includes("PROCUREMENT") || t.includes("INVENTORY")) return "MM";
-  if (t.includes(" PM ") || t.startsWith("PM") || t.includes("MAINTENANCE")) return "PM";
-  if (t.includes("HCM") || t.includes("HR ") || t.includes("PAYROLL") || t.includes("EMPLOYEE")) return "HCM";
-  if (t.includes("FICO") || t.includes("FINANCE") || t.includes("ACCOUNT") || t.includes("COST")) return "FICO";
-  if (t.includes(" SD ") || t.startsWith("SD") || t.includes("SALES") || t.includes("DELIVERY")) return "SD";
-  if (t.includes(" TM ") || t.startsWith("TM") || t.includes("TRANSPORT")) return "TM";
-  if (t.includes("EHS") || t.includes("SAFETY") || t.includes("ENVIRONMENT")) return "EHS";
-  return "General";
-}
-
-const MODULE_FILTERS = ["All", "PP", "QM", "MM", "PM", "HCM", "FICO", "SD", "TM", "EHS", "General"];
+const MODULE_ORDER = ["PP", "QM", "MM", "PM", "HCM", "FICO", "SD", "TM", "EHS", "General"];
 
 export function BusinessProcessesTab() {
   const [docs, setDocs] = useState<BpDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [modFilter, setModFilter] = useState("All");
+  const [activeModule, setActiveModule] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/bp-docs")
       .then((r) => r.json())
-      .then((data: BpDoc[]) => {
-        const enriched = data.map((d) => ({
-          ...d,
-          module: d.module && d.module !== "General" ? d.module : moduleFromTitle(d.title),
-        }));
-        setDocs(enriched);
-      })
+      .then((data: BpDoc[]) => setDocs(data))
       .catch(() => setError("Could not load business process documents."))
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return docs.filter((d) => {
-      const matchMod = modFilter === "All" || d.module === modFilter;
-      const matchSearch = !q || d.title.toLowerCase().includes(q);
-      return matchMod && matchSearch;
+  const q = search.trim().toLowerCase();
+
+  const grouped = useMemo(() => {
+    const filtered = docs.filter((d) => {
+      const modMatch = !activeModule || d.module === activeModule;
+      const searchMatch = !q || d.title.toLowerCase().includes(q);
+      return modMatch && searchMatch;
     });
-  }, [docs, search, modFilter]);
+
+    const map = new Map<string, BpDoc[]>();
+    for (const mod of MODULE_ORDER) map.set(mod, []);
+    for (const doc of filtered) {
+      const mod = doc.module in MODULE_META ? doc.module : "General";
+      map.get(mod)!.push(doc);
+    }
+    return map;
+  }, [docs, q, activeModule]);
 
   const countByMod = useMemo(() => {
-    const map: Record<string, number> = { All: docs.length };
-    docs.forEach((d) => { map[d.module] = (map[d.module] ?? 0) + 1; });
+    const map: Record<string, number> = {};
+    for (const d of docs) {
+      map[d.module] = (map[d.module] ?? 0) + 1;
+    }
     return map;
   }, [docs]);
+
+  const totalFiltered = useMemo(
+    () => Array.from(grouped.values()).reduce((s, a) => s + a.length, 0),
+    [grouped]
+  );
 
   if (loading) {
     return (
@@ -94,120 +93,163 @@ export function BusinessProcessesTab() {
   }
 
   return (
-    <div>
-      {/* Section header */}
-      <div className="mb-5 flex flex-col sm:flex-row sm:items-end gap-4">
-        <div className="flex-1">
-          <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">AWP Documentation</p>
-          <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-            Business Processes
-          </h3>
-          <p className="text-sm text-[#6B7A6F] mt-1">
-            {docs.length} structured process documents — click any to read the full guide.
-          </p>
-        </div>
-        {/* Search */}
-        <div className="relative sm:w-64 shrink-0">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7A6F] text-sm pointer-events-none">🔍</span>
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search processes…"
-            className="w-full pl-8 pr-3 py-2 text-sm border border-[#D9D4C8] rounded-lg bg-[#FAFAF8] text-[#2A2E2B] placeholder:text-[#9BA89F] focus:outline-none focus:border-[#4E7862] focus:ring-1 focus:ring-[#4E7862] transition-colors"
-          />
-        </div>
-      </div>
-
-      {/* Module filter pills */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {MODULE_FILTERS.map((mod) => {
-          const count = countByMod[mod] ?? 0;
-          if (mod !== "All" && count === 0) return null;
-          const mc = mod !== "All" ? MODULE_COLORS[mod] : null;
-          const active = modFilter === mod;
-          return (
-            <button
-              key={mod}
-              onClick={() => setModFilter(mod)}
-              className="text-xs px-3 py-1.5 rounded-full border transition-colors font-medium"
-              style={
-                active
-                  ? mc
-                    ? { background: mc.bg, color: mc.text, borderColor: mc.border }
-                    : { background: "#1C3A2B", color: "#F7F5F0", borderColor: "#1C3A2B" }
-                  : { background: "#FAFAF8", color: "#6B7A6F", borderColor: "#D9D4C8" }
-              }
-            >
-              {mod} ({count})
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Process document cards */}
-      {filtered.length === 0 ? (
-        <p className="text-sm text-[#6B7A6F] py-8 text-center">
-          No documents match{search ? ` "${search}"` : " this filter"}.{" "}
-          {search && (
-            <button onClick={() => setSearch("")} className="underline hover:text-[#1C3A2B] transition-colors">Clear</button>
-          )}
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* ── Left sidebar: module nav ─────────────────────────────────────── */}
+      <aside className="lg:w-52 shrink-0">
+        <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-3">
+          Filter by Module
         </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filtered.map((doc) => {
-            const mc = MODULE_COLORS[doc.module] ?? MODULE_COLORS.General;
-            const isExternal = !!doc.viewUrl;
-
-            const cardContent = (
-              <>
-                <div className="flex items-start justify-between gap-2">
-                  <span
-                    className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                    style={{ background: mc.bg, color: mc.text }}
-                  >
-                    {doc.module}
-                  </span>
-                  <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity shrink-0 flex items-center gap-0.5"
-                    style={{ color: "#4E7862" }}>
-                    {isExternal ? "Open ↗" : "Read →"}
-                  </span>
-                </div>
-                <p className="text-sm text-[#2A2E2B] font-medium leading-snug">{doc.title}</p>
-                {isExternal && (
-                  <p className="text-[10px] text-[#6B7A6F] mt-auto">📄 Business Blueprint</p>
-                )}
-              </>
-            );
-
-            const cardClass = "group bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all flex flex-col gap-2";
-
-            if (isExternal) {
-              return (
-                <a
-                  key={doc.id}
-                  href={doc.viewUrl!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cardClass}
-                >
-                  {cardContent}
-                </a>
-              );
+        <nav className="flex lg:flex-col gap-1.5 flex-wrap">
+          <button
+            onClick={() => setActiveModule(null)}
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left"
+            style={
+              !activeModule
+                ? { background: "#1C3A2B", color: "#F7F5F0" }
+                : { background: "#F0EDE8", color: "#4A5568" }
             }
+          >
+            <span>All Modules</span>
+            <span className="text-xs opacity-60">{docs.length}</span>
+          </button>
 
+          {MODULE_ORDER.map((mod) => {
+            const count = countByMod[mod] ?? 0;
+            if (count === 0) return null;
+            const meta = MODULE_META[mod];
+            const isActive = activeModule === mod;
             return (
-              <Link
-                key={doc.id}
-                href={`/learning/business-processes/${doc.slug ?? encodeURIComponent(doc.id)}`}
-                className={cardClass}
+              <button
+                key={mod}
+                onClick={() => setActiveModule(isActive ? null : mod)}
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors text-left w-full lg:w-auto"
+                style={
+                  isActive
+                    ? { background: meta.bg, color: meta.text, border: `1px solid ${meta.border}` }
+                    : { background: "#F7F5F0", color: "#4A5568", border: "1px solid #E4DFD8" }
+                }
               >
-                {cardContent}
-              </Link>
+                <span className="flex items-center gap-1.5">
+                  <span>{meta.icon}</span>
+                  <span className="font-medium">{mod}</span>
+                </span>
+                <span className="text-xs opacity-60 ml-2">{count}</span>
+              </button>
             );
           })}
+        </nav>
+      </aside>
+
+      {/* ── Main content ─────────────────────────────────────────────────── */}
+      <div className="flex-1 min-w-0">
+        {/* Header + Search */}
+        <div className="mb-5 flex flex-col sm:flex-row sm:items-end gap-4">
+          <div className="flex-1">
+            <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">
+              AWP Documentation
+            </p>
+            <h3
+              className="text-2xl font-light text-[#1C3A2B]"
+              style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+            >
+              {activeModule ? MODULE_META[activeModule]?.label ?? activeModule : "Business Processes"}
+            </h3>
+            <p className="text-sm text-[#6B7A6F] mt-1">
+              {totalFiltered} document{totalFiltered !== 1 ? "s" : ""} — click any to read the full guide.
+            </p>
+          </div>
+          <div className="relative sm:w-64 shrink-0">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7A6F] text-sm pointer-events-none">
+              🔍
+            </span>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search processes…"
+              className="w-full pl-8 pr-3 py-2 text-sm border border-[#D9D4C8] rounded-lg bg-[#FAFAF8] text-[#2A2E2B] placeholder:text-[#9BA89F] focus:outline-none focus:border-[#4E7862] focus:ring-1 focus:ring-[#4E7862] transition-colors"
+            />
+          </div>
         </div>
-      )}
+
+        {/* Module groups */}
+        {totalFiltered === 0 ? (
+          <p className="text-sm text-[#6B7A6F] py-8 text-center">
+            No documents match{search ? ` "${search}"` : " this filter"}.{" "}
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="underline hover:text-[#1C3A2B] transition-colors"
+              >
+                Clear
+              </button>
+            )}
+          </p>
+        ) : (
+          <div className="space-y-8">
+            {MODULE_ORDER.map((mod) => {
+              const items = grouped.get(mod) ?? [];
+              if (items.length === 0) return null;
+              const meta = MODULE_META[mod];
+              return (
+                <section key={mod}>
+                  {/* Module section header */}
+                  <div
+                    className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg"
+                    style={{ background: meta.bg, borderLeft: `3px solid ${meta.border}` }}
+                  >
+                    <span>{meta.icon}</span>
+                    <span className="font-semibold text-sm" style={{ color: meta.text }}>
+                      {mod} — {meta.label}
+                    </span>
+                    <span
+                      className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded"
+                      style={{ background: meta.border, color: meta.text }}
+                    >
+                      {items.length}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {items.map((doc) => {
+                      const isBlueprint = !!doc.driveId;
+                      const href = isBlueprint
+                        ? `/learning/bp/${doc.driveId}`
+                        : `/learning/business-processes/${doc.slug ?? doc.id}`;
+
+                      return (
+                        <Link
+                          key={doc.id}
+                          href={href}
+                          className="group bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all flex flex-col gap-2"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span
+                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
+                              style={{ background: meta.bg, color: meta.text }}
+                            >
+                              {mod}
+                            </span>
+                            <span className="text-[10px] text-[#4E7862] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                              {isBlueprint ? "Open ↗" : "Read →"}
+                            </span>
+                          </div>
+                          <p className="text-sm text-[#2A2E2B] font-medium leading-snug">
+                            {doc.title}
+                          </p>
+                          {isBlueprint && (
+                            <p className="text-[10px] text-[#6B7A6F] mt-auto">📋 Blueprint</p>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
