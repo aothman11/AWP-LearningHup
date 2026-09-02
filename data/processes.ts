@@ -1227,7 +1227,6 @@ export const processes: Process[] = [
     descriptionAR:
       "دليل للموظفين للوصول إلى خدمات الموظف الذاتية على ess.al-watania.com — يغطي طلبات الإجازة، كشوف الراتب، العمل الإضافي، القروض، رحلات العمل، التخليص، وخطابات الموارد البشرية.",
     roles: ["Employee"],
-    estimatedTime: "5–15 minutes per request",
     lastUpdated: "2025-09-01",
     steps: [
       {
@@ -1420,7 +1419,6 @@ export const processes: Process[] = [
     descriptionAR:
       "دليل للمديرين لاستخدام خدمة المدير الذاتية على ess.al-watania.com — يغطي الصفحة الرئيسية، الموافقة على الطلبات عبر الإشعارات، إدارة صندوق الموافقات، وعرض ملفات الفريق.",
     roles: ["Manager", "Supervisor"],
-    estimatedTime: "5–10 minutes per approval",
     lastUpdated: "2025-09-01",
     steps: [
       {
