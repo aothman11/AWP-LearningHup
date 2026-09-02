@@ -1215,6 +1215,296 @@ export const processes: Process[] = [
       },
     ],
   },
+
+  // ─── HCM: SuccessFactors ESS ────────────────────────────────────────────────
+  {
+    id: "sf-ess",
+    module: "HCM",
+    titleEN: "SuccessFactors Employee Self-Service (ESS)",
+    titleAR: "خدمة الموظف الذاتية - SuccessFactors",
+    descriptionEN:
+      "A guide for employees to access and use SuccessFactors ESS at ess.al-watania.com — covering leave requests, payslips, overtime, loans, business trips, clearance, and HR letters.",
+    descriptionAR:
+      "دليل للموظفين للوصول إلى خدمات الموظف الذاتية على ess.al-watania.com — يغطي طلبات الإجازة، كشوف الراتب، العمل الإضافي، القروض، رحلات العمل، التخليص، وخطابات الموارد البشرية.",
+    roles: ["Employee"],
+    estimatedTime: "5–15 minutes per request",
+    lastUpdated: "2025-09-01",
+    steps: [
+      {
+        id: "sf-ess-1",
+        stepNumber: 1,
+        titleEN: "Log In to SuccessFactors ESS",
+        titleAR: "تسجيل الدخول إلى SuccessFactors ESS",
+        tCode: "ESS Portal",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p05.png",
+        whatToDoEN:
+          "Open a browser and go to ess.al-watania.com. Enter your Employee ID as the username and your password, then click Login. If you have forgotten your password contact IT.",
+        whatToDoAR:
+          "افتح متصفحاً وانتقل إلى ess.al-watania.com. أدخل رقم الموظف كاسم مستخدم وكلمة المرور، ثم انقر تسجيل الدخول. إذا نسيت كلمة المرور، تواصل مع قسم تقنية المعلومات.",
+        whatSAPDoesEN:
+          "Authenticates the employee and opens the SuccessFactors home screen with all self-service tiles.",
+        whatSAPDoesAR:
+          "يتحقق من هوية الموظف ويفتح الشاشة الرئيسية لـ SuccessFactors بجميع بلاطات الخدمة الذاتية.",
+        expectedOutputEN: "Employee is logged in and can see the ESS home page.",
+        expectedOutputAR: "الموظف مسجّل دخوله ويرى الصفحة الرئيسية لـ ESS.",
+      },
+      {
+        id: "sf-ess-2",
+        stepNumber: 2,
+        titleEN: "Submit a Leave Request",
+        titleAR: "تقديم طلب إجازة",
+        tCode: "Time Off",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p06.png",
+        whatToDoEN:
+          "From the home page click the Time Off tile. Select the leave type (Annual, Sick, Hajj, etc.), choose the start and end dates, enter any notes, then click Submit. The request is routed to your line manager for approval.",
+        whatToDoAR:
+          "من الصفحة الرئيسية انقر على بلاطة 'الإجازة'. اختر نوع الإجازة (سنوية، مرضية، حج، إلخ)، حدد تاريخ البدء والانتهاء، أدخل أي ملاحظات، ثم انقر إرسال. يُحوَّل الطلب إلى مديرك المباشر للموافقة.",
+        whatSAPDoesEN:
+          "Creates a leave request workflow. Sends approval notification to the line manager. Deducts the days from the leave balance upon approval.",
+        whatSAPDoesAR:
+          "ينشئ سير عمل طلب الإجازة. يرسل إشعار موافقة إلى المدير المباشر. يخصم الأيام من رصيد الإجازة عند الموافقة.",
+        expectedOutputEN:
+          "Leave request submitted and pending manager approval. Employee receives confirmation.",
+        expectedOutputAR:
+          "تم تقديم طلب الإجازة وهو في انتظار موافقة المدير. يتلقى الموظف تأكيداً.",
+      },
+      {
+        id: "sf-ess-3",
+        stepNumber: 3,
+        titleEN: "Request Return from Leave",
+        titleAR: "طلب العودة من الإجازة",
+        tCode: "Time Off",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p07.png",
+        whatToDoEN:
+          "If you return from leave earlier than planned, go to Time Off and submit a Return from Leave request with the actual return date.",
+        whatToDoAR:
+          "إذا عدت من الإجازة قبل الموعد المحدد، انتقل إلى 'الإجازة' وقدّم طلب عودة من الإجازة مع تاريخ العودة الفعلي.",
+        whatSAPDoesEN:
+          "Updates the leave record and restores the unused leave balance to the employee's account.",
+        whatSAPDoesAR:
+          "يحدّث سجل الإجازة ويستعيد رصيد الإجازة غير المستخدم في حساب الموظف.",
+        expectedOutputEN: "Leave balance updated; return date recorded in the system.",
+        expectedOutputAR: "رصيد الإجازة محدَّث؛ تاريخ العودة مسجَّل في النظام.",
+      },
+      {
+        id: "sf-ess-4",
+        stepNumber: 4,
+        titleEN: "View Payslip",
+        titleAR: "عرض قسيمة الراتب",
+        tCode: "Pay Statement",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p08.png",
+        whatToDoEN:
+          "Click the Pay Statement tile on the home page. Select the month and year to view your payslip. You can download or print it as a PDF.",
+        whatToDoAR:
+          "انقر على بلاطة 'قسيمة الراتب' في الصفحة الرئيسية. اختر الشهر والسنة لعرض قسيمة راتبك. يمكنك تنزيلها أو طباعتها بصيغة PDF.",
+        whatSAPDoesEN:
+          "Retrieves the payroll run results for the selected period and displays the breakdown of earnings, deductions, and net pay.",
+        whatSAPDoesAR:
+          "يسترجع نتائج تشغيل كشوف الرواتب للفترة المحددة ويعرض تفاصيل الاستحقاقات والخصومات وصافي الراتب.",
+        expectedOutputEN: "Employee can view and download their payslip.",
+        expectedOutputAR: "يستطيع الموظف عرض قسيمة راتبه وتنزيلها.",
+      },
+      {
+        id: "sf-ess-5",
+        stepNumber: 5,
+        titleEN: "Submit Overtime Request",
+        titleAR: "تقديم طلب عمل إضافي",
+        tCode: "Overtime",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p09.png",
+        whatToDoEN:
+          "Click the Overtime tile. Enter the overtime date, hours, and reason. Attach any supporting documents if required, then submit. The request goes to the manager for approval.",
+        whatToDoAR:
+          "انقر على بلاطة 'العمل الإضافي'. أدخل تاريخ العمل الإضافي والساعات والسبب. أرفق أي مستندات داعمة إذا لزم الأمر، ثم أرسل. يذهب الطلب إلى المدير للموافقة.",
+        whatSAPDoesEN:
+          "Routes the overtime request for approval and records the approved hours for payroll processing.",
+        whatSAPDoesAR:
+          "يحوّل طلب العمل الإضافي للموافقة ويسجّل الساعات الموافق عليها لمعالجة الرواتب.",
+        expectedOutputEN: "Overtime request submitted; pending manager approval.",
+        expectedOutputAR: "تم تقديم طلب العمل الإضافي؛ في انتظار موافقة المدير.",
+      },
+      {
+        id: "sf-ess-6",
+        stepNumber: 6,
+        titleEN: "Apply for a Loan",
+        titleAR: "تقديم طلب قرض",
+        tCode: "Loan Request",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p10.png",
+        whatToDoEN:
+          "Click the Loan Request tile. Select the loan type, enter the amount required, the number of installments, and any reason. Submit the request for HR/Finance approval.",
+        whatToDoAR:
+          "انقر على بلاطة 'طلب القرض'. اختر نوع القرض وأدخل المبلغ المطلوب وعدد الأقساط وأي سبب. أرسل الطلب للموافقة من الموارد البشرية / المالية.",
+        whatSAPDoesEN:
+          "Creates a loan request and routes it through the approval workflow. Upon approval, integrates with payroll to set up deduction installments.",
+        whatSAPDoesAR:
+          "ينشئ طلب قرض ويحوّله عبر سير عمل الموافقة. عند الموافقة، يتكامل مع الرواتب لإعداد أقساط الخصم.",
+        expectedOutputEN: "Loan request submitted for approval.",
+        expectedOutputAR: "تم تقديم طلب القرض للموافقة.",
+      },
+      {
+        id: "sf-ess-7",
+        stepNumber: 7,
+        titleEN: "Request a Business Trip",
+        titleAR: "طلب رحلة عمل",
+        tCode: "Business Trip",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p14.png",
+        whatToDoEN:
+          "Click the Business Trip tile. Fill in the destination, travel dates, purpose, and estimated expenses. Attach any supporting documents, then submit for manager approval.",
+        whatToDoAR:
+          "انقر على بلاطة 'رحلة العمل'. أدخل الوجهة وتواريخ السفر والغرض والمصروفات المقدّرة. أرفق أي مستندات داعمة، ثم أرسل للموافقة من المدير.",
+        whatSAPDoesEN:
+          "Routes the trip request for approval and records it for financial settlement upon return.",
+        whatSAPDoesAR:
+          "يحوّل طلب الرحلة للموافقة ويسجّله للتسوية المالية عند العودة.",
+        expectedOutputEN: "Business trip request submitted; pending approval.",
+        expectedOutputAR: "تم تقديم طلب رحلة العمل؛ في انتظار الموافقة.",
+      },
+      {
+        id: "sf-ess-8",
+        stepNumber: 8,
+        titleEN: "Submit Clearance Request",
+        titleAR: "تقديم طلب تخليص",
+        tCode: "Clearance",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p15.png",
+        whatToDoEN:
+          "Click the Clearance tile when you are leaving the company or a department. The system sends clearance tasks to all relevant departments (IT, Finance, Accommodation, etc.). Track the status until fully cleared.",
+        whatToDoAR:
+          "انقر على بلاطة 'التخليص' عند مغادرة الشركة أو القسم. يرسل النظام مهام التخليص إلى جميع الإدارات المعنية (تقنية المعلومات، المالية، الإقامة، إلخ). تابع الحالة حتى اكتمال التخليص.",
+        whatSAPDoesEN:
+          "Triggers a clearance workflow across all departments. Tracks completion of each department's sign-off before issuing the final clearance.",
+        whatSAPDoesAR:
+          "يُطلق سير عمل التخليص عبر جميع الإدارات. يتتبع اكتمال توقيع كل إدارة قبل إصدار التخليص النهائي.",
+        expectedOutputEN:
+          "Clearance request initiated; all departments notified to complete their tasks.",
+        expectedOutputAR:
+          "تم بدء طلب التخليص؛ جميع الإدارات مُبلَّغة لإتمام مهامها.",
+      },
+      {
+        id: "sf-ess-9",
+        stepNumber: 9,
+        titleEN: "Request an HR Letter",
+        titleAR: "طلب خطاب موارد بشرية",
+        tCode: "HR Letter",
+        role: "Employee",
+        screenshotUrl: "/process-charts/sf-ess-p16.png",
+        whatToDoEN:
+          "Click the HR Letter tile. Select the letter type (Salary Certificate, Experience Letter, etc.), choose the addressee (Bank, Embassy, etc.), add any notes, and submit. HR will prepare and issue the letter.",
+        whatToDoAR:
+          "انقر على بلاطة 'خطاب الموارد البشرية'. اختر نوع الخطاب (شهادة راتب، خطاب خبرة، إلخ)، اختر المُرسَل إليه (بنك، سفارة، إلخ)، أضف أي ملاحظات وأرسل. ستُعدّ الموارد البشرية الخطاب وتُصدره.",
+        whatSAPDoesEN:
+          "Routes the HR letter request to the HR team. Once issued, the employee can download the signed letter from the portal.",
+        whatSAPDoesAR:
+          "يحوّل طلب خطاب الموارد البشرية إلى فريق الموارد البشرية. بعد الإصدار، يمكن للموظف تنزيل الخطاب الموقّع من البوابة.",
+        expectedOutputEN: "HR letter request submitted; employee notified when the letter is ready.",
+        expectedOutputAR:
+          "تم تقديم طلب خطاب الموارد البشرية؛ يُبلَّغ الموظف عند جاهزية الخطاب.",
+      },
+    ],
+  },
+
+  // ─── HCM: SuccessFactors MSS ────────────────────────────────────────────────
+  {
+    id: "sf-mss",
+    module: "HCM",
+    titleEN: "SuccessFactors Manager Self-Service (MSS)",
+    titleAR: "خدمة المدير الذاتية - SuccessFactors",
+    descriptionEN:
+      "A guide for managers to use SuccessFactors MSS at ess.al-watania.com — covering the home page, approving requests via notifications, managing the approval inbox, and viewing team profiles.",
+    descriptionAR:
+      "دليل للمديرين لاستخدام خدمة المدير الذاتية على ess.al-watania.com — يغطي الصفحة الرئيسية، الموافقة على الطلبات عبر الإشعارات، إدارة صندوق الموافقات، وعرض ملفات الفريق.",
+    roles: ["Manager", "Supervisor"],
+    estimatedTime: "5–10 minutes per approval",
+    lastUpdated: "2025-09-01",
+    steps: [
+      {
+        id: "sf-mss-1",
+        stepNumber: 1,
+        titleEN: "Log In and Navigate the Home Page",
+        titleAR: "تسجيل الدخول والتنقل في الصفحة الرئيسية",
+        tCode: "MSS Portal",
+        role: "Manager",
+        screenshotUrl: "/process-charts/sf-mss-p05.png",
+        whatToDoEN:
+          "Go to ess.al-watania.com and log in with your Employee ID and password. As a manager you will see additional tiles on the home page: My Team, Approvals, Notifications, and team analytics tiles.",
+        whatToDoAR:
+          "انتقل إلى ess.al-watania.com وسجّل الدخول برقم موظفك وكلمة المرور. بصفتك مديراً ستجد بلاطات إضافية في الصفحة الرئيسية: فريقي، الموافقات، الإشعارات، وبلاطات تحليلات الفريق.",
+        whatSAPDoesEN:
+          "Loads the manager's dashboard with pending approvals count, team headcount, and quick-action tiles.",
+        whatSAPDoesAR:
+          "يُحمِّل لوحة تحكم المدير مع عدد الموافقات المعلقة وحجم الفريق وبلاطات الإجراءات السريعة.",
+        expectedOutputEN: "Manager is logged in and sees the MSS home page with team tiles.",
+        expectedOutputAR: "المدير مسجَّل الدخول ويرى الصفحة الرئيسية لـ MSS مع بلاطات الفريق.",
+      },
+      {
+        id: "sf-mss-2",
+        stepNumber: 2,
+        titleEN: "Approve Requests via Notifications",
+        titleAR: "الموافقة على الطلبات عبر الإشعارات",
+        tCode: "Notifications",
+        role: "Manager",
+        screenshotUrl: "/process-charts/sf-mss-p06.png",
+        whatToDoEN:
+          "Click the bell icon (Notifications) at the top of the page. Any pending approval request will appear here. Click the request to review details, then click Approve or Reject and add a comment if needed.",
+        whatToDoAR:
+          "انقر على أيقونة الجرس (الإشعارات) في أعلى الصفحة. ستظهر هنا أي طلبات موافقة معلقة. انقر على الطلب لمراجعة التفاصيل، ثم انقر موافقة أو رفض وأضف تعليقاً إذا لزم.",
+        whatSAPDoesEN:
+          "Displays real-time approval requests. Approved requests automatically update the employee's record and notify the employee of the decision.",
+        whatSAPDoesAR:
+          "يعرض طلبات الموافقة في الوقت الفعلي. تُحدِّث الطلبات الموافق عليها تلقائياً سجل الموظف وتُبلِّغ الموظف بالقرار.",
+        expectedOutputEN: "Request approved or rejected; employee notified automatically.",
+        expectedOutputAR: "تمت الموافقة على الطلب أو رفضه؛ يُبلَّغ الموظف تلقائياً.",
+      },
+      {
+        id: "sf-mss-3",
+        stepNumber: 3,
+        titleEN: "Approve Leave and Overtime via the Inbox",
+        titleAR: "الموافقة على الإجازة والعمل الإضافي عبر صندوق الوارد",
+        tCode: "Approval Inbox",
+        role: "Manager",
+        screenshotUrl: "/process-charts/sf-mss-p08.png",
+        whatToDoEN:
+          "Click the Approvals tile or go to the Inbox from the main menu. Filter by request type (Leave, Overtime, etc.) if needed. Select a request, review the employee's leave balance and dates, then Approve or Reject with comments.",
+        whatToDoAR:
+          "انقر على بلاطة 'الموافقات' أو انتقل إلى صندوق الوارد من القائمة الرئيسية. قم بالتصفية حسب نوع الطلب (إجازة، عمل إضافي، إلخ) إذا لزم. اختر طلباً، راجع رصيد إجازة الموظف والتواريخ، ثم وافق أو ارفض مع تعليقات.",
+        whatSAPDoesEN:
+          "Provides a consolidated inbox of all pending approval tasks. Approving a leave request deducts the balance immediately; rejecting it notifies the employee with the manager's comment.",
+        whatSAPDoesAR:
+          "يوفر صندوق وارد موحَّداً لجميع مهام الموافقة المعلقة. تؤدي الموافقة على طلب الإجازة إلى خصم الرصيد فوراً؛ ويُبلَّغ الموظف بالرفض مع تعليق المدير.",
+        expectedOutputEN:
+          "All pending leave and overtime requests reviewed; employees notified of decisions.",
+        expectedOutputAR:
+          "تمت مراجعة جميع طلبات الإجازة والعمل الإضافي المعلقة؛ الموظفون مُبلَّغون بالقرارات.",
+      },
+      {
+        id: "sf-mss-4",
+        stepNumber: 4,
+        titleEN: "View Team Profiles and Leave Balances",
+        titleAR: "عرض ملفات الفريق وأرصدة الإجازات",
+        tCode: "My Team",
+        role: "Manager",
+        screenshotUrl: "/process-charts/sf-mss-p14.png",
+        whatToDoEN:
+          "Click the My Team tile. You can see all your direct reports with their job titles, leave balances, and attendance summaries. Click any employee card to see their full profile, history, and current requests.",
+        whatToDoAR:
+          "انقر على بلاطة 'فريقي'. يمكنك رؤية جميع المرؤوسين المباشرين مع مسمياتهم الوظيفية وأرصدة إجازاتهم وملخصات الحضور. انقر على بطاقة أي موظف لرؤية ملفه الكامل وتاريخه وطلباته الحالية.",
+        whatSAPDoesEN:
+          "Displays an org-chart view of the manager's team with key HR data. Provides drill-down to individual employee records for informed decision-making.",
+        whatSAPDoesAR:
+          "يعرض عرضاً هيكلياً لفريق المدير مع بيانات الموارد البشرية الرئيسية. يوفر الحفر في سجلات الموظفين الفردية لاتخاذ قرارات مدروسة.",
+        expectedOutputEN:
+          "Manager has a complete view of team attendance, leave balances, and pending requests.",
+        expectedOutputAR:
+          "يمتلك المدير رؤية كاملة لحضور الفريق وأرصدة الإجازات والطلبات المعلقة.",
+      },
+    ],
+  },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
