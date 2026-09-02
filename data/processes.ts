@@ -2160,6 +2160,338 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── SD: Consignment Processing ───────────────────────────────────────────
+  {
+    id: "sd-consignment",
+    icon: "🏪",
+    duration: "45 min",
+    titleEN: "Consignment Processing (Fill-Up, Issue & Pick-Up)",
+    titleAR: "معالجة بضائع الأمانة (التعبئة والإصدار والاسترداد)",
+    descriptionEN:
+      "Consignment goods are stored at the customer's location but remain AWP's property until the customer removes them. Three active transactions: Fill-Up (YKB) ships goods to customer consignment stock; Issue (YKE) bills the customer when they consume the stock; Pick-Up (YKA) returns unused goods to AWP warehouse. ~10 consignment orders/day across 19 branches.",
+    descriptionAR:
+      "بضائع الأمانة مخزّنة في موقع العميل لكنها تبقى ملكاً لـ AWP حتى يسحبها العميل. ثلاثة معاملات نشطة: التعبئة (YKB) لشحن البضائع إلى مخزون أمانة العميل؛ الإصدار (YKE) لفوترة العميل عند استهلاك المخزون؛ الاسترداد (YKA) لإعادة البضائع غير المستخدمة إلى مستودع AWP. حوالي 10 أوامر أمانة يومياً عبر 19 فرعاً.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Shipping Specialist",
+      "Billing Clerk",
+      "A/R Accountant",
+    ],
+    steps: [
+      {
+        id: "sd-con-1",
+        stepNumber: 1,
+        titleEN: "Consignment Fill-Up — Create Order (VA01 / YKB)",
+        titleAR: "تعبئة الأمانة — إنشاء الأمر (VA01 / YKB)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Open VA01 and enter order type YKB (Consignment Fill-Up). Sales Org 1000, Distribution Channel 20 (Direct Sales), Division 10 (Fresh). Enter the customer, materials, and quantities to ship to the consignment warehouse. Save the order. Note: this order has no billing relevance — goods remain AWP property.",
+        whatToDoAR:
+          "افتح VA01 وأدخل نوع الأمر YKB (تعبئة الأمانة). مؤسسة المبيعات 1000، قناة التوزيع 20 (البيع المباشر)، القسم 10 (طازج). أدخل العميل والمواد والكميات للشحن إلى مستودع الأمانة. احفظ الأمر. ملاحظة: هذا الأمر ليس له صلة بالفوترة — تبقى البضائع ملكاً لـ AWP.",
+        whatSAPDoesEN:
+          "Creates a consignment fill-up order (item category KBN, delivery type YLF). No billing document is generated at this stage.",
+        whatSAPDoesAR:
+          "ينشئ أمر تعبئة أمانة (فئة البند KBN، نوع التسليم YLF). لا يُنشأ مستند فوترة في هذه المرحلة.",
+        expectedOutputEN: "Fill-up order created. Goods will be shipped to customer consignment stock.",
+        expectedOutputAR: "تم إنشاء أمر التعبئة. ستُشحن البضائع إلى مخزون أمانة العميل.",
+      },
+      {
+        id: "sd-con-2",
+        stepNumber: 2,
+        titleEN: "Consignment Fill-Up — Create Delivery and Post GI (VL10C → VL06G)",
+        titleAR: "تعبئة الأمانة — إنشاء التسليم وترحيل إصدار البضائع (VL10C ← VL06G)",
+        tCode: "VL10C",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Run VL10C for the fill-up order to create an outbound delivery. Verify batch assignment (nearest expiry date is auto-determined). Then run VL06G to post goods issue, moving stock from unrestricted-use stock to customer consignment (special stock).",
+        whatToDoAR:
+          "شغّل VL10C لأمر التعبئة لإنشاء تسليم صادر. تحقق من تعيين الدفعة (يتم تحديد أقرب تاريخ انتهاء صلاحية تلقائياً). ثم شغّل VL06G لترحيل إصدار البضائع، مما ينقل المخزون من المخزون الحر إلى أمانة العميل (مخزون خاص).",
+        whatSAPDoesEN:
+          "Posts goods issue from unrestricted stock to customer special (consignment) stock. Total plant valuation remains unchanged — goods are still AWP's asset.",
+        whatSAPDoesAR:
+          "يرحّل إصدار البضائع من المخزون الحر إلى المخزون الخاص (أمانة العميل). يبقى إجمالي تقييم المصنع دون تغيير — البضائع لا تزال أصل AWP.",
+        expectedOutputEN: "Stock transferred to customer consignment location. No invoice generated.",
+        expectedOutputAR: "تم نقل المخزون إلى موقع أمانة العميل. لم تُنشأ فاتورة.",
+      },
+      {
+        id: "sd-con-3",
+        stepNumber: 3,
+        titleEN: "Consignment Issue — Create Order (VA01 / YKE)",
+        titleAR: "إصدار الأمانة — إنشاء الأمر (VA01 / YKE)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "When the customer uses or sells consignment stock, create a Consignment Issue order in VA01 using order type YKE. Enter the customer, material, and quantity consumed. This order is billing-relevant.",
+        whatToDoAR:
+          "عندما يستخدم العميل أو يبيع مخزون الأمانة، أنشئ أمر إصدار أمانة في VA01 باستخدام نوع الأمر YKE. أدخل العميل والمادة والكمية المستهلكة. هذا الأمر ذو صلة بالفوترة.",
+        whatSAPDoesEN:
+          "Creates a consignment issue order (item category KEN, delivery type YLF, billing type YF2). Credit check (credit group D) is applied.",
+        whatSAPDoesAR:
+          "ينشئ أمر إصدار أمانة (فئة البند KEN، نوع التسليم YLF، نوع الفوترة YF2). يُطبَّق الفحص الائتماني (مجموعة الائتمان D).",
+        expectedOutputEN: "Consignment issue order created — billing will be triggered after goods issue.",
+        expectedOutputAR: "تم إنشاء أمر إصدار الأمانة — ستُشغَّل الفوترة بعد إصدار البضائع.",
+      },
+      {
+        id: "sd-con-4",
+        stepNumber: 4,
+        titleEN: "Consignment Issue — Delivery, GI, and Billing (VL10C → VL06G → VF04)",
+        titleAR: "إصدار الأمانة — التسليم وإصدار البضائع والفوترة (VL10C ← VL06G ← VF04)",
+        tCode: "VL10C",
+        role: "Shipping Specialist / Billing Clerk",
+        whatToDoEN:
+          "Run VL10C to create delivery for the issue order. Post goods issue in VL06G — this deducts the quantity from both the customer's special stock and AWP's total valuation. Then run VF04 (Billing Clerk) to generate the invoice (billing type YF2) for the consumed quantity.",
+        whatToDoAR:
+          "شغّل VL10C لإنشاء تسليم لأمر الإصدار. ارحّل إصدار البضائع في VL06G — يخصم هذا الكمية من مخزون العميل الخاص وإجمالي تقييم AWP. ثم شغّل VF04 (موظف الفوترة) لإنشاء الفاتورة (نوع الفوترة YF2) عن الكمية المستهلكة.",
+        whatSAPDoesEN:
+          "Goods issue reduces customer special stock and AWP total stock. VF04 creates invoice with accounting entry (debit A/R, credit revenue).",
+        whatSAPDoesAR:
+          "يخفض إصدار البضائع مخزون العميل الخاص وإجمالي مخزون AWP. ينشئ VF04 فاتورة بقيد محاسبي (مدين حسابات القبض، دائن الإيراد).",
+        expectedOutputEN: "Customer billed for consumed consignment stock. Accounting document created.",
+        expectedOutputAR: "تمت فوترة العميل عن مخزون الأمانة المستهلك. تم إنشاء مستند المحاسبة.",
+      },
+      {
+        id: "sd-con-5",
+        stepNumber: 5,
+        titleEN: "Consignment Pick-Up — Return Unused Stock (VA01 / YKA → VL10C → VL06G)",
+        titleAR: "استرداد الأمانة — إعادة المخزون غير المستخدم (VA01 / YKA ← VL10C ← VL06G)",
+        tCode: "VA01",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "If the customer returns unused consignment stock, create a Consignment Pick-Up order in VA01 using order type YKA. Enter the customer and quantities to retrieve. Run VL10C for the return delivery, then VL06G to post goods receipt — stock returns from customer special stock to AWP unrestricted stock. No billing is generated.",
+        whatToDoAR:
+          "إذا أعاد العميل مخزون الأمانة غير المستخدم، أنشئ أمر استرداد أمانة في VA01 باستخدام نوع الأمر YKA. أدخل العميل والكميات للاسترداد. شغّل VL10C لتسليم الإرجاع، ثم VL06G لترحيل إيصال البضائع — يعود المخزون من مخزون العميل الخاص إلى مخزون AWP الحر. لا تُنشأ فاتورة.",
+        whatSAPDoesEN:
+          "Creates pick-up order (item category KAN, delivery type YLR). Goods receipt restores stock to AWP unrestricted stock. Total plant valuation unchanged — stock was always AWP's.",
+        whatSAPDoesAR:
+          "ينشئ أمر استرداد (فئة البند KAN، نوع التسليم YLR). يُعيد إيصال البضائع المخزون إلى مخزون AWP الحر. يبقى إجمالي تقييم المصنع دون تغيير — كان المخزون دائماً ملك AWP.",
+        expectedOutputEN: "Unused consignment stock returned to AWP warehouse. Customer's special stock reduced. No billing.",
+        expectedOutputAR: "تم إعادة مخزون الأمانة غير المستخدم إلى مستودع AWP. تم تخفيض المخزون الخاص للعميل. لا فوترة.",
+      },
+    ],
+  },
+
+  // ─── SD: Credit Management ────────────────────────────────────────────────
+  {
+    id: "sd-credit-management",
+    icon: "🔒",
+    duration: "20 min",
+    titleEN: "Customer Credit Management",
+    titleAR: "إدارة ائتمان العملاء",
+    descriptionEN:
+      "SAP Credit Management (FSCM-CR) tracks customer credit exposure against limits across all four company codes (WAPO credit control area). Credit checks run automatically at order entry (credit group D). Blocked orders must be reviewed and released or rejected by the Credit Controller on the same business day.",
+    descriptionAR:
+      "تتبع إدارة الائتمان في SAP (FSCM-CR) تعرض ائتمان العميل مقابل الحدود عبر جميع رموز الشركة الأربعة (منطقة التحكم الائتمانية WAPO). تُجرى فحوصات الائتمان تلقائياً عند إدخال الأمر (مجموعة الائتمان D). يجب مراجعة الأوامر المحجوزة وإطلاقها أو رفضها من قِبل مراقب الائتمان في نفس يوم العمل.",
+    module: "SD",
+    roles: [
+      "Credit Controller",
+      "Internal Sales Representative (ISR)",
+    ],
+    steps: [
+      {
+        id: "sd-crm-1",
+        stepNumber: 1,
+        titleEN: "Set Customer Credit Limit (UKM_BP)",
+        titleAR: "تعيين حد ائتمان العميل (UKM_BP)",
+        tCode: "UKM_BP",
+        role: "Credit Controller",
+        whatToDoEN:
+          "Open UKM_BP (Maintain Business Partner). Navigate to the credit management section for the customer. Set or update the credit limit amount and attach all supporting documents (contracts, credit assessment) to the business partner. Assign risk category 'A' (Default Risk) under credit control area WAPO.",
+        whatToDoAR:
+          "افتح UKM_BP (صيانة شريك الأعمال). انتقل إلى قسم إدارة الائتمان للعميل. عيّن أو حدّث مبلغ حد الائتمان وأرفق جميع الوثائق الداعمة (العقود، تقييم الائتمان) بشريك الأعمال. عيّن فئة المخاطر 'A' (مخاطر افتراضية) ضمن منطقة التحكم الائتمانية WAPO.",
+        whatSAPDoesEN:
+          "Stores the customer's credit limit in the credit management master data. Future sales orders will be checked against this limit automatically.",
+        whatSAPDoesAR:
+          "يخزّن حد ائتمان العميل في البيانات الرئيسية لإدارة الائتمان. ستُفحص أوامر المبيعات المستقبلية مقابل هذا الحد تلقائياً.",
+        expectedOutputEN: "Customer credit limit set. Credit control area WAPO assigned.",
+        expectedOutputAR: "تم تعيين حد ائتمان العميل. تم تعيين منطقة التحكم الائتمانية WAPO.",
+      },
+      {
+        id: "sd-crm-2",
+        stepNumber: 2,
+        titleEN: "Automatic Credit Check at Order Entry",
+        titleAR: "الفحص الائتماني التلقائي عند إدخال الأمر",
+        role: "System (Automatic)",
+        whatToDoEN:
+          "When a sales order is saved in VA01, the system automatically runs the credit check (Poultry Checking Rule 1): Step 10 — statistical check of credit exposure vs. limit; Step 20 — check for maximum document value (100,000 SAR per credit segment); Step 30 — check for overdue open items. No user action needed.",
+        whatToDoAR:
+          "عند حفظ أمر المبيعات في VA01، يُشغّل النظام تلقائياً فحص الائتمان (قاعدة فحص الدواجن 1): الخطوة 10 — الفحص الإحصائي لتعرض الائتمان مقابل الحد؛ الخطوة 20 — فحص الحد الأقصى لقيمة المستند (100,000 ريال لكل شريحة ائتمانية)؛ الخطوة 30 — فحص البنود المفتوحة المتأخرة. لا يلزم أي إجراء من المستخدم.",
+        whatSAPDoesEN:
+          "System runs credit check automatically. If limit is not exceeded, order proceeds normally. If exceeded, order is blocked with reason '01 Credit Limit Exceeded' and sent to credit controller queue.",
+        whatSAPDoesAR:
+          "يُشغّل النظام فحص الائتمان تلقائياً. إذا لم يُتجاوَز الحد، يستمر الأمر بشكل طبيعي. إذا تجاوز، يُحجب الأمر بالسبب '01 تجاوز حد الائتمان' ويُرسَل إلى قائمة انتظار مراقب الائتمان.",
+        expectedOutputEN: "Credit check passed — order proceeds. Or order blocked — credit controller is notified.",
+        expectedOutputAR: "اجتاز فحص الائتمان — يستمر الأمر. أو الأمر محجوب — يتم إخطار مراقب الائتمان.",
+      },
+      {
+        id: "sd-crm-3",
+        stepNumber: 3,
+        titleEN: "Review and Release or Reject Blocked Orders (VKM1)",
+        titleAR: "مراجعة وإطلاق أو رفض الأوامر المحجوزة (VKM1)",
+        tCode: "VKM1",
+        role: "Credit Controller",
+        whatToDoEN:
+          "Open VKM1 (Manage Credit Cases). Review all blocked sales orders. For each blocked order, check the customer's credit exposure (UKM_COMMITMENTS), payment history, and overdue items. Decision must be made on the same business day: Release the order if credit situation is acceptable; Reject the order if credit risk is too high. Document the decision reasoning.",
+        whatToDoAR:
+          "افتح VKM1 (إدارة حالات الائتمان). راجع جميع أوامر المبيعات المحجوزة. لكل أمر محجوب، تحقق من تعرض ائتمان العميل (UKM_COMMITMENTS) وتاريخ الدفع والبنود المتأخرة. يجب اتخاذ القرار في نفس يوم العمل: إطلاق الأمر إذا كان وضع الائتمان مقبولاً؛ رفض الأمر إذا كانت مخاطر الائتمان عالية جداً. وثّق سبب القرار.",
+        whatSAPDoesEN:
+          "Releasing the order removes the credit block and allows delivery processing. Rejecting sets the order status to rejected. All decisions are logged for audit (UKM_LOGS_DISPLAY).",
+        whatSAPDoesAR:
+          "يُزيل إطلاق الأمر حجب الائتمان ويسمح بمعالجة التسليم. يضبط الرفض حالة الأمر إلى مرفوض. تُسجَّل جميع القرارات للمراجعة (UKM_LOGS_DISPLAY).",
+        expectedOutputEN: "Blocked orders released or rejected. Decision logged. Released orders proceed to delivery.",
+        expectedOutputAR: "تم إطلاق أو رفض الأوامر المحجوزة. تم تسجيل القرار. الأوامر المُطلَقة تنتقل إلى التسليم.",
+      },
+      {
+        id: "sd-crm-4",
+        stepNumber: 4,
+        titleEN: "Monitor Credit Exposure and Reporting",
+        titleAR: "مراقبة تعرض الائتمان والتقارير",
+        tCode: "UKM_MASS_DSP2",
+        role: "Credit Controller",
+        whatToDoEN:
+          "Regularly monitor customer credit data using the following T-codes: UKM_MASS_DSP2 (Display credit data for all customers), UKM_COMMITMENTS (Display credit exposure/commitments), UKM_LOGS_DISPLAY (Review credit decision audit log), UKM_MALUS_DSP (Credit limit utilization report), UKM_BP_DISPLAY (Display credit master data for one customer).",
+        whatToDoAR:
+          "راقب بانتظام بيانات ائتمان العملاء باستخدام رموز المعاملات التالية: UKM_MASS_DSP2 (عرض بيانات الائتمان لجميع العملاء)، UKM_COMMITMENTS (عرض تعرض/التزامات الائتمان)، UKM_LOGS_DISPLAY (مراجعة سجل تدقيق قرارات الائتمان)، UKM_MALUS_DSP (تقرير استخدام حد الائتمان)، UKM_BP_DISPLAY (عرض بيانات الائتمان الرئيسية لعميل واحد).",
+        whatSAPDoesEN:
+          "Provides real-time visibility into customer credit exposure across all open orders, deliveries, and invoices.",
+        whatSAPDoesAR:
+          "يوفر رؤية فورية لتعرض ائتمان العملاء عبر جميع الأوامر والتسليمات والفواتير المفتوحة.",
+        expectedOutputEN: "Credit exposure monitored. Any customers approaching or exceeding limits are flagged for action.",
+        expectedOutputAR: "تمت مراقبة تعرض الائتمان. يتم وضع علامة على أي عملاء يقتربون من الحدود أو يتجاوزونها لاتخاذ إجراء.",
+      },
+    ],
+  },
+
+  // ─── SD: Sales Period End Closing ─────────────────────────────────────────
+  {
+    id: "sd-period-end-closing",
+    icon: "📅",
+    duration: "90 min",
+    titleEN: "Sales Period End Closing Operations",
+    titleAR: "عمليات إغلاق الفترة لقسم المبيعات",
+    descriptionEN:
+      "Monthly closing checklist for the Sales & Distribution department — performed before FI period close. Covers reviewing blocked/incomplete orders, releasing orders for billing, clearing delivery backlogs, posting goods issue on pending deliveries, processing the billing due list, and verifying all credit memos are generated.",
+    descriptionAR:
+      "قائمة التحقق الشهرية لإغلاق قسم المبيعات والتوزيع — تُنفَّذ قبل إغلاق فترة المالية. تشمل مراجعة الأوامر المحجوزة/غير المكتملة، وإطلاق الأوامر للفوترة، وتصفية متأخرات التسليم، وترحيل إصدار البضائع على التسليمات المعلقة، ومعالجة قائمة الفوترة المستحقة، والتحقق من إنشاء جميع الإشعارات الدائنة.",
+    module: "SD",
+    roles: [
+      "Internal Sales Representative (ISR)",
+      "Billing Clerk",
+      "Shipping Specialist",
+      "Credit Manager",
+    ],
+    steps: [
+      {
+        id: "sd-pec-1",
+        stepNumber: 1,
+        titleEN: "Review Sales Order Fulfillment Issues",
+        titleAR: "مراجعة مشكلات تنفيذ أوامر المبيعات",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Run the Sales Order Fulfillment Analyze Issues report to get a comprehensive view of all open orders with problems. Identify orders that need action before period close.",
+        whatToDoAR:
+          "شغّل تقرير تحليل مشكلات تنفيذ أوامر المبيعات للحصول على نظرة شاملة على جميع الأوامر المفتوحة ذات المشكلات. حدد الأوامر التي تحتاج إلى إجراء قبل إغلاق الفترة.",
+        whatSAPDoesEN:
+          "Displays all open sales orders with issues including incomplete data, delivery blocks, and credit holds.",
+        whatSAPDoesAR:
+          "يعرض جميع أوامر المبيعات المفتوحة التي بها مشكلات، بما في ذلك البيانات غير المكتملة وحجب التسليم وتجميد الائتمان.",
+        expectedOutputEN: "Full picture of open order issues identified — action items listed.",
+        expectedOutputAR: "تم تحديد الصورة الكاملة لمشكلات الأوامر المفتوحة — قائمة بنود الإجراءات.",
+      },
+      {
+        id: "sd-pec-2",
+        stepNumber: 2,
+        titleEN: "Clear Incomplete Sales Orders (V.02)",
+        titleAR: "تصفية أوامر المبيعات غير المكتملة (V.02)",
+        tCode: "V.02",
+        role: "Internal Sales Representative (ISR)",
+        whatToDoEN:
+          "Open V.02 to display all incomplete sales orders. For each incomplete order, open it in VA02 and fill in the missing mandatory fields (customer reference, pricing date, terms of payment, shipping point). Save each order once complete.",
+        whatToDoAR:
+          "افتح V.02 لعرض جميع أوامر المبيعات غير المكتملة. لكل أمر غير مكتمل، افتحه في VA02 وأكمل الحقول الإلزامية المفقودة (مرجع العميل، تاريخ التسعير، شروط الدفع، نقطة الشحن). احفظ كل أمر بعد اكتماله.",
+        whatSAPDoesEN:
+          "Identifies all orders flagged as incomplete. Once mandatory fields are filled, orders are released for further processing.",
+        whatSAPDoesAR:
+          "يحدد جميع الأوامر المُعلَّمة بأنها غير مكتملة. بمجرد اكتمال الحقول الإلزامية، تُطلَق الأوامر لمزيد من المعالجة.",
+        expectedOutputEN: "All incomplete orders resolved — orders ready for delivery and billing.",
+        expectedOutputAR: "تمت تسوية جميع الأوامر غير المكتملة — الأوامر جاهزة للتسليم والفوترة.",
+      },
+      {
+        id: "sd-pec-3",
+        stepNumber: 3,
+        titleEN: "Review Delivery-Blocked Orders (VA14L) and Credit-Blocked Orders (VKM1)",
+        titleAR: "مراجعة الأوامر المحجوزة للتسليم (VA14L) والأوامر المحجوزة ائتمانياً (VKM1)",
+        tCode: "VA14L",
+        role: "Internal Sales Representative (ISR) / Credit Manager",
+        whatToDoEN:
+          "Open VA14L to see all sales orders blocked for delivery (delivery block reasons). ISR resolves delivery blocks. Credit Manager opens VKM1 to review and release or reject all credit-blocked orders. All blocks must be cleared before period close.",
+        whatToDoAR:
+          "افتح VA14L لرؤية جميع أوامر المبيعات المحجوزة للتسليم (أسباب حجب التسليم). يُسوّي ISR حجوب التسليم. يفتح مدير الائتمان VKM1 لمراجعة وإطلاق أو رفض جميع الأوامر المحجوزة ائتمانياً. يجب إزالة جميع الحجوب قبل إغلاق الفترة.",
+        whatSAPDoesEN:
+          "VA14L shows delivery-blocked orders. VKM1 manages credit-blocked orders.",
+        whatSAPDoesAR:
+          "يعرض VA14L الأوامر المحجوزة للتسليم. يدير VKM1 الأوامر المحجوزة ائتمانياً.",
+        expectedOutputEN: "All delivery blocks and credit blocks resolved or rejected.",
+        expectedOutputAR: "تمت تسوية أو رفض جميع حجوب التسليم والائتمان.",
+      },
+      {
+        id: "sd-pec-4",
+        stepNumber: 4,
+        titleEN: "Release Orders for Billing (V.23) and Review Open Deliveries",
+        titleAR: "إطلاق الأوامر للفوترة (V.23) ومراجعة التسليمات المفتوحة",
+        tCode: "V.23",
+        role: "Internal Sales Representative (ISR) / Shipping Specialist",
+        whatToDoEN:
+          "Run V.23 (Schedule Billing Release) to release any orders held back from billing. Then review: V_UC (incomplete delivery documents) to fix and complete them; VL10C (sales orders due for delivery) to create any missing deliveries; VL06G (outbound deliveries pending goods issue) to post all outstanding GIs; V_SA (log of collective delivery creation) to check for delivery creation errors.",
+        whatToDoAR:
+          "شغّل V.23 (جدولة إطلاق الفوترة) لإطلاق أي أوامر محتجزة عن الفوترة. ثم راجع: V_UC (مستندات تسليم غير مكتملة) لإصلاحها وإكمالها؛ VL10C (أوامر مبيعات مستحقة للتسليم) لإنشاء أي تسليمات مفقودة؛ VL06G (تسليمات صادرة معلقة إصدار البضائع) لترحيل جميع إصدارات البضائع المعلقة؛ V_SA (سجل إنشاء التسليم الجماعي) للتحقق من أخطاء إنشاء التسليم.",
+        whatSAPDoesEN:
+          "V.23 removes billing holds. VL06G posts all pending goods issues, creating accounting documents and making deliveries billable.",
+        whatSAPDoesAR:
+          "يُزيل V.23 تجميد الفوترة. يرحّل VL06G جميع إصدارات البضائع المعلقة، وينشئ مستندات محاسبة ويجعل التسليمات قابلة للفوترة.",
+        expectedOutputEN: "All orders released for billing. All delivery GIs posted. Billing due list is complete.",
+        expectedOutputAR: "تم إطلاق جميع الأوامر للفوترة. تم ترحيل جميع إصدارات البضائع. قائمة الفوترة المستحقة مكتملة.",
+      },
+      {
+        id: "sd-pec-5",
+        stepNumber: 5,
+        titleEN: "Process Billing Due List and Review Blocked Billing (VF04 → VFX3)",
+        titleAR: "معالجة قائمة الفوترة المستحقة ومراجعة الفوترة المحجوزة (VF04 ← VFX3)",
+        tCode: "VF04",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Open VF04 and run collective billing for all deliveries in the billing due list. After billing run, open VFX3 (Manage Billing Documents) to review any billing documents blocked for accounting transfer. Resolve any blocked billing documents so they are transferred to FI.",
+        whatToDoAR:
+          "افتح VF04 وشغّل الفوترة الجماعية لجميع التسليمات في قائمة الفوترة المستحقة. بعد تشغيل الفوترة، افتح VFX3 (إدارة مستندات الفوترة) لمراجعة أي مستندات فوترة محجوزة لنقل المحاسبة. سوّ أي مستندات فوترة محجوزة حتى تُنقَل إلى المالية.",
+        whatSAPDoesEN:
+          "VF04 creates all invoice billing documents. VFX3 identifies and resolves billing documents that failed accounting transfer.",
+        whatSAPDoesAR:
+          "ينشئ VF04 جميع مستندات الفوترة والفواتير. يحدد VFX3 ويُسوّي مستندات الفوترة التي فشل نقلها المحاسبي.",
+        expectedOutputEN: "All invoices created and transferred to FI. No blocked billing documents remaining.",
+        expectedOutputAR: "تم إنشاء جميع الفواتير ونقلها إلى المالية. لا توجد مستندات فوترة محجوزة متبقية.",
+      },
+      {
+        id: "sd-pec-6",
+        stepNumber: 6,
+        titleEN: "Verify Reports and Credit Memo Completeness",
+        titleAR: "التحقق من التقارير واكتمال الإشعارات الدائنة",
+        tCode: "YSD005",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Run the following period-end verification reports: YSD005 (Sales Order Status) — confirm all orders are fully delivered and billed; YSD010 (Profitability by Material / Average Sales Price) — review for any pricing anomalies; YSD009 (List of Billing Documents) — confirm all credit memos for monthly incentives, compensations, and promotions have been generated. Log any discrepancies for follow-up.",
+        whatToDoAR:
+          "شغّل تقارير التحقق من نهاية الفترة التالية: YSD005 (حالة أمر المبيعات) — تأكد من تسليم وفوترة جميع الأوامر بالكامل؛ YSD010 (الربحية حسب المادة / متوسط سعر البيع) — راجع بحثاً عن أي شذوذ في التسعير؛ YSD009 (قائمة مستندات الفوترة) — تأكد من إنشاء جميع الإشعارات الدائنة للحوافز الشهرية والتعويضات والعروض الترويجية. سجّل أي تناقضات للمتابعة.",
+        whatSAPDoesEN:
+          "Custom reports YSD005, YSD010, and YSD009 provide period-end visibility into order, billing, and profitability status.",
+        whatSAPDoesAR:
+          "توفر التقارير المخصصة YSD005 وYSD010 وYSD009 رؤية نهاية الفترة لحالة الأوامر والفوترة والربحية.",
+        expectedOutputEN: "Period-end checklist complete. All orders closed, all invoices posted, all credit memos issued. Ready for FI period close.",
+        expectedOutputAR: "اكتملت قائمة تحقق نهاية الفترة. جميع الأوامر مغلقة، جميع الفواتير مرحّلة، جميع الإشعارات الدائنة مُصدَرة. جاهز لإغلاق فترة المالية.",
+      },
+    ],
+  },
+
   // ─── HCM: SuccessFactors ESS ────────────────────────────────────────────────
   {
     id: "sf-ess",
