@@ -5,6 +5,9 @@ import { logbookEntries } from "@/data/qm-logbook";
 import { learningPaths } from "@/data/learning-paths";
 import Link from "next/link";
 import { ProcessesTab, useProcessProgress, getCompletedProcesses } from "@/components/hub/ProcessesTab";
+import { BusinessProcessesTab } from "@/components/hub/BusinessProcessesTab";
+import { ProcessFlowTab } from "@/components/hub/ProcessFlowTab";
+import { CommonErrorsTab } from "@/components/hub/CommonErrorsTab";
 import { useLang } from "@/context/LangContext";
 import { useT } from "@/lib/i18n";
 
@@ -39,15 +42,15 @@ const MODULE_COLORS: Record<string, { bg: string; text: string; border: string }
 };
 
 const MODULE_TABS = [
-  { id: "All",  label: "All Modules",   icon: "🔗" },
-  { id: "PP",   label: "PP",            icon: "🏭" },
-  { id: "QM",   label: "QM",            icon: "✅" },
-  { id: "MM",   label: "MM",            icon: "📦" },
-  { id: "PM",   label: "PM",            icon: "🔧" },
-  { id: "HCM",  label: "HCM",           icon: "👥" },
-  { id: "FICO", label: "FICO",          icon: "💰" },
-  { id: "TM",   label: "TM",            icon: "🚚" },
-  { id: "EHS",  label: "EHS",           icon: "⛑️" },
+  { id: "All",  label: "All Modules", icon: "🔗" },
+  { id: "PP",   label: "PP",          icon: "🏭" },
+  { id: "QM",   label: "QM",          icon: "✅" },
+  { id: "MM",   label: "MM",          icon: "📦" },
+  { id: "PM",   label: "PM",          icon: "🔧" },
+  { id: "HCM",  label: "HCM",         icon: "👥" },
+  { id: "FICO", label: "FICO",        icon: "💰" },
+  { id: "TM",   label: "TM",          icon: "🚚" },
+  { id: "EHS",  label: "EHS",         icon: "⛑️" },
 ] as const;
 
 const PHASE_ICONS: Record<string, string> = {
@@ -57,14 +60,23 @@ const PHASE_ICONS: Record<string, string> = {
   all:        "🔗",
 };
 
-type HubTab = "critical" | "processes" | "paths" | "completed";
+// ── Tab definition ─────────────────────────────────────────────────────────
+type HubTab = "processes" | "business" | "flow" | "errors" | "completed";
+
+const HUB_TABS: { id: HubTab; label: string }[] = [
+  { id: "processes", label: "Processes" },
+  { id: "business",  label: "Business Processes" },
+  { id: "flow",      label: "Process Flow" },
+  { id: "errors",    label: "Common Errors" },
+  { id: "completed", label: "Completed" },
+];
 
 export default function HubPage() {
   const { lang, toggle: toggleLang } = useLang();
   const t = useT();
   const [progress, setProgress] = useState<ProgressState>({ visited: {}, completed: {} });
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<HubTab>("critical");
+  const [activeTab, setActiveTab] = useState<HubTab>("processes");
 
   // Command Centre modal state
   const [showCmd, setShowCmd] = useState(false);
@@ -109,7 +121,7 @@ export default function HubPage() {
   const cmdEntries = useMemo(() => {
     const q = cmdSearch.trim().toLowerCase();
     return logbookEntries.filter((e) => {
-      const matchesMod = cmdModule === "All" || e.module === cmdModule || e.module.startsWith(cmdModule);
+      const matchesMod = cmdModule === "All" || e.module === cmdModule || e.module.startsWith(cmdModule + "/");
       const matchesSearch = !q ||
         e.transactionCode.toLowerCase().includes(q) ||
         e.title.toLowerCase().includes(q) ||
@@ -118,24 +130,19 @@ export default function HubPage() {
     });
   }, [cmdModule, cmdSearch]);
 
-  // ── AWP High entries for critical tab ────────────────────────────────────
-  const awpHighEntries = useMemo(
-    () => logbookEntries.filter((e) => e.awpRelevance === "High"),
-    []
-  );
-
   // ── Stats ─────────────────────────────────────────────────────────────────
+  const awpHighCount = useMemo(() => logbookEntries.filter((e) => e.awpRelevance === "High").length, []);
   const stats = useMemo(() => {
-    const visitedCount = Object.values(progress.visited).filter(Boolean).length;
     const completedCount = Object.values(progress.completed).filter(Boolean).length;
+    const visitedCount = Object.values(progress.visited).filter(Boolean).length;
     return {
       total: logbookEntries.length,
-      awpHigh: awpHighEntries.length,
+      awpHigh: awpHighCount,
       paths: learningPaths.length,
       completed: completedCount,
       visited: visitedCount,
     };
-  }, [progress, awpHighEntries.length]);
+  }, [progress, awpHighCount]);
 
   function getPathProgress(pathId: string) {
     const path = learningPaths.find((p) => p.id === pathId);
@@ -183,7 +190,7 @@ export default function HubPage() {
             </div>
           </div>
 
-          {/* Right: "Do you want to learn more?" + Command Centre + Lang toggle */}
+          {/* Right: prompt + T-Code Library button + Lang toggle */}
           <div className="flex items-center gap-3 shrink-0">
             <span className="hidden sm:block text-xs text-[#6B7A6F] italic">Do you want to learn more?</span>
             <button
@@ -206,7 +213,7 @@ export default function HubPage() {
         </div>
       </header>
 
-      {/* ── Command Centre Modal ──────────────────────────────────────────────── */}
+      {/* ── T-Code Library Modal ──────────────────────────────────────────────── */}
       {showCmd && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[72px] px-4 pb-4" style={{ background: "rgba(28,58,43,0.45)", backdropFilter: "blur(2px)" }}>
           <div
@@ -242,7 +249,7 @@ export default function HubPage() {
               </div>
             </div>
 
-            {/* Module tabs */}
+            {/* Module filter tabs */}
             <div className="flex gap-1 px-6 py-3 border-b border-[#D9D4C8] overflow-x-auto">
               {MODULE_TABS.map((mod) => {
                 const count = mod.id === "All"
@@ -275,7 +282,7 @@ export default function HubPage() {
                 <p className="text-sm text-[#6B7A6F] py-8 text-center">
                   No T-codes match{cmdSearch ? ` "${cmdSearch}"` : " this filter"}.{" "}
                   {cmdSearch && (
-                    <button onClick={() => setCmdSearch("")} className="underline hover:text-[#1C3A2B] transition-colors">Clear search</button>
+                    <button onClick={() => setCmdSearch("")} className="underline hover:text-[#1C3A2B] transition-colors">Clear</button>
                   )}
                 </p>
               ) : (
@@ -291,20 +298,12 @@ export default function HubPage() {
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <code className="text-sm font-mono font-semibold text-[#1C3A2B]">{entry.transactionCode}</code>
                           <div className="flex items-center gap-1.5">
-                            <span
-                              className="text-[9px] font-medium px-1.5 py-0.5 rounded"
-                              style={{ background: mc.bg, color: mc.text }}
-                            >
-                              {entry.module}
-                            </span>
+                            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded" style={{ background: mc.bg, color: mc.text }}>{entry.module}</span>
                             <button
                               onClick={() => toggleCompleted(entry.id)}
                               title={done ? "Mark incomplete" : "Mark complete"}
                               className="w-5 h-5 rounded-full border flex items-center justify-center transition-colors text-[10px]"
-                              style={done
-                                ? { background: "#1C3A2B", borderColor: "#1C3A2B", color: "white" }
-                                : { background: "transparent", borderColor: "#D9D4C8", color: "#6B7A6F" }
-                              }
+                              style={done ? { background: "#1C3A2B", borderColor: "#1C3A2B", color: "white" } : { background: "transparent", borderColor: "#D9D4C8", color: "#6B7A6F" }}
                             >✓</button>
                           </div>
                         </div>
@@ -316,9 +315,7 @@ export default function HubPage() {
                             href={`/logbook/${entry.id}`}
                             onClick={() => setShowCmd(false)}
                             className="text-[10px] text-[#4E7862] opacity-0 group-hover:opacity-100 hover:text-[#1C3A2B] transition-all"
-                          >
-                            Deep dive →
-                          </Link>
+                          >Deep dive →</Link>
                         </div>
                       </div>
                     );
@@ -339,12 +336,7 @@ export default function HubPage() {
       {/* ── Tab Bar ──────────────────────────────────────────────────────────── */}
       <nav className="border-b border-[#D9D4C8] bg-[#FAFAF8] sticky top-[73px] z-20" aria-label="Hub navigation">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex gap-1 overflow-x-auto">
-          {([
-            { id: "critical",  label: t("hub.tabs.critical") },
-            { id: "processes", label: t("hub.tabs.processes") },
-            { id: "paths",     label: t("hub.tabs.paths") },
-            { id: "completed", label: t("hub.tabs.completed") },
-          ] as { id: HubTab; label: string }[]).map((tab) => (
+          {HUB_TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -380,8 +372,6 @@ export default function HubPage() {
             Role-based learning paths, curated SAP reference, and progress tracking —
             everything you need across all SAP modules to deliver AWP-aligned results.
           </p>
-
-          {/* Hero stats */}
           <div className="flex flex-wrap gap-6 sm:gap-10">
             {[
               { value: stats.total,    label: "T-Codes" },
@@ -390,12 +380,7 @@ export default function HubPage() {
               { value: stats.completed, label: "Completed" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center sm:text-left">
-                <div
-                  className="text-3xl font-light text-white"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  {value}
-                </div>
+                <div className="text-3xl font-light text-white" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{value}</div>
                 <div className="text-xs text-[#C8DFC5] mt-0.5">{label}</div>
               </div>
             ))}
@@ -409,14 +394,9 @@ export default function HubPage() {
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
             <span className="text-xs font-semibold text-[#1C3A2B]">Your progress</span>
             <div className="flex-1 max-w-xs h-1.5 bg-[#C8DFC5] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#1C3A2B] rounded-full transition-all"
-                style={{ width: `${Math.round((stats.completed / stats.awpHigh) * 100)}%` }}
-              />
+              <div className="h-full bg-[#1C3A2B] rounded-full transition-all" style={{ width: `${Math.round((stats.completed / stats.awpHigh) * 100)}%` }} />
             </div>
-            <span className="text-xs text-[#4E7862]">
-              {stats.completed} of {stats.awpHigh} AWP-critical T-codes completed
-            </span>
+            <span className="text-xs text-[#4E7862]">{stats.completed} of {stats.awpHigh} AWP-critical T-codes completed</span>
           </div>
         </div>
       )}
@@ -426,121 +406,14 @@ export default function HubPage() {
         {/* ── Processes tab ─────────────────────────────────────────────────── */}
         {activeTab === "processes" && <ProcessesTab />}
 
-        {/* ── AWP Critical tab ──────────────────────────────────────────────── */}
-        {activeTab === "critical" && (
-          <div className="space-y-14">
-            <section>
-              <div className="mb-5">
-                <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">AWP Critical</p>
-                <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                  High-Priority T-Codes
-                </h3>
-                <p className="text-sm text-[#6B7A6F] mt-1">
-                  T-codes rated <strong>High</strong> for AWP relevance — the ones you use daily.
-                  For the full library across all modules, use the{" "}
-                  <button onClick={() => setShowCmd(true)} className="underline text-[#4E7862] hover:text-[#1C3A2B] transition-colors">T-Code Library</button>.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {awpHighEntries.map((entry) => {
-                  const done = progress.completed[entry.id];
-                  const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
-                  return (
-                    <div key={entry.id} className="bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all group">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <code className="text-sm font-mono font-semibold text-[#1C3A2B]">{entry.transactionCode}</code>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-medium px-1.5 py-0.5 rounded" style={{ background: mc.bg, color: mc.text }}>{entry.module}</span>
-                          <button onClick={() => toggleCompleted(entry.id)} title={done ? "Mark incomplete" : "Mark complete"} className="w-5 h-5 rounded-full border flex items-center justify-center transition-colors text-[10px]" style={done ? { background: "#1C3A2B", borderColor: "#1C3A2B", color: "white" } : { background: "transparent", borderColor: "#D9D4C8", color: "#6B7A6F" }}>✓</button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-[#2A2E2B] font-medium leading-snug mb-1">{entry.title}</p>
-                      <p className="text-[11px] text-[#6B7A6F] leading-relaxed line-clamp-2">{entry.description}</p>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-[10px] text-[#6B7A6F]">{entry.category}</span>
-                        <Link href={`/logbook/${entry.id}`} className="text-[10px] text-[#4E7862] opacity-0 group-hover:opacity-100 hover:text-[#1C3A2B] transition-all">Deep dive →</Link>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              {awpHighEntries.length === 0 && (
-                <p className="text-sm text-[#6B7A6F] py-8 text-center">No AWP-critical entries found.</p>
-              )}
-            </section>
-          </div>
-        )}
+        {/* ── Business Processes tab ────────────────────────────────────────── */}
+        {activeTab === "business" && <BusinessProcessesTab />}
 
-        {/* ── Learning Paths tab ────────────────────────────────────────────── */}
-        {activeTab === "paths" && (
-          <div className="space-y-14">
-            <section>
-              <div className="mb-6">
-                <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">Step 1</p>
-                <h3 className="text-2xl font-light text-[#1C3A2B]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>Choose Your Learning Path</h3>
-                <p className="text-sm text-[#6B7A6F] mt-1">Role-based sequences of T-codes — curated for how you work.</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {learningPaths.map((path) => {
-                  const prog = getPathProgress(path.id);
-                  const isSelected = selectedPath === path.id;
-                  return (
-                    <button key={path.id} onClick={() => setSelectedPath(isSelected ? null : path.id)} aria-pressed={isSelected} className="text-left border rounded-2xl p-5 transition-all hover:shadow-md" style={{ background: isSelected ? path.color : "#FAFAF8", borderColor: isSelected ? path.dotColor + "40" : "#D9D4C8" }}>
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <span className="text-xl" aria-hidden>{PHASE_ICONS[path.processPhase ?? "all"]}</span>
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: path.dotColor + "20", color: path.dotColor }}>{path.estimatedDuration.EN}</span>
-                      </div>
-                      <h4 className="text-base font-medium mb-1" style={{ color: path.dotColor, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "18px" }}>{path.title.EN}</h4>
-                      <p className="text-xs text-[#6B7A6F] mb-4 leading-relaxed line-clamp-2">{path.description.EN}</p>
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[10px] text-[#6B7A6F]">{path.entryIds.length} T-codes</span>
-                          <span className="text-[10px] font-medium" style={{ color: path.dotColor }}>{prog.done}/{prog.total}</span>
-                        </div>
-                        <div className="h-1 bg-[#D9D4C8] rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all" style={{ width: `${prog.pct}%`, background: path.dotColor }} />
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-              {selectedPathData && (
-                <div className="mt-4 border rounded-2xl overflow-hidden" style={{ borderColor: selectedPathData.dotColor + "40", background: selectedPathData.color }}>
-                  <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: selectedPathData.dotColor + "20" }}>
-                    <div>
-                      <h4 className="text-lg font-medium" style={{ color: selectedPathData.dotColor, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: "20px" }}>{selectedPathData.title.EN} — Learning Sequence</h4>
-                      <p className="text-xs text-[#6B7A6F] mt-0.5">Role: {selectedPathData.role} · {selectedPathData.estimatedDuration.EN}</p>
-                    </div>
-                    <button onClick={() => setSelectedPath(null)} className="text-[#6B7A6F] hover:text-[#1C3A2B] text-xl leading-none" aria-label="Close">×</button>
-                  </div>
-                  <div className="p-6">
-                    <ol className="space-y-3">
-                      {selectedPathData.entryIds.map((entryId, i) => {
-                        const entry = logbookEntries.find((e) => e.id === entryId);
-                        if (!entry) return null;
-                        const done = progress.completed[entryId];
-                        const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
-                        return (
-                          <li key={entryId} className="flex items-center gap-3 group">
-                            <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors" style={{ background: done ? selectedPathData.dotColor : selectedPathData.dotColor + "20", color: done ? "white" : selectedPathData.dotColor }}>{done ? "✓" : i + 1}</span>
-                            <div className="flex-1 flex items-center gap-3 min-w-0">
-                              <code className="text-xs font-mono px-2 py-0.5 rounded shrink-0" style={{ background: selectedPathData.dotColor + "15", color: selectedPathData.dotColor }}>{entry.transactionCode}</code>
-                              <span className="text-sm text-[#2A2E2B] truncate">{entry.title}</span>
-                              <span className="text-[10px] shrink-0 px-1.5 py-0.5 rounded" style={{ background: mc.bg, color: mc.text }}>{entry.module}</span>
-                            </div>
-                            <button onClick={() => toggleCompleted(entryId)} className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-xs px-2 py-0.5 rounded transition-all border" style={{ borderColor: selectedPathData.dotColor + "40", color: done ? "#9B3030" : selectedPathData.dotColor }}>{done ? "Undo" : "Mark done"}</button>
-                            <Link href={`/logbook/${entryId}`} className="opacity-0 group-hover:opacity-100 focus:opacity-100 text-xs text-[#6B7A6F] hover:text-[#1C3A2B] shrink-0 transition-opacity">View →</Link>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  </div>
-                </div>
-              )}
-            </section>
-          </div>
-        )}
+        {/* ── Process Flow tab ──────────────────────────────────────────────── */}
+        {activeTab === "flow" && <ProcessFlowTab />}
+
+        {/* ── Common Errors tab ─────────────────────────────────────────────── */}
+        {activeTab === "errors" && <CommonErrorsTab />}
 
         {/* ── Completed tab ─────────────────────────────────────────────────── */}
         {activeTab === "completed" && (
@@ -570,9 +443,7 @@ export default function HubPage() {
                       {lang === "AR" ? p.titleAR : p.titleEN}
                     </h4>
                     <p className="text-xs text-[#6B7A6F] mb-3">{p.duration} · {p.steps.length} steps · {p.module}</p>
-                    <button onClick={() => setActiveTab("processes")} className="text-xs font-medium text-[#4E7862] hover:text-[#1C3A2B] transition-colors">
-                      Review →
-                    </button>
+                    <button onClick={() => setActiveTab("processes")} className="text-xs font-medium text-[#4E7862] hover:text-[#1C3A2B] transition-colors">Review →</button>
                   </div>
                 ))}
               </div>
@@ -587,7 +458,6 @@ export default function HubPage() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 flex items-center justify-between gap-4 text-xs text-[#6B7A6F]">
           <span>AWP Central Learning Hub · SAP S/4HANA</span>
           <div className="flex flex-wrap gap-4">
-            <Link href="/learning/business-processes" className="hover:text-[#1C3A2B] transition-colors">Business Processes</Link>
             <Link href="/process-flow" className="hover:text-[#1C3A2B] transition-colors">Process Flow</Link>
             <Link href="/about" className="hover:text-[#1C3A2B] transition-colors">About</Link>
             <Link href="/faq" className="hover:text-[#1C3A2B] transition-colors">FAQ</Link>
