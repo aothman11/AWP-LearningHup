@@ -1684,6 +1684,435 @@ export const processes: Process[] = [
       },
     ],
   },
+
+  // ─── TM: Logistic Service Provider ─────────────────────────────────────────
+  {
+    id: "tm-lsp",
+    module: "TM",
+    icon: "🚛",
+    duration: "1–2 days",
+    titleEN: "Logistic Service Provider (LSP) Process",
+    titleAR: "عملية مزود الخدمة اللوجستية (LSP)",
+    descriptionEN:
+      "Sell and execute transportation services for external customers: create a forwarding order, auto-generate freight units, build and print the freight order, assign driver and vehicle, then settle and invoice.",
+    descriptionAR:
+      "بيع وتنفيذ خدمات النقل للعملاء الخارجيين: إنشاء أمر شحن، إنشاء وحدات الشحن تلقائياً، بناء أمر الشحن وطباعته، تعيين السائق والمركبة، ثم التسوية والفوترة.",
+    roles: ["Transportation Planner", "Billing Clerk"],
+    steps: [
+      {
+        id: "tm-lsp-1",
+        stepNumber: 1,
+        titleEN: "Create Forwarding Order",
+        titleAR: "إنشاء أمر الشحن",
+        tCode: "Forwarding Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "Open the Forwarding Orders Worklist app. Create a new forwarding order for the external customer. Enter the customer details, origin and destination locations, material, quantities, and required delivery date. The forwarding order captures the customer's transportation requirement and is the basis for charge calculation using the Forwarding Agreement (FWA).",
+        whatToDoAR:
+          "افتح تطبيق قائمة عمل أوامر الشحن. أنشئ أمر شحن جديداً للعميل الخارجي. أدخل تفاصيل العميل ومواقع الأصل والوجهة والمادة والكميات وتاريخ التسليم المطلوب. يلتقط أمر الشحن متطلبات النقل للعميل ويُعدّ أساساً لحساب الرسوم باستخدام اتفاقية الشحن (FWA).",
+        whatSAPDoesEN:
+          "Creates the forwarding order document (type ZFWL). Applies the Forwarding Agreement rate to calculate customer freight charges automatically.",
+        whatSAPDoesAR:
+          "ينشئ مستند أمر الشحن (النوع ZFWL). يطبّق سعر اتفاقية الشحن لحساب رسوم الشحن للعميل تلقائياً.",
+        expectedOutputEN: "Forwarding order created with customer charges calculated.",
+        expectedOutputAR: "تم إنشاء أمر الشحن مع احتساب رسوم العميل.",
+      },
+      {
+        id: "tm-lsp-2",
+        stepNumber: 2,
+        titleEN: "Freight Units Created Automatically",
+        titleAR: "إنشاء وحدات الشحن تلقائياً",
+        tCode: "Freight Units – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "No manual action required. SAP TM automatically generates Freight Units (FUs) based on the quantities entered in the forwarding order. Review the generated FUs in the Freight Units Worklist to confirm they are correct.",
+        whatToDoAR:
+          "لا يلزم أي إجراء يدوي. يُنشئ SAP TM تلقائياً وحدات الشحن (FU) بناءً على الكميات المدخلة في أمر الشحن. راجع وحدات الشحن المُنشأة في قائمة عمل وحدات الشحن للتأكد من صحتها.",
+        whatSAPDoesEN:
+          "Splits the forwarding order into transportable freight units (type ZFUL). Each FU represents a load that can be assigned to a freight order.",
+        whatSAPDoesAR:
+          "يقسّم أمر الشحن إلى وحدات شحن قابلة للنقل (النوع ZFUL). كل وحدة شحن تمثّل حمولة يمكن تعيينها لأمر شحن.",
+        expectedOutputEN: "Freight units auto-generated and visible in the FU worklist.",
+        expectedOutputAR: "وحدات الشحن منشأة تلقائياً وظاهرة في قائمة عمل وحدات الشحن.",
+      },
+      {
+        id: "tm-lsp-3",
+        stepNumber: 3,
+        titleEN: "Create Freight Order",
+        titleAR: "إنشاء أمر الشحن",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "Use the Transportation Cockpit to plan and assign freight units to a freight order automatically, or manually create a freight order and assign the freight units to it. Set the carrier (if subcontracting) and route details.",
+        whatToDoAR:
+          "استخدم قمرة قيادة النقل لتخطيط وحدات الشحن وتعيينها لأمر شحن تلقائياً، أو أنشئ أمر شحن يدوياً وعيّن وحدات الشحن إليه. حدد الناقل (في حالة التعاقد من الباطن) وتفاصيل المسار.",
+        whatSAPDoesEN:
+          "Creates the freight order document. Applies the Freight Agreement rate for subcontractor charge calculation. Links freight units to the freight order.",
+        whatSAPDoesAR:
+          "ينشئ مستند أمر الشحن. يطبّق سعر اتفاقية الشحن لحساب رسوم المتعاقد من الباطن. يربط وحدات الشحن بأمر الشحن.",
+        expectedOutputEN: "Freight order created with freight units assigned.",
+        expectedOutputAR: "تم إنشاء أمر الشحن مع تعيين وحدات الشحن.",
+      },
+      {
+        id: "tm-lsp-4",
+        stepNumber: 4,
+        titleEN: "Print Freight Order",
+        titleAR: "طباعة أمر الشحن",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "From the freight order, print the freight order form to give to the driver. The form contains all trip details: origin, destination, material, quantities, and the customer information.",
+        whatToDoAR:
+          "من أمر الشحن، اطبع نموذج أمر الشحن لتسليمه للسائق. يحتوي النموذج على جميع تفاصيل الرحلة: الأصل والوجهة والمادة والكميات ومعلومات العميل.",
+        whatSAPDoesEN:
+          "Generates the freight order printout using the custom form (Enhancement 001).",
+        whatSAPDoesAR:
+          "يُنشئ مطبوعة أمر الشحن باستخدام النموذج المخصص (التحسين 001).",
+        expectedOutputEN: "Freight order form printed and handed to the driver.",
+        expectedOutputAR: "تمت طباعة نموذج أمر الشحن وتسليمه للسائق.",
+      },
+      {
+        id: "tm-lsp-5",
+        stepNumber: 5,
+        titleEN: "Insert Driver and Vehicle Number",
+        titleAR: "إدخال رقم السائق والمركبة",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "In the freight order, assign the driver and vehicle (truck/trailer/combination) for the trip. Also enter the actual fuel consumed in the custom fuel field (Enhancement 004).",
+        whatToDoAR:
+          "في أمر الشحن، عيّن السائق والمركبة (شاحنة / مقطورة / تركيبة) للرحلة. أدخل أيضاً الوقود الفعلي المستهلك في حقل الوقود المخصص (التحسين 004).",
+        whatSAPDoesEN:
+          "Links the driver and vehicle resources to the freight order. Records are available for reporting and the driver incentive calculation.",
+        whatSAPDoesAR:
+          "يربط موارد السائق والمركبة بأمر الشحن. السجلات متاحة لإعداد التقارير وحساب حوافز السائق.",
+        expectedOutputEN: "Driver and vehicle assigned; fuel data recorded on the freight order.",
+        expectedOutputAR: "تم تعيين السائق والمركبة؛ بيانات الوقود مسجّلة في أمر الشحن.",
+      },
+      {
+        id: "tm-lsp-6",
+        stepNumber: 6,
+        titleEN: "Create Forwarding Settlement Document",
+        titleAR: "إنشاء مستند تسوية الشحن",
+        tCode: "Forwarding Settlements – Worklist",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "After the trip is complete, open the Forwarding Settlements Worklist and create a forwarding settlement document with reference to the forwarding order. This triggers the customer billing process.",
+        whatToDoAR:
+          "بعد اكتمال الرحلة، افتح قائمة عمل تسويات الشحن وأنشئ مستند تسوية شحن بالرجوع إلى أمر الشحن. يُطلِق ذلك عملية فوترة العميل.",
+        whatSAPDoesEN:
+          "Creates the forwarding settlement document (type ZSTL). Triggers automatic creation of the SD billing document in ERP.",
+        whatSAPDoesAR:
+          "ينشئ مستند تسوية الشحن (النوع ZSTL). يُطلِق الإنشاء التلقائي لمستند فوترة SD في ERP.",
+        expectedOutputEN: "Forwarding settlement document created; billing triggered in ERP.",
+        expectedOutputAR: "تم إنشاء مستند تسوية الشحن؛ تم تشغيل الفوترة في ERP.",
+      },
+      {
+        id: "tm-lsp-7",
+        stepNumber: 7,
+        titleEN: "Billing Document Created Automatically in ERP",
+        titleAR: "إنشاء مستند الفوترة تلقائياً في ERP",
+        tCode: "Forwarding Settlements – Worklist",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "No manual action needed. SAP automatically creates the customer billing document (type ZBIL) in the ERP system based on the forwarding settlement document. Review to confirm the amounts are correct.",
+        whatToDoAR:
+          "لا يلزم أي إجراء يدوي. يُنشئ SAP تلقائياً مستند فوترة العميل (النوع ZBIL) في نظام ERP بناءً على مستند تسوية الشحن. راجع للتأكد من صحة المبالغ.",
+        whatSAPDoesEN:
+          "Integration with SD module creates the customer invoice automatically in ERP. Accounting entries are posted to FICO.",
+        whatSAPDoesAR:
+          "يُنشئ التكامل مع وحدة SD فاتورة العميل تلقائياً في ERP. يتم ترحيل قيود المحاسبة إلى FICO.",
+        expectedOutputEN: "Customer billing document posted in ERP; accounting entries created.",
+        expectedOutputAR: "تم ترحيل مستند فوترة العميل في ERP؛ تم إنشاء قيود المحاسبة.",
+      },
+      {
+        id: "tm-lsp-8",
+        stepNumber: 8,
+        titleEN: "Print Billing Document",
+        titleAR: "طباعة مستند الفوترة",
+        tCode: "Create Billing Document",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Print the billing document to send to the external customer as their invoice. The form is designed using the custom billing document form (Enhancement 002).",
+        whatToDoAR:
+          "اطبع مستند الفوترة لإرساله إلى العميل الخارجي كفاتورتهم. النموذج مُصمَّم باستخدام نموذج مستند الفوترة المخصص (التحسين 002).",
+        whatSAPDoesEN:
+          "Generates the customer invoice printout using the custom billing form.",
+        whatSAPDoesAR:
+          "يُنشئ مطبوعة فاتورة العميل باستخدام نموذج الفوترة المخصص.",
+        expectedOutputEN: "Billing document printed and sent to the customer.",
+        expectedOutputAR: "تمت طباعة مستند الفوترة وإرساله للعميل.",
+      },
+    ],
+  },
+
+  // ─── TM: Group Logistic Scenario ────────────────────────────────────────────
+  {
+    id: "tm-group",
+    module: "TM",
+    icon: "🏭",
+    duration: "1–2 days",
+    titleEN: "Group Logistic Scenario (Internal Transport)",
+    titleAR: "سيناريو اللوجستيات الجماعية (النقل الداخلي)",
+    descriptionEN:
+      "Transport products between Al-Watania Poultry (AWP) and its customers: sales/purchase orders flow from ERP to TM, freight orders are created and executed, internal fees are settled, and billing is posted automatically.",
+    descriptionAR:
+      "نقل المنتجات بين الوطنية للدواجن (AWP) وعملائها: تنتقل أوامر البيع/الشراء من ERP إلى TM، تُنشأ أوامر الشحن وتُنفَّذ، تُسوَّى الرسوم الداخلية، وتُرحَّل الفوترة تلقائياً.",
+    roles: ["Sales Representative", "Shipping Specialist", "Transportation Planner", "Billing Clerk"],
+    steps: [
+      {
+        id: "tm-group-1",
+        stepNumber: 1,
+        titleEN: "Create Sales Order / Purchase Order in ERP",
+        titleAR: "إنشاء أمر مبيعات / أمر شراء في ERP",
+        tCode: "Create Sales Order / Purchase Order",
+        role: "Sales Representative / Purchasing",
+        whatToDoEN:
+          "In ERP create a sales order or purchase order for the required materials and quantities. This triggers the transportation planning process in SAP TM.",
+        whatToDoAR:
+          "في ERP أنشئ أمر مبيعات أو أمر شراء للمواد والكميات المطلوبة. يُطلِق ذلك عملية تخطيط النقل في SAP TM.",
+        whatSAPDoesEN:
+          "Creates the sales or purchase order in ERP. The order data is passed to TM to generate the transportation requirement.",
+        whatSAPDoesAR:
+          "ينشئ أمر المبيعات أو الشراء في ERP. تُمرَّر بيانات الأمر إلى TM لإنشاء متطلبات النقل.",
+        expectedOutputEN: "Sales or purchase order created in ERP.",
+        expectedOutputAR: "تم إنشاء أمر المبيعات أو الشراء في ERP.",
+      },
+      {
+        id: "tm-group-2",
+        stepNumber: 2,
+        titleEN: "Create Delivery Document in ERP",
+        titleAR: "إنشاء مستند التسليم في ERP",
+        tCode: "Create Delivery Document",
+        role: "Shipping Specialist",
+        whatToDoEN:
+          "Create an outbound or inbound delivery document in ERP based on the sales or purchase order. This is the trigger for the automatic creation of the Order Transportation Request (OTR) or Delivery Transportation Request (DTR) in TM.",
+        whatToDoAR:
+          "أنشئ مستند تسليم صادر أو وارد في ERP بناءً على أمر المبيعات أو الشراء. هذا هو مُحفِّز الإنشاء التلقائي لطلب نقل الأمر (OTR) أو طلب نقل التسليم (DTR) في TM.",
+        whatSAPDoesEN:
+          "Creates the delivery document in ERP and triggers replication to SAP TM as an OTR or DTR.",
+        whatSAPDoesAR:
+          "ينشئ مستند التسليم في ERP ويُطلِق النسخ إلى SAP TM كـ OTR أو DTR.",
+        expectedOutputEN: "Delivery document created; OTR/DTR generated automatically in TM.",
+        expectedOutputAR: "تم إنشاء مستند التسليم؛ تم إنشاء OTR/DTR تلقائياً في TM.",
+      },
+      {
+        id: "tm-group-3",
+        stepNumber: 3,
+        titleEN: "OTR / DTR Created Automatically in TM",
+        titleAR: "إنشاء OTR / DTR تلقائياً في TM",
+        tCode: "Automatically Created",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "No manual action required. SAP TM automatically creates the Order Transportation Request (OTR) or Delivery Transportation Request (DTR) from the ERP delivery document. Review the created request to confirm details.",
+        whatToDoAR:
+          "لا يلزم أي إجراء يدوي. يُنشئ SAP TM تلقائياً طلب نقل الأمر (OTR) أو طلب نقل التسليم (DTR) من مستند تسليم ERP. راجع الطلب المُنشأ للتأكد من التفاصيل.",
+        whatSAPDoesEN:
+          "Replicates the ERP delivery document into TM as an OTR or DTR (document type DTR1). This is the foundation for freight unit creation.",
+        whatSAPDoesAR:
+          "ينسخ مستند تسليم ERP إلى TM كـ OTR أو DTR (نوع المستند DTR1). هذا هو الأساس لإنشاء وحدات الشحن.",
+        expectedOutputEN: "OTR or DTR visible in TM and ready for freight unit creation.",
+        expectedOutputAR: "OTR أو DTR ظاهر في TM وجاهز لإنشاء وحدات الشحن.",
+      },
+      {
+        id: "tm-group-4",
+        stepNumber: 4,
+        titleEN: "Freight Units Created Automatically",
+        titleAR: "إنشاء وحدات الشحن تلقائياً",
+        tCode: "Freight Units – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "No manual action required. SAP TM auto-generates freight units (FUs) from the OTR/DTR quantities. Review them in the Freight Units Worklist.",
+        whatToDoAR:
+          "لا يلزم أي إجراء يدوي. يُنشئ SAP TM وحدات الشحن (FU) تلقائياً من كميات OTR/DTR. راجعها في قائمة عمل وحدات الشحن.",
+        whatSAPDoesEN:
+          "Creates freight units (type ZAFU) from the OTR/DTR. Each FU is a transportable unit that can be assigned to a freight order.",
+        whatSAPDoesAR:
+          "ينشئ وحدات الشحن (النوع ZAFU) من OTR/DTR. كل وحدة شحن وحدة قابلة للنقل يمكن تعيينها لأمر شحن.",
+        expectedOutputEN: "Freight units created and available for planning.",
+        expectedOutputAR: "وحدات الشحن منشأة ومتاحة للتخطيط.",
+      },
+      {
+        id: "tm-group-5",
+        stepNumber: 5,
+        titleEN: "Create Freight Order",
+        titleAR: "إنشاء أمر الشحن",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "Use the Transportation Cockpit to assign freight units to a freight order (type ZAFO), or manually create and assign. Set the route and any special requirements (e.g., refrigerated truck for poultry products).",
+        whatToDoAR:
+          "استخدم قمرة قيادة النقل لتعيين وحدات الشحن لأمر شحن (النوع ZAFO)، أو أنشئ وعيّن يدوياً. حدد المسار وأي متطلبات خاصة (مثلاً شاحنة مبردة لمنتجات الدواجن).",
+        whatSAPDoesEN:
+          "Creates the freight order and links it to the OTR/DTR and the freight units. Applies the internal agreement rates for charge calculation.",
+        whatSAPDoesAR:
+          "ينشئ أمر الشحن ويربطه بـ OTR/DTR ووحدات الشحن. يطبّق أسعار الاتفاقية الداخلية لحساب الرسوم.",
+        expectedOutputEN: "Freight order created with freight units and route assigned.",
+        expectedOutputAR: "تم إنشاء أمر الشحن مع وحدات الشحن والمسار.",
+      },
+      {
+        id: "tm-group-6",
+        stepNumber: 6,
+        titleEN: "Assign Driver and Vehicle Number",
+        titleAR: "تعيين السائق ورقم المركبة",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "In the freight order, select and assign the driver and vehicle (truck/trailer/combination). The driver's mobile number is used to send an SMS via the Camion integration when the freight order is executed.",
+        whatToDoAR:
+          "في أمر الشحن، اختر وعيّن السائق والمركبة (شاحنة / مقطورة / تركيبة). يُستخدَم رقم هاتف السائق المحمول لإرسال رسالة SMS عبر تكامل Camion عند تنفيذ أمر الشحن.",
+        whatSAPDoesEN:
+          "Links driver and vehicle resources to the freight order. Sends an SMS to the driver via the Camion TMS integration to start the trip.",
+        whatSAPDoesAR:
+          "يربط موارد السائق والمركبة بأمر الشحن. يرسل رسالة SMS للسائق عبر تكامل Camion TMS لبدء الرحلة.",
+        expectedOutputEN: "Driver and vehicle assigned; SMS sent to driver.",
+        expectedOutputAR: "تم تعيين السائق والمركبة؛ تم إرسال رسالة SMS للسائق.",
+      },
+      {
+        id: "tm-group-7",
+        stepNumber: 7,
+        titleEN: "Print Freight Order",
+        titleAR: "طباعة أمر الشحن",
+        tCode: "Freight Orders – Worklist",
+        role: "Transportation Planner",
+        whatToDoEN:
+          "Print the freight order form (waybill) for the driver. The waybill includes all trip details and has space to record actual fuel collected from the petrol station.",
+        whatToDoAR:
+          "اطبع نموذج أمر الشحن (بوليصة الشحن) للسائق. تتضمن بوليصة الشحن جميع تفاصيل الرحلة ولديها مساحة لتسجيل الوقود الفعلي المجمَّع من محطة الوقود.",
+        whatSAPDoesEN:
+          "Generates the freight order waybill using the custom form. The waybill is the driver's trip document.",
+        whatSAPDoesAR:
+          "يُنشئ بوليصة شحن أمر الشحن باستخدام النموذج المخصص. بوليصة الشحن هي وثيقة رحلة السائق.",
+        expectedOutputEN: "Freight order (waybill) printed and given to driver before departure.",
+        expectedOutputAR: "تمت طباعة أمر الشحن (بوليصة الشحن) وتسليمه للسائق قبل المغادرة.",
+      },
+      {
+        id: "tm-group-8",
+        stepNumber: 8,
+        titleEN: "Calculate Internal Transportation Fees",
+        titleAR: "حساب رسوم النقل الداخلية",
+        tCode: "Freight Orders – Worklist",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "After trip completion, calculate the internal transportation fees on the freight order. Fees are based on the internal calculation sheet (Z00001) covering transport price, loading/unloading wait time, route change fees, and applicable discounts.",
+        whatToDoAR:
+          "بعد اكتمال الرحلة، احسب رسوم النقل الداخلية على أمر الشحن. تستند الرسوم إلى ورقة الحساب الداخلية (Z00001) التي تشمل سعر النقل ووقت انتظار التحميل/التفريغ ورسوم تغيير المسار والخصومات المطبّقة.",
+        whatSAPDoesEN:
+          "Applies the internal rate calculation sheet to compute freight charges. Monthly costs (driver salary, fuel, maintenance) can be distributed by trip, driver, vehicle, and department (Enhancement 003).",
+        whatSAPDoesAR:
+          "يطبّق ورقة حساب السعر الداخلي لحساب رسوم الشحن. يمكن توزيع التكاليف الشهرية (راتب السائق، الوقود، الصيانة) حسب الرحلة والسائق والمركبة والقسم (التحسين 003).",
+        expectedOutputEN: "Internal transportation fees calculated on the freight order.",
+        expectedOutputAR: "تم حساب رسوم النقل الداخلية على أمر الشحن.",
+      },
+      {
+        id: "tm-group-9",
+        stepNumber: 9,
+        titleEN: "Create Internal Settlement Document",
+        titleAR: "إنشاء مستند التسوية الداخلية",
+        tCode: "Forwarding Settlements – Worklist",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Create the internal settlement document (type ZFIS) with reference to the OTR/DTR. This document records the inter-company transportation charges between Al-Watania Transportation and Al-Watania Poultry.",
+        whatToDoAR:
+          "أنشئ مستند التسوية الداخلية (النوع ZFIS) بالرجوع إلى OTR/DTR. يسجّل هذا المستند رسوم النقل بين الشركات بين الوطنية للنقل والوطنية للدواجن.",
+        whatSAPDoesEN:
+          "Creates the internal settlement document and triggers the automatic creation of the billing document in ERP.",
+        whatSAPDoesAR:
+          "ينشئ مستند التسوية الداخلية ويُطلِق الإنشاء التلقائي لمستند الفوترة في ERP.",
+        expectedOutputEN: "Internal settlement document created; billing triggered in ERP.",
+        expectedOutputAR: "تم إنشاء مستند التسوية الداخلية؛ تم تشغيل الفوترة في ERP.",
+      },
+      {
+        id: "tm-group-10",
+        stepNumber: 10,
+        titleEN: "Billing Document Created Automatically in ERP",
+        titleAR: "إنشاء مستند الفوترة تلقائياً في ERP",
+        tCode: "Forwarding Settlements – Worklist",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "No manual action required. SAP automatically creates the billing document (type YATM) in the ERP system. Review to confirm the amounts are correct and accounting entries are posted.",
+        whatToDoAR:
+          "لا يلزم أي إجراء يدوي. يُنشئ SAP تلقائياً مستند الفوترة (النوع YATM) في نظام ERP. راجع للتأكد من صحة المبالغ وترحيل قيود المحاسبة.",
+        whatSAPDoesEN:
+          "SD/TM/FI integration creates the billing document in ERP. Accounting entries are posted to FICO for inter-company cost allocation.",
+        whatSAPDoesAR:
+          "يُنشئ تكامل SD/TM/FI مستند الفوترة في ERP. يتم ترحيل قيود المحاسبة إلى FICO لتخصيص التكاليف بين الشركات.",
+        expectedOutputEN: "Internal billing document posted; inter-company accounts updated.",
+        expectedOutputAR: "تم ترحيل مستند الفوترة الداخلية؛ تم تحديث حسابات ما بين الشركات.",
+      },
+      {
+        id: "tm-group-11",
+        stepNumber: 11,
+        titleEN: "Print Billing Document",
+        titleAR: "طباعة مستند الفوترة",
+        tCode: "Create Billing Document",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Print the billing document for the internal customer record using the custom billing document form (Enhancement 002).",
+        whatToDoAR:
+          "اطبع مستند الفوترة لسجل العميل الداخلي باستخدام نموذج مستند الفوترة المخصص (التحسين 002).",
+        whatSAPDoesEN:
+          "Generates the billing document printout using the custom form.",
+        whatSAPDoesAR:
+          "يُنشئ مطبوعة مستند الفوترة باستخدام النموذج المخصص.",
+        expectedOutputEN: "Billing document printed for internal records.",
+        expectedOutputAR: "تمت طباعة مستند الفوترة للسجلات الداخلية.",
+      },
+    ],
+  },
+
+  // ─── TM: Service and Rental Process ─────────────────────────────────────────
+  {
+    id: "tm-service",
+    module: "TM",
+    icon: "🔧",
+    duration: "< 1 day",
+    titleEN: "Service and Rental Process",
+    titleAR: "عملية الخدمة والإيجار",
+    descriptionEN:
+      "Bill customers (internal or external) for transportation-related services: vehicle washing, daily/weekly/monthly/per-trip vehicle rental. A simple two-step process — create a service order, then generate the billing document.",
+    descriptionAR:
+      "فوترة العملاء (الداخليين أو الخارجيين) مقابل الخدمات المرتبطة بالنقل: غسيل المركبات، تأجير السيارات (يومي / أسبوعي / شهري / لكل رحلة). عملية بسيطة من خطوتين — إنشاء أمر خدمة، ثم إنشاء مستند الفوترة.",
+    roles: ["Sales Representative", "Billing Clerk"],
+    steps: [
+      {
+        id: "tm-svc-1",
+        stepNumber: 1,
+        titleEN: "Create Service Order",
+        titleAR: "إنشاء أمر الخدمة",
+        tCode: "Create Sales Order",
+        role: "Sales Representative",
+        whatToDoEN:
+          "Create a sales order (type ZSRV) for the requested service: vehicle washing for Al-Watania Poultry, or vehicle rental (daily, weekly, monthly, or per trip) for internal or external customers. Enter the customer, service type, quantities/duration, and applicable rates.",
+        whatToDoAR:
+          "أنشئ أمر مبيعات (النوع ZSRV) للخدمة المطلوبة: غسيل مركبات للوطنية للدواجن، أو تأجير مركبات (يومي أو أسبوعي أو شهري أو لكل رحلة) للعملاء الداخليين أو الخارجيين. أدخل العميل ونوع الخدمة والكميات/المدة والأسعار المطبّقة.",
+        whatSAPDoesEN:
+          "Creates the service order document (type ZSRV). Calculates the service charges based on the applicable rate table.",
+        whatSAPDoesAR:
+          "ينشئ مستند أمر الخدمة (النوع ZSRV). يحسب رسوم الخدمة بناءً على جدول الأسعار المطبّق.",
+        expectedOutputEN: "Service order created with charges calculated.",
+        expectedOutputAR: "تم إنشاء أمر الخدمة مع احتساب الرسوم.",
+      },
+      {
+        id: "tm-svc-2",
+        stepNumber: 2,
+        titleEN: "Create Billing Document",
+        titleAR: "إنشاء مستند الفوترة",
+        tCode: "Create Billing Document App",
+        role: "Billing Clerk",
+        whatToDoEN:
+          "Create the billing document with reference to the service order. Print it using the custom billing form (Enhancement 002) and send it to the customer.",
+        whatToDoAR:
+          "أنشئ مستند الفوترة بالرجوع إلى أمر الخدمة. اطبعه باستخدام نموذج الفوترة المخصص (التحسين 002) وأرسله إلى العميل.",
+        whatSAPDoesEN:
+          "SD/FI integration creates and posts the billing document. Accounting entries are created in FI for revenue recognition.",
+        whatSAPDoesAR:
+          "يُنشئ تكامل SD/FI مستند الفوترة ويرحّله. يتم إنشاء قيود المحاسبة في FI للاعتراف بالإيراد.",
+        expectedOutputEN: "Billing document created, printed, and sent to the customer.",
+        expectedOutputAR: "تم إنشاء مستند الفوترة وطباعته وإرساله إلى العميل.",
+      },
+    ],
+  },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
