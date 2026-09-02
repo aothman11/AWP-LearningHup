@@ -7,7 +7,8 @@ interface BpDoc {
   id: string;
   title: string;
   module: string;
-  slug?: string;
+  slug?: string | null;
+  viewUrl?: string | null;
 }
 
 const MODULE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -52,7 +53,7 @@ export function BusinessProcessesTab() {
       .then((data: BpDoc[]) => {
         const enriched = data.map((d) => ({
           ...d,
-          module: moduleFromTitle(d.title),
+          module: d.module && d.module !== "General" ? d.module : moduleFromTitle(d.title),
         }));
         setDocs(enriched);
       })
@@ -156,12 +157,10 @@ export function BusinessProcessesTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((doc) => {
             const mc = MODULE_COLORS[doc.module] ?? MODULE_COLORS.General;
-            return (
-              <Link
-                key={doc.id}
-                href={`/learning/business-processes/${doc.slug ?? encodeURIComponent(doc.id)}`}
-                className="group bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all flex flex-col gap-2"
-              >
+            const isExternal = !!doc.viewUrl;
+
+            const cardContent = (
+              <>
                 <div className="flex items-start justify-between gap-2">
                   <span
                     className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
@@ -169,9 +168,41 @@ export function BusinessProcessesTab() {
                   >
                     {doc.module}
                   </span>
-                  <span className="text-[10px] text-[#4E7862] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">Read →</span>
+                  <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity shrink-0 flex items-center gap-0.5"
+                    style={{ color: "#4E7862" }}>
+                    {isExternal ? "Open ↗" : "Read →"}
+                  </span>
                 </div>
                 <p className="text-sm text-[#2A2E2B] font-medium leading-snug">{doc.title}</p>
+                {isExternal && (
+                  <p className="text-[10px] text-[#6B7A6F] mt-auto">📄 Business Blueprint</p>
+                )}
+              </>
+            );
+
+            const cardClass = "group bg-[#FAFAF8] border border-[#D9D4C8] rounded-xl p-4 hover:border-[#4E7862] hover:shadow-sm transition-all flex flex-col gap-2";
+
+            if (isExternal) {
+              return (
+                <a
+                  key={doc.id}
+                  href={doc.viewUrl!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cardClass}
+                >
+                  {cardContent}
+                </a>
+              );
+            }
+
+            return (
+              <Link
+                key={doc.id}
+                href={`/learning/business-processes/${doc.slug ?? encodeURIComponent(doc.id)}`}
+                className={cardClass}
+              >
+                {cardContent}
               </Link>
             );
           })}
