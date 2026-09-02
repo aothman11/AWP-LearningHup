@@ -1349,6 +1349,134 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── MM: STO Without Delivery ─────────────────────────────────────────────
+  {
+    id: "mm-sto-no-delivery",
+    icon: "🔁",
+    duration: "15 min",
+    titleEN: "Stock Transport Order Without Delivery",
+    titleAR: "أمر نقل المخزون بدون تسليم",
+    descriptionEN:
+      "Simplified inter-plant stock transfer using STO without an outbound delivery document: create STO (ME21N), post goods issue directly from MIGO (movement type 351), monitor in-transit stock (MB5T), and post GR at receiving plant (MIGO). Purchase Group 888. ~20 STOs per day, primarily at Qassim.",
+    descriptionAR:
+      "نقل مخزون مبسّط بين المصانع باستخدام STO بدون مستند تسليم صادر: إنشاء STO (ME21N)، ترحيل إصدار البضاعة مباشرة من MIGO (نوع حركة 351)، مراقبة المخزون في العبور (MB5T)، وترحيل استلام البضاعة في المصنع المستلِم (MIGO). مجموعة الشراء 888. حوالي 20 STO يومياً، أساساً في القصيم.",
+    module: "MM",
+    roles: [
+      "STO Requester",
+      "Stock Keeper (Issuing Plant)",
+      "Stock Keeper (Receiving Plant)",
+    ],
+    steps: [
+      {
+        id: "mm-snd-1",
+        stepNumber: 1,
+        titleEN: "Create Stock Transport Order (ME21N)",
+        titleAR: "إنشاء أمر نقل المخزون (ME21N)",
+        tCode: "ME21N",
+        role: "STO Requester",
+        whatToDoEN:
+          "Open ME21N. Create the STO with document type 'UB' (Stock Transfer) and Purchase Group 888 (STO Without Dlv). Enter: supplying plant, receiving plant, material, quantity, and requested delivery date. Save the STO.",
+        whatToDoAR:
+          "افتح ME21N. أنشئ STO بنوع المستند 'UB' (نقل المخزون) ومجموعة الشراء 888 (STO بدون تسليم). أدخل: المصنع المورِّد، المصنع المستلِم، المادة، الكمية، وتاريخ التسليم المطلوب. احفظ STO.",
+        whatSAPDoesEN:
+          "Creates a stock transport order without triggering outbound delivery processing. STO appears in the issuing plant's goods issue worklist.",
+        whatSAPDoesAR:
+          "ينشئ أمر نقل مخزون بدون تشغيل معالجة التسليم الصادر. يظهر STO في قائمة أعمال إصدار البضاعة للمصنع المُرسِل.",
+        expectedOutputEN: "STO created. Issuing plant stock keeper notified.",
+        expectedOutputAR: "تم إنشاء STO. تم إخطار أمين المخزن في المصنع المُرسِل.",
+      },
+      {
+        id: "mm-snd-2",
+        stepNumber: 2,
+        titleEN: "Post Goods Issue at Issuing Plant (MIGO — Movement Type 351)",
+        titleAR: "ترحيل إصدار البضاعة في المصنع المُرسِل (MIGO — نوع حركة 351)",
+        tCode: "MIGO",
+        role: "Stock Keeper (Issuing Plant)",
+        whatToDoEN:
+          "Open MIGO. Select 'Goods Issue' with reference to the Stock Transport Order number. Enter the actual quantity to issue. Post goods issue — stock moves from the issuing plant's unrestricted-use stock to in-transit at the receiving plant. All issued quantities must equal received quantities.",
+        whatToDoAR:
+          "افتح MIGO. حدد 'إصدار البضاعة' بالإشارة إلى رقم أمر نقل المخزون. أدخل الكمية الفعلية للإصدار. ارحّل إصدار البضاعة — ينتقل المخزون من مخزون المصنع المُرسِل الحر إلى العبور في المصنع المستلِم. يجب أن تساوي جميع الكميات المُصدَرة الكميات المستلَمة.",
+        whatSAPDoesEN:
+          "Posts movement type 351: reduces issuing plant stock and creates stock-in-transit at the receiving plant.",
+        whatSAPDoesAR:
+          "يرحّل نوع الحركة 351: يخفض مخزون المصنع المُرسِل وينشئ مخزوناً في العبور في المصنع المستلِم.",
+        expectedOutputEN: "Stock in transit at receiving plant. Issuing stock reduced.",
+        expectedOutputAR: "المخزون في العبور إلى المصنع المستلِم. تم تخفيض مخزون المُرسِل.",
+      },
+      {
+        id: "mm-snd-3",
+        stepNumber: 3,
+        titleEN: "Monitor Stock in Transit and Receive (MB5T → MIGO)",
+        titleAR: "مراقبة المخزون في العبور والاستلام (MB5T ← MIGO)",
+        tCode: "MB5T",
+        role: "Stock Keeper (Receiving Plant)",
+        whatToDoEN:
+          "Monitor in-transit quantities with MB5T (or MB5TD for a specific key date). Once goods arrive at the receiving plant, open MIGO, select 'Goods Receipt' referencing the STO. Enter actual received quantities (must match issued quantities) and storage location. Post goods receipt.",
+        whatToDoAR:
+          "راقب الكميات في العبور مع MB5T (أو MB5TD لتاريخ محدد). عند وصول البضائع إلى المصنع المستلِم، افتح MIGO، وحدد 'استلام البضاعة' بالإشارة إلى STO. أدخل الكميات المستلَمة الفعلية (يجب أن تطابق الكميات المُصدَرة) وموقع التخزين. ارحّل استلام البضاعة.",
+        whatSAPDoesEN:
+          "GR posting (movement type 101) clears in-transit stock and adds to receiving plant unrestricted stock. STO document flow is complete.",
+        whatSAPDoesAR:
+          "يُصفّي ترحيل استلام البضاعة (نوع حركة 101) المخزون في العبور ويُضيف إلى مخزون المصنع المستلِم الحر. اكتمل تدفق مستند STO.",
+        expectedOutputEN: "Stock received. In-transit cleared. STO fully completed.",
+        expectedOutputAR: "تم استلام المخزون. تم تصفية العبور. اكتمل STO بالكامل.",
+      },
+    ],
+  },
+
+  // ─── MM: Scrapping / Write-Off ─────────────────────────────────────────────
+  {
+    id: "mm-scrapping",
+    icon: "🗑️",
+    duration: "20 min",
+    titleEN: "Scrapping / Inventory Write-Off (MIGO)",
+    titleAR: "الإتلاف / شطب المخزون (MIGO)",
+    descriptionEN:
+      "Warehouse process for writing off expired, spoiled, or shrinkage stock. A committee is formed, then stock is scrapped in MIGO using movement types 551 (from unrestricted) or 553 (from quality inspection stock). Reasons are classified for reporting: Expired (55101), Shrinkage (55102), Spoiled (55103). ~20 scrap postings per day.",
+    descriptionAR:
+      "عملية المستودع لشطب المخزون المنتهي الصلاحية أو الفاسد أو الناقص. يُشكَّل مجلس، ثم يُتلَف المخزون في MIGO باستخدام نوع حركة 551 (من المخزون الحر) أو 553 (من مخزون فحص الجودة). تُصنَّف الأسباب للإبلاغ: منتهي الصلاحية (55101)، نقص (55102)، فاسد (55103). حوالي 20 ترحيل إتلاف يومياً.",
+    module: "MM",
+    roles: [
+      "Warehouse Manager",
+      "Warehouse Administrator",
+    ],
+    steps: [
+      {
+        id: "mm-scr-1",
+        stepNumber: 1,
+        titleEN: "Form Scrapping Committee and Identify Stock",
+        titleAR: "تشكيل لجنة الإتلاف وتحديد المخزون",
+        role: "Warehouse Manager",
+        whatToDoEN:
+          "Form an official scrapping committee (Warehouse Manager + relevant department representatives). Physically identify and segregate the stock to be scrapped. Classify each item by scrapping reason: Expired (55101), Shrinkage (55102), or Spoiled (55103). Document the list of materials, quantities, and reasons before posting in SAP.",
+        whatToDoAR:
+          "شكّل لجنة إتلاف رسمية (مدير المستودع + ممثلو الإدارات ذات الصلة). حدد المخزون المراد إتلافه فعلياً وافصله. صنّف كل صنف حسب سبب الإتلاف: منتهي الصلاحية (55101)، نقص (55102)، أو فاسد (55103). وثّق قائمة المواد والكميات والأسباب قبل الترحيل في SAP.",
+        whatSAPDoesEN: "No SAP action at this step — committee formation and stock identification are done manually.",
+        whatSAPDoesAR: "لا يوجد إجراء SAP في هذه الخطوة — تشكيل اللجنة وتحديد المخزون يتمان يدوياً.",
+        expectedOutputEN: "Scrapping list approved by committee. Materials, quantities, and reasons documented.",
+        expectedOutputAR: "قائمة الإتلاف معتمدة من اللجنة. المواد والكميات والأسباب موثّقة.",
+      },
+      {
+        id: "mm-scr-2",
+        stepNumber: 2,
+        titleEN: "Post Scrapping in SAP (MIGO — Movement Type 551 or 553)",
+        titleAR: "ترحيل الإتلاف في SAP (MIGO — نوع حركة 551 أو 553)",
+        tCode: "MIGO",
+        role: "Warehouse Manager",
+        whatToDoEN:
+          "Open MIGO and select 'Goods Issue' (transaction MIGO_GI). Use movement type 551 to scrap from unrestricted-use stock, or 553 to scrap from quality inspection stock. Enter: plant, storage location, material, quantity, batch, and the relevant reason for movement (55101 Expired, 55102 Shrinkage, 55103 Spoiled, etc.). Post the scrapping document.",
+        whatToDoAR:
+          "افتح MIGO وحدد 'إصدار البضاعة' (معاملة MIGO_GI). استخدم نوع حركة 551 للإتلاف من المخزون الحر، أو 553 للإتلاف من مخزون فحص الجودة. أدخل: المصنع وموقع التخزين والمادة والكمية والدفعة وسبب الحركة المناسب (55101 منتهي الصلاحية، 55102 نقص، 55103 فاسد، إلخ). ارحّل مستند الإتلاف.",
+        whatSAPDoesEN:
+          "Posts goods issue with the selected movement type: reduces stock quantity. Creates accounting document (debit scrapping cost center/loss account, credit inventory). Costs are posted to the assigned cost center.",
+        whatSAPDoesAR:
+          "يرحّل إصدار البضاعة بنوع الحركة المحدد: يخفض كمية المخزون. ينشئ مستند محاسبة (مدين مركز تكلفة الإتلاف/حساب الخسارة، دائن المخزون). تُرحَّل التكاليف إلى مركز التكلفة المعيَّن.",
+        expectedOutputEN: "Scrapping document posted. Stock reduced. Accounting entry created to cost center.",
+        expectedOutputAR: "تم ترحيل مستند الإتلاف. تم تخفيض المخزون. تم إنشاء قيد محاسبي إلى مركز التكلفة.",
+      },
+    ],
+  },
+
   // ─── PM: Corrective Maintenance ───────────────────────────────────────────
   {
     id: "pm-corrective-maintenance",
