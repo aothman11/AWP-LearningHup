@@ -3432,6 +3432,58 @@ export const processes: Process[] = [
       },
     ],
   },
+  // ── TM: Verify Delivery Transport Mode ────────────────────────────────────
+  {
+    id: "tm-verify-delivery-transport",
+    icon: "🔍",
+    duration: "5–10 minutes",
+    titleEN: "Verify Transport Mode in Delivery",
+    titleAR: "التأكد من طريقة النقل في الدليفري",
+    module: "TM",
+    roles: ["TM Planner", "Warehouse Staff"],
+    steps: [
+      {
+        id: "tm-verify-transport-01",
+        stepNumber: 1,
+        titleEN: "Open the Delivery Document",
+        titleAR: "فتح مستند التسليم",
+        role: "TM Planner",
+        whatToDoEN: "Open the outbound delivery document using VL03N (Display) or VL02N (Change). Enter the delivery number.",
+        whatToDoAR: "افتح مستند التسليم الصادر باستخدام VL03N (عرض) أو VL02N (تغيير). أدخل رقم التسليم.",
+        whatSAPDoesEN: "SAP opens the delivery document with all header and item data.",
+        whatSAPDoesAR: "يفتح SAP مستند التسليم مع جميع بيانات الرأس والبند.",
+        expectedOutputEN: "Delivery document opened.",
+        expectedOutputAR: "تم فتح مستند التسليم.",
+      },
+      {
+        id: "tm-verify-transport-02",
+        stepNumber: 2,
+        titleEN: "Check Shipping Tab for Transport Mode",
+        titleAR: "التحقق من علامة تبويب الشحن لطريقة النقل",
+        role: "TM Planner",
+        whatToDoEN: "Navigate to the Shipping tab in the delivery header. Verify the Shipping Condition and Means of Transport Type fields are correctly set (e.g., '01 Standard' and 'Y1 TM: Shipping product').",
+        whatToDoAR: "انتقل إلى علامة تبويب الشحن في رأس التسليم. تحقق من ضبط حقلَي شرط الشحن ونوع وسيلة النقل بشكل صحيح (مثلًا '01 قياسي' و'Y1 TM: منتج الشحن').",
+        whatSAPDoesEN: "SAP displays the current shipping condition and transport mode configured on the delivery.",
+        whatSAPDoesAR: "يعرض SAP شرط الشحن ووضع النقل الحالي المُهيَّأ في التسليم.",
+        expectedOutputEN: "Transport mode and shipping condition verified on delivery.",
+        expectedOutputAR: "تم التحقق من طريقة النقل وشرط الشحن في التسليم.",
+      },
+      {
+        id: "tm-verify-transport-03",
+        stepNumber: 3,
+        titleEN: "Correct if Needed & Save",
+        titleAR: "التصحيح إذا لزم الأمر والحفظ",
+        role: "TM Planner",
+        whatToDoEN: "If the transport mode is incorrect, switch to VL02N (Change) and update the Shipping Condition and Means of Transport Type to the correct values. Save the delivery.",
+        whatToDoAR: "إذا كانت طريقة النقل غير صحيحة، انتقل إلى VL02N (تغيير) وحدِّث شرط الشحن ونوع وسيلة النقل إلى القيم الصحيحة. احفظ التسليم.",
+        whatSAPDoesEN: "SAP saves the corrected delivery with the right transport mode, ensuring TM creates the correct type of freight order.",
+        whatSAPDoesAR: "يحفظ SAP التسليم المُصحَّح بطريقة النقل الصحيحة مما يضمن إنشاء TM لنوع أمر الشحن الصحيح.",
+        expectedOutputEN: "Delivery saved with correct transport mode.",
+        expectedOutputAR: "تم حفظ التسليم بطريقة النقل الصحيحة.",
+      },
+    ],
+  },
+
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
