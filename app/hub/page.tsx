@@ -195,7 +195,7 @@ export default function HubPage() {
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
           >
             Don&apos;t Guess. Everything You Need Is Here.
-            <span className="block text-3xl sm:text-4xl mt-1 text-[#A8C4A8]" dir="rtl">
+            <span className="block text-3xl sm:text-4xl mt-1 text-[#A8C4A8]">
               لا تحتار، كل اللي تحتاجه هنا.
             </span>
           </h2>
