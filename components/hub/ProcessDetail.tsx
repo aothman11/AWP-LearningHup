@@ -173,6 +173,24 @@ function StepCard({ step, isDone, isCurrent, lang, onToggle, scrollRef }: StepCa
             <DecisionDiamond step={step} lang={lang} t={t} />
           )}
 
+          {/* SAP Screenshot */}
+          {step.screenshotUrl && (
+            <div className="rounded-xl overflow-hidden border border-[#D9D4C8] shadow-sm">
+              <div className="bg-[#EDE9E1] px-3 py-1.5 flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest">
+                  🖥 {lang === "AR" ? "شاشة SAP" : "SAP Screen"}
+                </span>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={step.screenshotUrl}
+                alt={`SAP screenshot for step ${step.stepNumber}`}
+                className="block w-full"
+                style={{ maxHeight: "380px", objectFit: "cover", objectPosition: "top" }}
+              />
+            </div>
+          )}
+
           <div>
             <p className="text-[10px] font-semibold text-[#6B7A6F] uppercase tracking-widest mb-1">
               {t("proc.detail.whatToDo")}

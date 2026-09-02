@@ -24,6 +24,8 @@ export interface ProcessStep {
   isDecisionPoint?: boolean;
   yesNextStep?: number;   // step number to jump to on "Yes"
   noNextStep?: number;    // step number to jump to on "No"
+  /** Path relative to /public — SAP screenshot for this step, shown inline when expanded */
+  screenshotUrl?: string;
 }
 
 /** All SAP modules represented in the Processes tab */
@@ -507,10 +509,16 @@ export const processes: Process[] = [
       "إنشاء طلب شراء خدمة لتنفيذ مشروع باستخدام ME51N. يشمل اختيار نوع المستند وتفاصيل البند والتقييم والتواريخ وتعيين مصدر التوريد.",
     module: "MM",
     roles: ["Procurement Officer", "Project Manager"],
+    chartImages: [
+      "/process-charts/me51n-screen-p1.png",
+      "/process-charts/me51n-screen-p2.png",
+      "/process-charts/me51n-screen-p3.png",
+    ],
     steps: [
       {
         id: "pr-1",
         stepNumber: 1,
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         titleEN: "Navigate to ME51N and Set Document Type",
         titleAR: "الانتقال إلى ME51N وتحديد نوع المستند",
         tCode: "ME51N",
@@ -531,6 +539,7 @@ export const processes: Process[] = [
       {
         id: "pr-2",
         stepNumber: 2,
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         titleEN: "Enter Item Category",
         titleAR: "إدخال فئة البند",
         tCode: "ME51N",
@@ -550,6 +559,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-3",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 3,
         titleEN: "Enter Short Text Description",
         titleAR: "إدخال وصف النص القصير",
@@ -570,6 +580,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-4",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 4,
         titleEN: "Enter Quantity",
         titleAR: "إدخال الكمية",
@@ -590,6 +601,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-5",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 5,
         titleEN: "Set Unit of Measure",
         titleAR: "تحديد وحدة القياس",
@@ -610,6 +622,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-6",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 6,
         titleEN: "Set Delivery Date and Material Group",
         titleAR: "تحديد تاريخ التسليم ومجموعة المواد",
@@ -630,6 +643,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-7",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 7,
         titleEN: "Enter Plant",
         titleAR: "إدخال المصنع",
@@ -650,6 +664,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-8",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 8,
         titleEN: "Enter Storage Location",
         titleAR: "إدخال موقع التخزين",
@@ -670,6 +685,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-9",
+        screenshotUrl: "/process-charts/me51n-step-01-10.png",
         stepNumber: 9,
         titleEN: "Set Purchase Group and Requisitioner",
         titleAR: "تحديد مجموعة الشراء وصاحب الطلب",
@@ -690,6 +706,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-10",
+        screenshotUrl: "/process-charts/me51n-step-11.png",
         stepNumber: 10,
         titleEN: "Enter Valuation Price",
         titleAR: "إدخال سعر التقييم",
@@ -710,6 +727,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-11",
+        screenshotUrl: "/process-charts/me51n-step-12.png",
         stepNumber: 11,
         titleEN: "Set Product Type Group (Material Data Tab)",
         titleAR: "تحديد مجموعة نوع المنتج (تبويب بيانات المادة)",
@@ -730,6 +748,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-12",
+        screenshotUrl: "/process-charts/me51n-step-13.png",
         stepNumber: 12,
         titleEN: "Enter Project Start and End Dates (Quantities/Dates Tab)",
         titleAR: "إدخال تاريخي بداية ونهاية المشروع (تبويب الكميات/التواريخ)",
@@ -750,6 +769,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-13",
+        screenshotUrl: "/process-charts/me51n-step-14.png",
         stepNumber: 13,
         titleEN: "Assign Source of Supply (Source of Supply Tab)",
         titleAR: "تعيين مصدر التوريد (تبويب مصدر التوريد)",
@@ -770,6 +790,7 @@ export const processes: Process[] = [
       },
       {
         id: "pr-14",
+        screenshotUrl: "/process-charts/me51n-step-14.png",
         stepNumber: 14,
         titleEN: "Save the Purchase Requisition",
         titleAR: "حفظ طلب الشراء",
