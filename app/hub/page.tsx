@@ -64,7 +64,7 @@ const PHASE_ICONS: Record<string, string> = {
 type HubTab = "processes" | "business" | "flow" | "errors" | "completed";
 
 const HUB_TABS: { id: HubTab; label: string }[] = [
-  { id: "processes", label: "Processes" },
+  { id: "processes", label: "AWP Processes" },
   { id: "business",  label: "Business Processes" },
   { id: "flow",      label: "Process Flow" },
   { id: "errors",    label: "Common Errors" },
