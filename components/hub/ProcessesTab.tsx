@@ -86,6 +86,7 @@ const MODULE_COLORS: Record<ProcessModule, { bg: string; text: string; border: s
   QM:   { bg: "#FEF9E7", text: "#7A5E0A", border: "#E8D585", accent: "#C49A1A" },
   MM:   { bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8", accent: "#2563EB" },
   PM:   { bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8", accent: "#7C3AED" },
+  SD:   { bg: "#E0F4F8", text: "#0C4A6E", border: "#7DD3FC", accent: "#0284C7" },
   HCM:  { bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4", accent: "#DC2626" },
   FICO: { bg: "#E0F5EC", text: "#14532D", border: "#86EFAC", accent: "#16A34A" },
   TM:   { bg: "#FFF7E0", text: "#7A4A0A", border: "#F5C87A", accent: "#D97706" },
