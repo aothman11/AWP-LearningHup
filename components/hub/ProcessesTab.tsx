@@ -527,7 +527,7 @@ export function ProcessesTab() {
               searchQuery={q}
               searchMatches={searchMatches}
               onOpen={(id, step) => { setOpenProcessId(id); setJumpToStep(step); }}
-              defaultOpen={i === 0 || Boolean(q) || Boolean(roleFilter !== "All")}
+              defaultOpen={Boolean(q) || Boolean(roleFilter !== "All")}
             />
           ))}
         </div>
