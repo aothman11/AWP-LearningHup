@@ -250,7 +250,7 @@ export default function HubPage() {
             </div>
 
             {/* Module filter tabs */}
-            <div className="flex gap-1 px-6 py-3 border-b border-[#D9D4C8] overflow-x-auto">
+            <div className="flex flex-wrap gap-1.5 px-6 py-3 border-b border-[#D9D4C8]">
               {MODULE_TABS.map((mod) => {
                 const count = mod.id === "All"
                   ? logbookEntries.length
