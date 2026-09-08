@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LangProvider } from "@/context/LangContext";
-import { ResearchDrawer } from "@/components/ResearchDrawer";
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +16,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="antialiased">
         <LangProvider>{children}</LangProvider>
-        <ResearchDrawer />
       </body>
     </html>
   );
