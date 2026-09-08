@@ -14,9 +14,10 @@ When answering:
 - Be concise but complete — the user needs to act on your guidance immediately`;
 
 export async function POST(req: Request) {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
+
   if (!apiKey) {
-    console.error("[chat] GEMINI_API_KEY is not set.");
+    console.error("[chat] GROQ_API_KEY is not set.");
     return NextResponse.json(
       { error: "Assistant is not configured. Please contact the admin." },
       { status: 503 },
@@ -25,25 +26,27 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-
-    // Support both callers: { messages, processContext } and legacy { prompt }
     const { messages, processContext, prompt } = body as {
       messages?: Array<{ role: "user" | "assistant"; content: string }>;
       processContext?: string;
       prompt?: string;
     };
 
-    let userText: string;
+    // Build messages array for Groq
+    const chatMessages: Array<{ role: string; content: string }> = [];
+
+    let systemContent = SYSTEM_PROMPT;
+    if (processContext) {
+      systemContent += `\n\nHere are the process flows currently loaded in the app:\n\n${processContext}`;
+    }
+    chatMessages.push({ role: "system", content: systemContent });
+
     if (messages && Array.isArray(messages) && messages.length > 0) {
-      const context = processContext
-        ? `Here are the process flows currently loaded in the app:\n\n${processContext}\n\n`
-        : "";
-      const history = messages
-        .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
-        .join("\n\n");
-      userText = context + history;
+      for (const m of messages) {
+        chatMessages.push({ role: m.role, content: m.content });
+      }
     } else if (prompt) {
-      userText = prompt;
+      chatMessages.push({ role: "user", content: prompt });
     } else {
       return NextResponse.json(
         { error: "messages array or prompt is required" },
@@ -51,37 +54,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const geminiRes = await fetch(url, {
+    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents: [{ parts: [{ text: userText }] }],
+        model: "llama-3.3-70b-versatile",
+        max_tokens: 1000,
+        messages: chatMessages,
       }),
     });
 
-    const data = await geminiRes.json();
+    const data = await groqRes.json();
 
-    if (geminiRes.status === 429) {
+    if (!groqRes.ok) {
+      console.error("[chat] Groq error:", data.error?.message);
       return NextResponse.json(
-        { error: "Rate limit exceeded. Please try again shortly." },
-        { status: 429 },
+        { error: data.error?.message || "Groq API error." },
+        { status: groqRes.status },
       );
     }
 
-    if (!geminiRes.ok) {
-      console.error("[chat] Gemini API error:", data.error?.message);
-      return NextResponse.json(
-        { error: data.error?.message || "Gemini API error." },
-        { status: geminiRes.status },
-      );
-    }
-
-    const reply: string =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response generated.";
-
+    const reply: string = data.choices?.[0]?.message?.content ?? "No response generated.";
     return NextResponse.json({ reply });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -20,11 +20,10 @@ Rules:
 - Format step-by-step answers as a numbered list`;
 
 export async function POST(req: Request) {
-  // Accept either env var name
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    console.error("[process-assistant] No Gemini API key found (GEMINI_API_KEY or GOOGLE_GEMINI_API_KEY).");
+    console.error("[process-assistant] GROQ_API_KEY is not set.");
     return NextResponse.json(
       { error: "Assistant is not configured. Please contact the admin." },
       { status: 503 },
@@ -52,39 +51,33 @@ export async function POST(req: Request) {
         ? "\n\nThe user's interface language is Arabic — prefer an Arabic response unless the user writes in English."
         : "";
 
-    const systemInstruction = SYSTEM_PROMPT + contextHint + langHint;
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const geminiRes = await fetch(url, {
+    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemInstruction }] },
-        contents: [{ parts: [{ text: message }] }],
+        model: "llama-3.3-70b-versatile",
+        max_tokens: 1000,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT + contextHint + langHint },
+          { role: "user", content: message },
+        ],
       }),
     });
 
-    const data = await geminiRes.json();
+    const data = await groqRes.json();
 
-    if (geminiRes.status === 429) {
+    if (!groqRes.ok) {
+      console.error("[process-assistant] Groq error:", data.error?.message);
       return NextResponse.json(
-        { error: "Rate limit exceeded. Please try again shortly." },
-        { status: 429 },
+        { error: data.error?.message || "Groq API error." },
+        { status: groqRes.status },
       );
     }
 
-    if (!geminiRes.ok) {
-      console.error("[process-assistant] Gemini error:", data.error?.message);
-      return NextResponse.json(
-        { error: data.error?.message || "Gemini API error." },
-        { status: geminiRes.status },
-      );
-    }
-
-    const reply: string =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response generated.";
-
+    const reply: string = data.choices?.[0]?.message?.content ?? "No response generated.";
     return NextResponse.json({ reply });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
