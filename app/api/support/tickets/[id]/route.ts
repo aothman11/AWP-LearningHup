@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { notifyStatusChange } from "@/lib/teams-notifier";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 /** Simple bearer-token guard — matches ADMIN_SECRET env var. */
 function isAdmin(req: NextRequest): boolean {
@@ -16,13 +18,13 @@ function isAdmin(req: NextRequest): boolean {
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   if (!isAdmin(req)) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   let body: unknown;
   try {
@@ -46,6 +48,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Nothing to update." }, { status: 422 });
   }
 
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from("support_tickets")
     .update(patch)

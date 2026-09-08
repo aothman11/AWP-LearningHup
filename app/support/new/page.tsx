@@ -19,13 +19,13 @@ export default function NewSupportTicketPage() {
     subject: "",
     description: "",
   });
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState("");
 
   function validate(): boolean {
-    const e: Partial<typeof form> = {};
+    const e: Partial<Record<keyof typeof form, string>> = {};
     if (!form.submitted_by.trim()) e.submitted_by = "Name is required.";
     if (!form.department) e.department = "Please select a department.";
     if (!form.subject.trim()) e.subject = "Subject is required.";

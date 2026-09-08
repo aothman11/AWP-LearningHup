@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { notifyNewTicket } from "@/lib/teams-notifier";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+}
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -38,6 +40,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from("support_tickets")
     .insert({
