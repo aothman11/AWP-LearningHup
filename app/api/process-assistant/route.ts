@@ -21,7 +21,17 @@ Rules:
 - Format step-by-step answers as a numbered list`;
 
 export async function POST(req: Request) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API_KEY! });
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
+
+  if (!apiKey) {
+    console.error("[process-assistant] GOOGLE_GEMINI_API_KEY is not set.");
+    return NextResponse.json(
+      { error: "Assistant is not configured. Please contact the admin." },
+      { status: 503 },
+    );
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const body = await req.json();
@@ -56,10 +66,10 @@ export async function POST(req: Request) {
     });
 
     const text = response.text ?? "";
-
     return NextResponse.json({ reply: text });
   } catch (err) {
-    console.error("Process assistant API error:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[process-assistant] Gemini API error:", message);
     return NextResponse.json(
       { error: "Failed to get a response. Please try again." },
       { status: 500 },
