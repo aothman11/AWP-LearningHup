@@ -12,6 +12,8 @@ const DEPARTMENTS: { value: Department; label: string }[] = [
   { value: "Other", label: "Other" },
 ];
 
+const MIN_DESC = 20;
+
 export default function NewSupportTicketPage() {
   const [form, setForm] = useState({
     submitted_by: "",
@@ -29,8 +31,8 @@ export default function NewSupportTicketPage() {
     if (!form.submitted_by.trim()) e.submitted_by = "Name is required.";
     if (!form.department) e.department = "Please select a department.";
     if (!form.subject.trim()) e.subject = "Subject is required.";
-    if (form.description.trim().length < 20)
-      e.description = "Description must be at least 20 characters.";
+    if (form.description.trim().length < MIN_DESC)
+      e.description = `Description must be at least ${MIN_DESC} characters.`;
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -60,6 +62,8 @@ export default function NewSupportTicketPage() {
     }
   }
 
+  const descLen = form.description.trim().length;
+
   if (submitted) {
     return (
       <div style={styles.page}>
@@ -69,15 +73,20 @@ export default function NewSupportTicketPage() {
           <p style={styles.successMsg}>
             Your ticket has been submitted. We&rsquo;ll follow up shortly.
           </p>
-          <button
-            style={styles.btnPrimary}
-            onClick={() => {
-              setSubmitted(false);
-              setForm({ submitted_by: "", department: "", subject: "", description: "" });
-            }}
-          >
-            Submit Another Ticket
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <button
+              style={styles.btnPrimary}
+              onClick={() => {
+                setSubmitted(false);
+                setForm({ submitted_by: "", department: "", subject: "", description: "" });
+              }}
+            >
+              Submit Another Ticket
+            </button>
+            <a href="/hub" style={styles.backLink}>
+              ← Back to Learning Hub
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -86,6 +95,13 @@ export default function NewSupportTicketPage() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
+        {/* Nav bar */}
+        <div style={styles.navBar}>
+          <a href="/hub" style={styles.navBack}>
+            ← Learning Hub
+          </a>
+        </div>
+
         <div style={styles.header}>
           <div style={styles.logoBar}>
             <span style={styles.logoText}>AWP Learning Hub</span>
@@ -110,20 +126,29 @@ export default function NewSupportTicketPage() {
           </Field>
 
           <Field label="Department" error={errors.department} required>
-            <select
-              style={{ ...styles.input, ...(errors.department ? styles.inputError : {}) }}
-              value={form.department}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, department: e.target.value as Department }))
-              }
-            >
-              <option value="">Select department…</option>
-              {DEPARTMENTS.map((d) => (
-                <option key={d.value} value={d.value}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
+            {/* Wrapper adds the custom dropdown arrow */}
+            <div style={styles.selectWrap}>
+              <select
+                style={{
+                  ...styles.input,
+                  ...styles.select,
+                  ...(errors.department ? styles.inputError : {}),
+                }}
+                value={form.department}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, department: e.target.value as Department }))
+                }
+              >
+                <option value="">Select department…</option>
+                {DEPARTMENTS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+              {/* Custom caret */}
+              <span style={styles.selectCaret} aria-hidden>▾</span>
+            </div>
           </Field>
 
           <Field label="Subject" error={errors.subject} required>
@@ -136,12 +161,7 @@ export default function NewSupportTicketPage() {
             />
           </Field>
 
-          <Field
-            label="Description"
-            error={errors.description}
-            hint="Minimum 20 characters"
-            required
-          >
+          <Field label="Description" error={errors.description} required>
             <textarea
               style={{
                 ...styles.input,
@@ -153,9 +173,24 @@ export default function NewSupportTicketPage() {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
             />
+            {/* Live character counter */}
+            <div style={styles.charCounter}>
+              <span style={{ color: descLen >= MIN_DESC ? "#047836" : "#888" }}>
+                {descLen}
+              </span>
+              <span style={{ color: "#888" }}> / {MIN_DESC} min</span>
+            </div>
           </Field>
 
-          <button type="submit" style={styles.btnPrimary} disabled={submitting}>
+          <button
+            type="submit"
+            style={{
+              ...styles.btnPrimary,
+              opacity: submitting ? 0.55 : 1,
+              cursor: submitting ? "not-allowed" : "pointer",
+            }}
+            disabled={submitting}
+          >
             {submitting ? "Submitting…" : "Submit Ticket"}
           </button>
         </form>
@@ -170,13 +205,11 @@ function Field({
   label,
   children,
   error,
-  hint,
   required,
 }: {
   label: string;
   children: React.ReactNode;
   error?: string;
-  hint?: string;
   required?: boolean;
 }) {
   return (
@@ -184,7 +217,6 @@ function Field({
       <label style={styles.label}>
         {label}
         {required && <span style={styles.required}> *</span>}
-        {hint && <span style={styles.hint}> ({hint})</span>}
       </label>
       {children}
       {error && <p style={styles.fieldError}>{error}</p>}
@@ -192,7 +224,7 @@ function Field({
   );
 }
 
-// ── inline styles (no Tailwind so the page is standalone-safe) ────────────────
+// ── inline styles ─────────────────────────────────────────────────────────────
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
@@ -202,8 +234,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "flex-start",
     justifyContent: "center",
     padding: "48px 16px",
-    fontFamily:
-      "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+    fontFamily: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
   },
   card: {
     background: "#FFFFFF",
@@ -211,8 +242,19 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "4px",
     width: "100%",
     maxWidth: "580px",
-    padding: "36px 40px",
+    padding: "28px 40px 36px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+  },
+  navBar: {
+    marginBottom: "20px",
+    paddingBottom: "16px",
+    borderBottom: "1px solid #EDE9E1",
+  },
+  navBack: {
+    fontSize: "13px",
+    color: "#047836",
+    textDecoration: "none",
+    fontWeight: 600,
   },
   header: { marginBottom: "28px" },
   logoBar: { marginBottom: "12px" },
@@ -248,7 +290,6 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: "6px",
   },
   required: { color: "#D24918" },
-  hint: { fontWeight: 400, color: "#888" },
   input: {
     width: "100%",
     padding: "9px 12px",
@@ -259,10 +300,31 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#1A1A1A",
     outline: "none",
     boxSizing: "border-box" as const,
+  },
+  selectWrap: {
+    position: "relative" as const,
+    display: "block",
+  },
+  select: {
     appearance: "none" as const,
+    paddingRight: "32px",
+  },
+  selectCaret: {
+    position: "absolute" as const,
+    right: "10px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    pointerEvents: "none" as const,
+    fontSize: "14px",
+    color: "#666",
   },
   inputError: { borderColor: "#D24918" },
   textarea: { resize: "vertical" as const, lineHeight: 1.5 },
+  charCounter: {
+    fontSize: "12px",
+    marginTop: "4px",
+    textAlign: "right" as const,
+  },
   fieldError: { fontSize: "12px", color: "#D24918", margin: "4px 0 0" },
   btnPrimary: {
     display: "block",
@@ -276,7 +338,15 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "3px",
     cursor: "pointer",
     marginTop: "8px",
-    opacity: 1,
+  },
+  backLink: {
+    display: "block",
+    textAlign: "center" as const,
+    fontSize: "14px",
+    color: "#047836",
+    textDecoration: "none",
+    fontWeight: 600,
+    padding: "8px 0",
   },
   successIcon: {
     width: "56px",
