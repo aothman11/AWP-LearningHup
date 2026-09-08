@@ -200,6 +200,13 @@ export default function HubPage() {
               <span>📚</span>
               <span>T-Code Library</span>
             </button>
+            {/* Support ticket link */}
+            <Link
+              href="/support/new"
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 border border-[#D9D4C8] bg-[#F7F5F0] text-[#1C3A2B] rounded-full hover:bg-[#E8F0E4] hover:border-[#4E7862] transition-colors"
+            >
+              <span>Support</span>
+            </Link>
             {/* Lang toggle */}
             <button
               onClick={toggleLang}
