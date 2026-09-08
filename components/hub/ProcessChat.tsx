@@ -59,12 +59,15 @@ export function ProcessChat({ processId, lang, onClose }: Props) {
         body: JSON.stringify({ message: text, processId, language: lang }),
       });
 
-      if (!res.ok) throw new Error("API error");
       const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error ?? `Server error ${res.status}`);
+        return;
+      }
       const reply: ChatMessage = { role: "assistant", content: data.reply };
       setMessages((prev) => [...prev.slice(-(MAX_MESSAGES - 1)), reply]);
-    } catch {
-      setError(t("proc.chat.error"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("proc.chat.error"));
     } finally {
       setLoading(false);
     }
