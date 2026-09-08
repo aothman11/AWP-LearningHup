@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_PROMPT = `You are a process guide assistant for Al-Watania Poultry (AWP), a fully integrated Saudi poultry producer.
 
@@ -21,7 +21,8 @@ Rules:
 - Format step-by-step answers as a numbered list`;
 
 export async function POST(req: Request) {
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_API_KEY! });
+
   try {
     const body = await req.json();
     const { message, processId, language } = body as {
@@ -34,31 +35,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "message is required" }, { status: 400 });
     }
 
-    // Build context hint for the current process
     const contextHint = processId
       ? `\n\nThe user is currently viewing process: ${processId}. Tailor your answer to that process context where relevant.`
       : "";
 
-    const langHint = language === "ar"
-      ? "\n\nThe user's interface language is Arabic — prefer an Arabic response unless the user writes in English."
-      : "";
+    const langHint =
+      language === "ar"
+        ? "\n\nThe user's interface language is Arabic — prefer an Arabic response unless the user writes in English."
+        : "";
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT + contextHint + langHint,
-      messages: [{ role: "user", content: message }],
+    const fullSystem = SYSTEM_PROMPT + contextHint + langHint;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: message,
+      config: {
+        systemInstruction: fullSystem,
+        maxOutputTokens: 1000,
+      },
     });
 
-    const text =
-      response.content[0]?.type === "text" ? response.content[0].text : "";
+    const text = response.text ?? "";
 
     return NextResponse.json({ reply: text });
   } catch (err) {
     console.error("Process assistant API error:", err);
     return NextResponse.json(
       { error: "Failed to get a response. Please try again." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
