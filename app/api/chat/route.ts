@@ -1,51 +1,44 @@
-import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { messages, processContext } = body as {
-      messages: Array<{ role: "user" | "assistant"; content: string }>;
-      processContext?: string;
-    };
+    const { prompt } = await req.json();
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ error: "messages array is required" }, { status: 400 });
+    if (!prompt) {
+      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const systemPrompt = `You are a process guide assistant for Al-Watania Poultry (AWP).
-You help end users and new employees understand SAP PP/QM processes at AWP.
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Server missing GEMINI_API_KEY variable' }, { status: 500 });
+    }
 
-${processContext ? `Here are the process flows currently loaded in the app:\n\n${processContext}\n\n` : ""}
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-When answering:
-- Refer to the specific step number and step name from the flow when relevant
-- Name the SAP T-code involved and what it does at that step
-- Use simple, clear language suitable for a new employee
-- If the user writes in Arabic, answer in Arabic
-- If the user writes in English, answer in English
-- If the answer is not covered by the loaded process flows, say so clearly — do not invent steps
-- Never invent T-codes or SAP behavior not shown in the flows
-- Be concise but complete — the user needs to act on your guidance immediately`;
+    const systemInstruction = "You are a helpful, concise AI assistant for our web application.";
+    const fullPrompt = `System: ${systemInstruction}\nUser: ${prompt}`;
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: fullPrompt }] }]
+      })
     });
 
-    const text =
-      response.content[0]?.type === "text" ? response.content[0].text : "";
+    const data = await response.json();
 
-    return NextResponse.json({ reply: text });
-  } catch (err) {
-    console.error("Chat API error:", err);
-    return NextResponse.json(
-      { error: "Failed to get a response. Please try again." },
-      { status: 500 }
-    );
+    if (response.status === 429) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Please wait a moment.' }, { status: 429 });
+    }
+    if (!response.ok) {
+      return NextResponse.json({ error: data.error?.message || 'Gemini API Error' }, { status: response.status });
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
+    return NextResponse.json({ reply });
+
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
