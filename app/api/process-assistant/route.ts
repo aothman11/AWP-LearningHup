@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
 
 const SYSTEM_PROMPT = `You are a process guide assistant for Al-Watania Poultry (AWP), a fully integrated Saudi poultry producer.
 
@@ -21,17 +20,16 @@ Rules:
 - Format step-by-step answers as a numbered list`;
 
 export async function POST(req: Request) {
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
+  // Accept either env var name
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    console.error("[process-assistant] GOOGLE_GEMINI_API_KEY is not set.");
+    console.error("[process-assistant] No Gemini API key found (GEMINI_API_KEY or GOOGLE_GEMINI_API_KEY).");
     return NextResponse.json(
       { error: "Assistant is not configured. Please contact the admin." },
       { status: 503 },
     );
   }
-
-  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const body = await req.json();
@@ -54,22 +52,43 @@ export async function POST(req: Request) {
         ? "\n\nThe user's interface language is Arabic — prefer an Arabic response unless the user writes in English."
         : "";
 
-    const fullSystem = SYSTEM_PROMPT + contextHint + langHint;
+    const systemInstruction = SYSTEM_PROMPT + contextHint + langHint;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: message,
-      config: {
-        systemInstruction: fullSystem,
-        maxOutputTokens: 1000,
-      },
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    const geminiRes = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemInstruction }] },
+        contents: [{ parts: [{ text: message }] }],
+      }),
     });
 
-    const text = response.text ?? "";
-    return NextResponse.json({ reply: text });
+    const data = await geminiRes.json();
+
+    if (geminiRes.status === 429) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Please try again shortly." },
+        { status: 429 },
+      );
+    }
+
+    if (!geminiRes.ok) {
+      console.error("[process-assistant] Gemini error:", data.error?.message);
+      return NextResponse.json(
+        { error: data.error?.message || "Gemini API error." },
+        { status: geminiRes.status },
+      );
+    }
+
+    const reply: string =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response generated.";
+
+    return NextResponse.json({ reply });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[process-assistant] Gemini API error:", message);
+    console.error("[process-assistant] Unexpected error:", message);
     return NextResponse.json(
       { error: "Failed to get a response. Please try again." },
       { status: 500 },
