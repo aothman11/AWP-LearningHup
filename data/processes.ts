@@ -279,7 +279,6 @@ export const processes: Process[] = [
       "ترحيل حركات البضائع مقابل أوامر الإنتاج وأوامر الشراء باستخدام MIGO.",
     module: "MM",
     roles: ["Warehouse", "PP Planner"],
-    stub: true,
     chartImages: ["/process-charts/processing-workflow.png"],
     steps: [
       {
@@ -358,7 +357,6 @@ export const processes: Process[] = [
       "تنفيذ MRP وقراءة قائمة المخزون والمتطلبات ومعالجة رسائل الاستثناء.",
     module: "PP",
     roles: ["PP Planner"],
-    stub: true,
     chartImages: ["/process-charts/supply-chain.png"],
     steps: [
       {
@@ -437,7 +435,6 @@ export const processes: Process[] = [
       "من إنشاء دفعة الفحص إلى تسجيل النتائج وقرار الاستخدام في QA32.",
     module: "QM",
     roles: ["QM Inspector"],
-    stub: true,
     chartImages: ["/process-charts/rem-confirmation.png"],
     steps: [
       {
