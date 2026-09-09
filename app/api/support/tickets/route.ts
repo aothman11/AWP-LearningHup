@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getSupabase } from "@/lib/supabase-server";
 import { notifyNewTicket } from "@/lib/teams-notifier";
-
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-}
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -17,23 +10,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const { submitted_by, department, subject, description } = body as Record<
-    string,
-    string
-  >;
+  const raw = body as Record<string, unknown>;
+  const submitted_by = typeof raw.submitted_by === "string" ? raw.submitted_by : "";
+  const department   = typeof raw.department   === "string" ? raw.department   : "";
+  const subject      = typeof raw.subject      === "string" ? raw.subject      : "";
+  const description  = typeof raw.description  === "string" ? raw.description  : "";
 
-  // Basic validation
-  if (!submitted_by?.trim()) {
+  // Validation
+  if (!submitted_by.trim()) {
     return NextResponse.json({ error: "Name is required." }, { status: 422 });
   }
   const allowedDepts = ["PP", "QM", "MM", "MDG", "Other"] as const;
   if (!allowedDepts.includes(department as (typeof allowedDepts)[number])) {
     return NextResponse.json({ error: "Invalid department." }, { status: 422 });
   }
-  if (!subject?.trim()) {
+  if (!subject.trim()) {
     return NextResponse.json({ error: "Subject is required." }, { status: 422 });
   }
-  if (!description || description.trim().length < 20) {
+  if (description.trim().length < 20) {
     return NextResponse.json(
       { error: "Description must be at least 20 characters." },
       { status: 422 },

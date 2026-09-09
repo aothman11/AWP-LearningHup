@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { groqChat } from "@/lib/groq";
 
 const SYSTEM_PROMPT = `You are a process guide assistant for Al-Watania Poultry (AWP), a fully integrated Saudi poultry producer.
 
@@ -51,34 +52,17 @@ export async function POST(req: Request) {
         ? "\n\nThe user's interface language is Arabic — prefer an Arabic response unless the user writes in English."
         : "";
 
-    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 1000,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT + contextHint + langHint },
-          { role: "user", content: message },
-        ],
-      }),
-    });
+    const result = await groqChat(apiKey, [
+      { role: "system", content: SYSTEM_PROMPT + contextHint + langHint },
+      { role: "user", content: message },
+    ]);
 
-    const data = await groqRes.json();
-
-    if (!groqRes.ok) {
-      console.error("[process-assistant] Groq error:", data.error?.message);
-      return NextResponse.json(
-        { error: data.error?.message || "Groq API error." },
-        { status: groqRes.status },
-      );
+    if (!result.ok) {
+      console.error("[process-assistant] Groq error:", result.message);
+      return NextResponse.json({ error: result.message }, { status: result.status });
     }
 
-    const reply: string = data.choices?.[0]?.message?.content ?? "No response generated.";
-    return NextResponse.json({ reply });
+    return NextResponse.json({ reply: result.reply });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[process-assistant] Unexpected error:", message);

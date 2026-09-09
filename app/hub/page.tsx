@@ -10,6 +10,7 @@ import { ProcessFlowTab } from "@/components/hub/ProcessFlowTab";
 import { CommonErrorsTab } from "@/components/hub/CommonErrorsTab";
 import { useLang } from "@/context/LangContext";
 import { useT } from "@/lib/i18n";
+import { getModuleColor } from "@/lib/module-colors";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface ProgressState {
@@ -28,18 +29,6 @@ function saveProgress(state: ProgressState) {
   try { localStorage.setItem("awp-hub-progress", JSON.stringify(state)); } catch {}
 }
 
-// ── Module colours ─────────────────────────────────────────────────────────
-const MODULE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  PP:      { bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5" },
-  QM:      { bg: "#F8EBC5", text: "#7A5E0A", border: "#E8D585" },
-  "PP/QM": { bg: "#EDE9E1", text: "#4A5568", border: "#D9D4C8" },
-  MM:      { bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8" },
-  PM:      { bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8" },
-  HCM:     { bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4" },
-  FICO:    { bg: "#E0F5EC", text: "#14532D", border: "#86EFAC" },
-  TM:      { bg: "#FFF0E0", text: "#7A4A0A", border: "#F5C87A" },
-  EHS:     { bg: "#F0E0E8", text: "#6B1F40", border: "#E8A4C0" },
-};
 
 const MODULE_TABS = [
   { id: "All",  label: "All Modules", icon: "🔗" },
@@ -148,7 +137,9 @@ export default function HubPage() {
     const path = learningPaths.find((p) => p.id === pathId);
     if (!path) return { done: 0, total: 0, pct: 0 };
     const done = path.entryIds.filter((id) => progress.completed[id]).length;
-    return { done, total: path.entryIds.length, pct: Math.round((done / path.entryIds.length) * 100) };
+    const total = path.entryIds.length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    return { done, total, pct };
   }
 
   function toggleCompleted(entryId: string) {
@@ -262,7 +253,7 @@ export default function HubPage() {
                 const count = mod.id === "All"
                   ? logbookEntries.length
                   : logbookEntries.filter((e) => e.module === mod.id || e.module.startsWith(mod.id + "/")).length;
-                const mc = mod.id !== "All" ? MODULE_COLORS[mod.id] : null;
+                const mc = mod.id !== "All" ? getModuleColor(mod.id) : null;
                 const active = cmdModule === mod.id;
                 return (
                   <button
@@ -295,7 +286,7 @@ export default function HubPage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {cmdEntries.map((entry) => {
-                    const mc = MODULE_COLORS[entry.module] ?? MODULE_COLORS["PP/QM"];
+                    const mc = getModuleColor(entry.module);
                     const done = progress.completed[entry.id];
                     return (
                       <div

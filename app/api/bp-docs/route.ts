@@ -40,7 +40,8 @@ export async function GET() {
     }));
 
     return NextResponse.json([...internal, ...external]);
-  } catch {
-    return NextResponse.json([], { status: 200 });
+  } catch (err) {
+    console.error("[GET /api/bp-docs] Failed to load business process docs:", err);
+    return NextResponse.json({ error: "Failed to load process docs." }, { status: 500 });
   }
 }

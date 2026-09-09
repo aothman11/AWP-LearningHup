@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useLang } from "@/context/LangContext";
 
 // ─── Translation dictionary ──────────────────────────────────────────────────
@@ -250,5 +251,7 @@ export function makeTFunc(lang: "EN" | "AR") {
 // ─── useT hook ────────────────────────────────────────────────────────────────
 export function useT() {
   const { lang } = useLang();
-  return makeTFunc(lang);
+  // Memoize so the returned function has stable identity between renders,
+  // making it safe to use in useCallback/useEffect dependency arrays.
+  return useMemo(() => makeTFunc(lang), [lang]);
 }

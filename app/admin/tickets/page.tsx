@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { formatDate } from "@/lib/format";
 
 type Status = "open" | "in_progress" | "closed";
 
@@ -35,20 +36,6 @@ const EMPTY_MESSAGES: Record<Status | "all", string> = {
   closed: "No closed tickets yet.",
 };
 
-function formatDate(iso: string): string {
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
 
 // ── Admin Auth ─────────────────────────────────────────────────────────────────
 

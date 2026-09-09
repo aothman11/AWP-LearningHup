@@ -71,6 +71,11 @@ export interface Process {
   steps: ProcessStep[];
   /** Paths relative to /public — shown in the chart lightbox */
   chartImages?: string[];
+  /**
+   * When true, step data is incomplete (placeholder only).
+   * Stub processes are shown with a "Coming Soon" badge and cannot be started.
+   */
+  stub?: true;
 }
 
 // ─── Process Data ─────────────────────────────────────────────────────────────
@@ -274,9 +279,9 @@ export const processes: Process[] = [
       "ترحيل حركات البضائع مقابل أوامر الإنتاج وأوامر الشراء باستخدام MIGO.",
     module: "MM",
     roles: ["Warehouse", "PP Planner"],
+    stub: true,
     chartImages: ["/process-charts/processing-workflow.png"],
     steps: [
-      // TODO: populate with full AWP step data from process PDFs
       {
         id: "gm-1",
         stepNumber: 1,
@@ -353,9 +358,9 @@ export const processes: Process[] = [
       "تنفيذ MRP وقراءة قائمة المخزون والمتطلبات ومعالجة رسائل الاستثناء.",
     module: "PP",
     roles: ["PP Planner"],
+    stub: true,
     chartImages: ["/process-charts/supply-chain.png"],
     steps: [
-      // TODO: populate with full AWP step data from process PDFs
       {
         id: "mrp-1",
         stepNumber: 1,
@@ -432,9 +437,9 @@ export const processes: Process[] = [
       "من إنشاء دفعة الفحص إلى تسجيل النتائج وقرار الاستخدام في QA32.",
     module: "QM",
     roles: ["QM Inspector"],
+    stub: true,
     chartImages: ["/process-charts/rem-confirmation.png"],
     steps: [
-      // TODO: populate with full AWP step data from process PDFs
       {
         id: "qi-1",
         stepNumber: 1,

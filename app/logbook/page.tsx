@@ -57,7 +57,11 @@ export default function LogbookPage() {
   });
 
   function refreshCollections() {
-    try { setCollectionsState(collectionsStore.getState()); } catch {}
+    try {
+      setCollectionsState(collectionsStore.getState());
+    } catch (err) {
+      console.error("[logbook] Failed to load collections:", err);
+    }
   }
 
   const getSavedCollectionIds = useCallback((entryId: string): string[] => {

@@ -21,6 +21,7 @@ import { ProcessDetail } from "./ProcessDetail";
 import { ProcessChat } from "./ProcessChat";
 import { useT } from "@/lib/i18n";
 import { useLang } from "@/context/LangContext";
+import { MODULE_COLORS } from "@/lib/module-colors";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -79,19 +80,6 @@ interface SearchMatch {
   tCode?: string;
 }
 
-// ─── Module colour palette ────────────────────────────────────────────────────
-
-const MODULE_COLORS: Record<ProcessModule, { bg: string; text: string; border: string; accent: string }> = {
-  PP:   { bg: "#E8F0E4", text: "#1C3A2B", border: "#C8DFC5", accent: "#1C3A2B" },
-  QM:   { bg: "#FEF9E7", text: "#7A5E0A", border: "#E8D585", accent: "#C49A1A" },
-  MM:   { bg: "#E0EAF5", text: "#1E3A5F", border: "#B0CCE8", accent: "#2563EB" },
-  PM:   { bg: "#EDE0F5", text: "#4A1F6B", border: "#CAA8E8", accent: "#7C3AED" },
-  SD:   { bg: "#E0F4F8", text: "#0C4A6E", border: "#7DD3FC", accent: "#0284C7" },
-  HCM:  { bg: "#FDE8E0", text: "#7A2C1A", border: "#F5B8A4", accent: "#DC2626" },
-  FICO: { bg: "#E0F5EC", text: "#14532D", border: "#86EFAC", accent: "#16A34A" },
-  TM:   { bg: "#FFF7E0", text: "#7A4A0A", border: "#F5C87A", accent: "#D97706" },
-  EHS:  { bg: "#F0E0E8", text: "#6B1F40", border: "#E8A4C0", accent: "#BE185D" },
-};
 
 // ─── Module Badge ─────────────────────────────────────────────────────────────
 
@@ -145,8 +133,9 @@ function ProcessCard({ process: p, progress, lang, searchQuery: hq, matchingStep
 
   return (
     <button
-      onClick={() => onOpen(p.id)}
-      className="text-left border rounded-2xl p-5 bg-[#FAFAF8] hover:bg-[#F0F6EE] transition-all hover:shadow-md group focus:outline-none focus:ring-2 focus:ring-[#1C3A2B]"
+      onClick={() => !p.stub && onOpen(p.id)}
+      disabled={!!p.stub}
+      className="text-left border rounded-2xl p-5 bg-[#FAFAF8] hover:bg-[#F0F6EE] transition-all hover:shadow-md group focus:outline-none focus:ring-2 focus:ring-[#1C3A2B] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-[#FAFAF8] disabled:hover:shadow-none"
       style={{ borderColor: isComplete ? mc.accent : "#D9D4C8" }}
     >
       {/* Top row */}
@@ -157,7 +146,12 @@ function ProcessCard({ process: p, progress, lang, searchQuery: hq, matchingStep
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#EDE9E1] text-[#6B7A6F]">
             {p.duration}
           </span>
-          {isComplete && (
+          {p.stub && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FEF9E7] text-[#7A5E0A] border border-[#E8D585]">
+              Coming Soon
+            </span>
+          )}
+          {!p.stub && isComplete && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4EFE0] text-[#1C3A2B]">
               ✓ {t("proc.completed")}
             </span>
