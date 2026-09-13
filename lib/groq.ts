@@ -1,6 +1,6 @@
 /** Shared Groq API configuration and fetch wrapper. */
 
-export const GROQ_MODEL = "llama-3.3-70b-versatile";
+export const GROQ_MODEL = "llama-3.1-8b-instant";
 export const GROQ_MAX_TOKENS = 1000;
 export const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 
