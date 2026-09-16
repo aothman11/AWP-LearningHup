@@ -5558,12 +5558,7 @@ export const processes: Process[] = [
       "طباعة تأكيد أمر المبيعات الموجود أو عرضه باستخدام VA03 وخيار إصدار المخرجات إلى.",
     module: "SD",
     roles: ["Sales"],
-    chartImages: [
-      "/process-charts/va03-so-print-p2-img2.png",
-      "/process-charts/va03-so-print-p2-img4.png",
-      "/process-charts/va03-so-print-p3-img2.png",
-      "/process-charts/va03-so-print-p3-img4.png",
-    ],
+    chartImages: [],
     steps: [
       {
         id: "sd-sop-1",
@@ -5572,6 +5567,7 @@ export const processes: Process[] = [
         titleAR: "فتح VA03 وإدخال رقم أمر المبيعات",
         tCode: "VA03",
         role: "Sales",
+        screenshotUrl: "/process-charts/va03-so-print-p2-img2.png",
         whatToDoEN:
           "Navigate to VA03 (Display Sales Order) in SAP Easy Access. In the Order field, enter the sales order number (e.g. 2100063546). Press Enter to open the order.",
         whatToDoAR:
@@ -5592,6 +5588,7 @@ export const processes: Process[] = [
         titleAR: "إصدار المخرجات — مستند المبيعات ← إصدار المخرجات إلى",
         tCode: "VA03",
         role: "Sales",
+        screenshotUrl: "/process-charts/va03-so-print-p2-img4.png",
         whatToDoEN:
           "From the menu bar, click Sales Document → Issue Output To. The Output Details screen opens showing all output records for this order. Locate the BA00 (Order Confirmation) row.",
         whatToDoAR:
@@ -5612,6 +5609,7 @@ export const processes: Process[] = [
         titleAR: "تحديد صف BA00 والطباعة",
         tCode: "VA03",
         role: "Sales",
+        screenshotUrl: "/process-charts/va03-so-print-p3-img2.png",
         whatToDoEN:
           "Select the BA00 (Order Confirmation) row by clicking it. Then click the Print button (printer icon) in the Output Details toolbar. The order confirmation is sent to the configured printer or output device.",
         whatToDoAR:
