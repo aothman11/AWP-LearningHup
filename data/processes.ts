@@ -5545,6 +5545,84 @@ export const processes: Process[] = [
     ],
   },
 
+  // ─── SD: Sales Order Print & Display ───────────────────────────────────────
+  {
+    id: "sd-sales-order-print",
+    icon: "🖨️",
+    duration: "10 min",
+    titleEN: "Sales Order Print & Display",
+    titleAR: "طباعة أمر المبيعات وعرضه",
+    descriptionEN:
+      "Print or display an existing sales order confirmation using VA03 and Issue Output To.",
+    descriptionAR:
+      "طباعة تأكيد أمر المبيعات الموجود أو عرضه باستخدام VA03 وخيار إصدار المخرجات إلى.",
+    module: "SD",
+    roles: ["Sales"],
+    chartImages: [],
+    steps: [
+      {
+        id: "sd-sop-1",
+        stepNumber: 1,
+        titleEN: "Open VA03 and Enter the Sales Order Number",
+        titleAR: "فتح VA03 وإدخال رقم أمر المبيعات",
+        tCode: "VA03",
+        role: "Sales",
+        whatToDoEN:
+          "Navigate to VA03 (Display Sales Order) in SAP Easy Access. In the Order field, enter the sales order number (e.g. 2100063546). Press Enter to open the order.",
+        whatToDoAR:
+          "انتقل إلى VA03 (عرض أمر المبيعات) في SAP Easy Access. في حقل الأمر، أدخل رقم أمر المبيعات (مثل 2100063546). اضغط Enter لفتح الأمر.",
+        whatSAPDoesEN:
+          "Loads the Display Sales Documents screen showing the full order — Sales, Item Overview, Ordering Party, Characteristics, and Orders tabs.",
+        whatSAPDoesAR:
+          "يحمّل شاشة عرض مستندات المبيعات التي تُظهر الأمر كاملاً — تبويبات المبيعات ونظرة عامة على البنود وطرف الطلب والخصائص والأوامر.",
+        expectedOutputEN:
+          "Sales order is displayed in read-only mode. All order details are visible.",
+        expectedOutputAR:
+          "يُعرض أمر المبيعات في وضع القراءة فقط. تظهر جميع تفاصيل الأمر.",
+      },
+      {
+        id: "sd-sop-2",
+        stepNumber: 2,
+        titleEN: "Issue Output — Sales Document → Issue Output To",
+        titleAR: "إصدار المخرجات — مستند المبيعات ← إصدار المخرجات إلى",
+        tCode: "VA03",
+        role: "Sales",
+        whatToDoEN:
+          "From the menu bar, click Sales Document → Issue Output To. The Output Details screen opens showing all output records for this order. Locate the BA00 (Order Confirmation) row.",
+        whatToDoAR:
+          "من شريط القائمة، انقر على مستند المبيعات ← إصدار المخرجات إلى. تفتح شاشة تفاصيل المخرجات التي تُظهر جميع سجلات المخرجات لهذا الأمر. حدد موقع صف BA00 (تأكيد الأمر).",
+        whatSAPDoesEN:
+          "Displays the Output Details screen listing all output types assigned to the sales order (message type, name, created on, transmission medium, process status).",
+        whatSAPDoesAR:
+          "تعرض شاشة تفاصيل المخرجات جميع أنواع المخرجات المُعيَّنة لأمر المبيعات (نوع الرسالة، الاسم، تاريخ الإنشاء، وسيلة الإرسال، حالة المعالجة).",
+        expectedOutputEN:
+          "Output Details screen is open. BA00 Order Confirmation row is visible with status and transmission details.",
+        expectedOutputAR:
+          "شاشة تفاصيل المخرجات مفتوحة. صف BA00 تأكيد الأمر مرئي مع حالة الإرسال وتفاصيله.",
+      },
+      {
+        id: "sd-sop-3",
+        stepNumber: 3,
+        titleEN: "Select BA00 Row and Print",
+        titleAR: "تحديد صف BA00 والطباعة",
+        tCode: "VA03",
+        role: "Sales",
+        whatToDoEN:
+          "Select the BA00 (Order Confirmation) row by clicking it. Then click the Print button (printer icon) in the Output Details toolbar. The order confirmation is sent to the configured printer or output device.",
+        whatToDoAR:
+          "حدد صف BA00 (تأكيد الأمر) بالنقر عليه. ثم انقر على زر الطباعة (أيقونة الطابعة) في شريط أدوات تفاصيل المخرجات. يُرسَل تأكيد الأمر إلى الطابعة أو جهاز الإخراج المُهيَّأ.",
+        whatSAPDoesEN:
+          "Triggers the output of the Order Confirmation document (BA00) to the assigned printer or transmission medium. Updates the process status of the output record.",
+        whatSAPDoesAR:
+          "يُشغّل إخراج مستند تأكيد الأمر (BA00) إلى الطابعة أو وسيلة الإرسال المُعيَّنة. يُحدّث حالة معالجة سجل المخرجات.",
+        expectedOutputEN:
+          "Order Confirmation printed or transmitted successfully. Process status updates in the Output Details screen.",
+        expectedOutputAR:
+          "تمت طباعة تأكيد الأمر أو إرساله بنجاح. تتحدث حالة المعالجة في شاشة تفاصيل المخرجات.",
+      },
+    ],
+  },
+
   // ─── HCM: SuccessFactors ESS ────────────────────────────────────────────────
   {
     id: "sf-ess",
