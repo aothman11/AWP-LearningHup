@@ -5558,7 +5558,12 @@ export const processes: Process[] = [
       "طباعة تأكيد أمر المبيعات الموجود أو عرضه باستخدام VA03 وخيار إصدار المخرجات إلى.",
     module: "SD",
     roles: ["Sales"],
-    chartImages: [],
+    chartImages: [
+      "/process-charts/va03-so-print-p2-img2.png",
+      "/process-charts/va03-so-print-p2-img4.png",
+      "/process-charts/va03-so-print-p3-img2.png",
+      "/process-charts/va03-so-print-p3-img4.png",
+    ],
     steps: [
       {
         id: "sd-sop-1",
